@@ -1,1 +1,14 @@
-test
+idendro package by Tomas Sieger, tomas.sieger@seznam.cz
+
+To install, please see the INSTALL file.
+
+To run demos:
+- a simple demo:
+
+ > library(idednro)
+ > demo(idednroDemo)
+
+- demo showing dendrogram performance on 5,000 observations:
+
+ > demo(idednroBigDemo)
+
