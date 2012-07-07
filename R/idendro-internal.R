@@ -80,6 +80,10 @@ sharedVarNames<-function() {
     'charmW',
     'strangeW',
     'dendroG',
+    'dendroZoom',
+    'dendroZoomMouseSelection',
+    'selectorG',
     'heatmapG',
+    'params',
     'df')
 }

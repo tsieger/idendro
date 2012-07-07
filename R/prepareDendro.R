@@ -3,6 +3,9 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
     df<-NULL
     df$h<-h
     df$x<-x
+    df$clusterCount<-length(h$height)
+    df$n<-df$clusterCount+1
+    df$k<-ifelse(is.null(x),NULL,ncol(x))
 
     clusterCount<-nrow(h$merge)
     n<-clusterCount+1
@@ -85,8 +88,10 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
     if (dbg>1) printVar(x2s)
     if (dbg>1) printVar(y1s)
     if (dbg>1) printVar(y2s)
-    coords1<-gw2xy(dendro2fig(with(df$unselectedBranches$branches,list(x1s,y1s))))
-    coords2<-gw2xy(dendro2fig(with(df$unselectedBranches$branches,list(x2s,y2s))))
+    #coords1<-gw2xy(dendro2fig(with(df$unselectedBranches$branches,list(x1s,y1s))))
+    #coords2<-gw2xy(dendro2fig(with(df$unselectedBranches$branches,list(x2s,y2s))))
+    coords1<-gw2xy(dendro2fig(list(x1s,y1s)))
+    coords2<-gw2xy(dendro2fig(list(x2s,y2s)))
     x1s<-coords1[[1]]
     y1s<-coords1[[2]]
     x2s<-coords2[[1]]
@@ -102,15 +107,20 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
     df$fetchedBranches<-df$noBranches<-list(indices=c(),branches=data.frame(x1s=c(),x2s=c(),y1s=c(),y2s=c()))
     df$fetchedLeafCount<-0
     df$fetchedInfo<-NULL
-    if (dbg) printVar(df$fetchedMap)
+    if (dbg>1) printVar(df$fetchedMap)
     fetchedMap<-matrix(rep(0,n),nrow=1)
     df$fetchedMap<-matrix(rep(0,n),nrow=1)
-    if (dbg) printVar(df$fetchedMap)
+    if (dbg>1) printVar(df$fetchedMap)
     df$emptyFetchedMap<-matrix(rep(0,n),nrow=1)
     df$fetchedChanged<-FALSE
     df$currentCluster<-1
     df$clusterCount<-clusterCount
     df$branchCenterOffsets<-branchCenterOffsets
+    df$leafOrder<-leafOrder
+    df$xOrdered<-x[leafOrder,,drop=F]
+    df$xOrderedSmoothed<-df$xOrdered
+    df$elemClusterCount<-df$n
 
+#print(df)
     df
 }

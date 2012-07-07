@@ -3,6 +3,8 @@ fig2dendro<-function(gw) {
     dbg.tx<-gfc(dbg.tx)
     if (dbg.tx) print('fig2dendro called')
 
+    return(gw)
+
     df<-gfc(df)
     n<-nrow(df$x)
     k<-ncol(df$x)

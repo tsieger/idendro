@@ -3,9 +3,10 @@ fig2heatmap<-function(gw) {
     dbg.tx<-gfc(dbg.tx)
     if (dbg.tx) print('fig2heatmap called')
 
+    return(gw)
+
     df<-gfc(df)
 
-    selectorG<-heatmapG/ncol(df$x)
     n<-nrow(df$x)
     k<-ncol(df$x)
     g<-gw[[1]]
