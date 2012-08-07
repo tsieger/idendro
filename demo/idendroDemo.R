@@ -1,9 +1,14 @@
+# generate data in feature space
 n<-10
-x<-cbind(rnorm(n),rnorm(n))
-cat('computing dist\n')
+x<-data.frame(x1=c(rnorm(n,-1),rnorm(n,1)),x2=c(rnorm(n,-1),rnorm(n,1)))
+rownames(x)<-1:(2*n)
+
+# compute pairwise distances
 dx<-dist(x)
-cat('computing HCA\n')
+
+# perform hierarchical clustering
 hx<-hclust(dx)
-cat('plotting HCA\n')
-idendro(hx,x)
-cat('done\n')
+
+# visualize clusters
+idendro(hx)
+

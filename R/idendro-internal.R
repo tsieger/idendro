@@ -25,13 +25,46 @@ function (pos = 1, pattern, order.by = "Size", decreasing=TRUE, head =     TRUE,
 
 dbg.internal<-0
 
+
+# Sequence generation resembling matlab ':' operator.
+# The difference from R `seq' is the behaviour in case when
+# from=2, to=1 and b=1 - in that case R seq raises an error, while
+# matlab returns an empty sequence.
+# This function returns an empty sequence as well in this case.
+mySeq <- function(from,to,by=1) {
+    if ((from<to) == (by>0)) return(seq(from,to,by))
+    else if (from==to) return(from)
+    else return(vector(class(from),0))
+}
+
 printWithName<-function (x) {
     cat(paste(deparse(substitute(x)),'\n',sep=''))
     print(x)
 }
 
 printVar<-function (x) {
-    cat(paste(deparse(substitute(x)),' [',class(x),', ',length(x),']: ',paste(x,collapse=' '),'\n',sep=''))
+    #cat(paste(deparse(substitute(x)),' [',class(x),', ',length(x),']: ',paste(x,collapse=' '),'\n',sep=''))
+    cat(paste(deparse(substitute(x)),
+        ' [',paste(class(x),collapse=','),', ',
+        ifelse(!is.null(dim(x)),paste(dim(x),collapse=','),length(x)),']: ',sep=''))
+    if (is.environment(x)) {
+        cat(paste(paste(ls(x),collapse=','),'\n',sep=''))
+    } else if (length(x)>0) {
+        for (i in 1:length(x)) {
+            if (is.environment(x[i])) {
+                tmp<-as.data.frame(x[i])
+            } else {
+                tmp<-x[i]
+            }
+            if (!is.null(names(x[i]))) {
+                cat(paste(names(x[i]),'=',tmp,ifelse(i<length(x),', ','\n'),sep=''))
+            } else {
+                cat(paste(tmp,ifelse(i<length(x),', ','\n'),sep=''))
+            }
+        }
+    } else {
+        cat('\n')
+    }
     #print(x)
 }
 
@@ -50,6 +83,12 @@ findVar<-function(idfName) {
     return(list(value=value,found=found))
 }
 
+# GFC: "get from caller" function making given variable appearing in
+# the environment of some caller of the function calling the `gfc'
+# function usable directly by the caller of the `gfc' function.
+# Example:
+#  f1() { a<-1; f2()}
+#  f2() { a<-gfc(a); <<now a copy of `a' appears in f2>> }
 gfc<-function(nm) {
     if (dbg.internal) cat(paste('gcf: looking for \'',deparse(substitute(nm)),'\'\n',sep=''))
     rv<-findVar(deparse(substitute(nm)))
@@ -60,7 +99,7 @@ gfc<-function(nm) {
         if (!rv$found) {
             print(tb())
             #stop(paste('\'scene\' not found in caller stack'))
-            stop(paste('\'',deparse(substitute(nm)),'\' not found in caller stack'))
+            stop(paste('\'',deparse(substitute(nm)),'\' not found in caller stack',sep=''))
         }
         return(attr(rv$value,'.sharedEnv')[deparse(substitute(nm))])
     }
@@ -73,17 +112,24 @@ first<-function(x) head(x,1)
 sharedVarNames<-function() {
     list(
     'dbg',
+    'dbg.args',
+    'dbg.mouse',
+    'dbg.gui',
     'dbg.tx',
     'dbg.dendro',
+    'dbg.dendro.zoom',
+    'dbg.dendro.axis',
+    'dbg.dendro.limits',
+    'dbg.dendro.select',
+    'dbg.dendro.cut',
+    'dbg.dendro.info',
+    'dbg.axis',
     'dbg.heatmap',
-    'dbg.clusterSelector',
-    'charmW',
-    'strangeW',
-    'dendroG',
+    'dbg.heatmap.text',
+    'dbg.heatmap.limits',
+    'dbg.brushedmap',
     'dendroZoom',
     'dendroZoomMouseSelection',
-    'selectorG',
-    'heatmapG',
     'params',
     'df')
 }

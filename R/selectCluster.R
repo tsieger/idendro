@@ -1,33 +1,54 @@
 selectCluster<-function (pos) {
     dbg<-gfc(dbg)
-    dbg.clusterSelector<-gfc(dbg.clusterSelector)
-    if (dbg.clusterSelector) print('selectCluster called')
+    dbg.dendro.select<-gfc(dbg.dendro.select)
+    if (dbg.dendro.select) print('selectCluster called')
 
     df<-gfc(df)
 
-    if (dbg.clusterSelector) print(pos)
+    # remember current selection
+    df<-pushSelectionHistory(df)
+    df$lastSelectionSaver<-'selectCluster'
+
+    if (dbg.dendro.select) print(pos)
     x<-as.numeric(pos)[1]
     y<-as.numeric(pos)[2]
-    if (dbg.clusterSelector) printVar(x)
-    if (dbg.clusterSelector) printVar(y)
+    if (dbg.dendro.select) printVar(x)
+    if (dbg.dendro.select) printVar(y)
     gw<-xy2gw(list(x,y))
-    if (dbg.clusterSelector) printVar(gw)
-    #TODO:
-    #currentXlim<-c(0,1)
-    #currentYlim<-c(0,1)
-    #d<-((-df$h$height-x)/diff(currentXlim))^2+((df$branchCenterOffsets-y)/diff(currentYlim))^2
-    d<-(dendro2fig(list(df$h$height,NULL))[[1]]-gw[[1]])^2+(df$branchCenterOffsets-gw[[2]])^2
-    if (dbg.clusterSelector) printVar(d)
+    if (dbg.dendro.select) printVar(gw)
+
+    ## find nearest cluster merging points
+    # zoom region determines scaling
+    dendroZoom<-gfc(dendroZoom)
+    zoom.limits.gw<-dendro2fig(dendroZoom)
+    if (dbg.dendro.select) printVar(zoom.limits.gw)
+    # branching points
+    printVar(dendro2fig(list(df$h$height,NULL)))
+    branches.g<-dendro2fig(list(df$h$height[df$clusterCount]-df$h$height,NULL))$g
+    if (dbg.dendro.select) printVar(branches.g)
+    branches.w<-df$branchCenterOffsets
+    if (dbg.dendro.select) printVar(branches.w)
+    # distances (measured in the current zoom region)
+    d<-((branches.g-gw$g)/diff(zoom.limits.gw$g))^2+((branches.w-gw$w)/diff(zoom.limits.gw$w))^2
+    if (dbg.dendro.select) printVar(d)
+    # index of the nearest cluster
     minI<-which.min(d)
-    if (dbg.clusterSelector) printVar(minI)
-    subclusters<-subclusterIndices(df$h,minI)
-    if (dbg.clusterSelector) printWithName(subclusters)
+    if (dbg.dendro.select) printVar(minI)
+
+    # subclusters
+    subclusters<-computeSubclusterIndices(df$h,minI)
+    if (dbg.dendro.select) printWithName(subclusters)
     idx<-clusterId2SegmentIds(subclusters)
+
+    # mark selected dendrogram segments
     df$clusters[[df$currentCluster]] <-
         list(indices=subclusters,
             branches=with(df$allBranches$branches,data.frame(x1s=x1s[idx],x2s=x2s[idx],y1s=y1s[idx],y2s=y2s[idx])))
+
+    # unmark deselected subclusters
     unselectedIndices<-setdiff(1:df$clusterCount,subclusters)
-    if (dbg.clusterSelector) printWithName(unselectedIndices)
+    if (dbg.dendro.select) printWithName(unselectedIndices)
+
     # remove the branches selected from the other clusters
     for (i in seq(along=df$clusters)) {
         if (i!=df$currentCluster && !is.null(df$clusters[[i]])) {
@@ -39,10 +60,16 @@ selectCluster<-function (pos) {
             }
         }
     }
+
     # remove branches of selected clusters from unselectedBranches
-    if (dbg.clusterSelector) printWithName(unselectedIndices)
+    if (dbg.dendro.select) printWithName(unselectedIndices)
     df$unselectedBranches$indices<-unselectedIndices
     idx<-clusterId2SegmentIds(unselectedIndices)
     df$unselectedBranches$branches<-with(df$allBranches$branches,data.frame(x1s=x1s[idx],x2s=x2s[idx],y1s=y1s[idx],y2s=y2s[idx]))
-    df
+
+    # compute leaf colors
+    df$leafColorIdxs<-computeLeafColorIdxs(df)
+
+    if (dbg.dendro.select>1) printWithName(df)
+    return(df)
 }

@@ -6,6 +6,7 @@ dendro2fig<-function(gw) {
     dbg.tx<-gfc(dbg.tx)
     if (dbg.tx) print('dendro2fig called')
 
+    names(gw)<-c('g','w')
     return(gw)
 
     df<-gfc(df)
@@ -32,6 +33,6 @@ dendro2fig<-function(gw) {
     #w<-(w-mean(dendroZoom$w))*(-diff(dendroZoom$w))/n+mean(dendroZoom$w)
 
     # transform to layer coords
-    list(dendroG*(1-g/last(df$h$height)),
-        (1-strangeW-charmW) * (1/(2*n) + (n-w)/n)+charmW)
+    list(g=dendroG*(1-g/last(df$h$height)),
+        w=(1-strangeW-charmW) * (1/(2*n) + (n-w)/n)+charmW)
 }

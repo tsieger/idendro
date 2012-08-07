@@ -3,12 +3,14 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
     df<-NULL
     df$h<-h
     df$x<-x
-    df$clusterCount<-length(h$height)
-    df$n<-df$clusterCount+1
-    df$k<-ifelse(is.null(x),NULL,ncol(x))
+    df$clusterCount<-clusterCount<-length(h$height)
+    df$n<-n<-df$clusterCount+1
+    if (is.null(x)) {
+        df$k<-0
+    } else {
+        df$k<-ncol(x)
+    }
 
-    clusterCount<-nrow(h$merge)
-    n<-clusterCount+1
     if (dbg) printVar(n)
     if (dbg) printVar(clusterCount)
 
@@ -72,6 +74,11 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
         x0<-h$height[i]
         x1<-ifelse(h$merge[i,1]>0,h$height[h$merge[i,1]],0)
         x2<-ifelse(h$merge[i,2]>0,h$height[h$merge[i,2]],0)
+        # mirror Xs: x=0 corresponding to the top-most cluster, x>0 to leafs
+        x0<-h$height[clusterCount]-x0
+        x1<-h$height[clusterCount]-x1
+        x2<-h$height[clusterCount]-x2
+
         y1<-yPos[n+1+h$merge[i,1]]
         y2<-yPos[n+1+h$merge[i,2]]
         branchCenterOffsets[i]<-mean(c(y1,y2))
@@ -117,10 +124,10 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
     df$clusterCount<-clusterCount
     df$branchCenterOffsets<-branchCenterOffsets
     df$leafOrder<-leafOrder
+    df$leafColorIdxs<-rep(0,n)
     df$xOrdered<-x[leafOrder,,drop=F]
     df$xOrderedSmoothed<-df$xOrdered
     df$elemClusterCount<-df$n
 
-#print(df)
-    df
+    return(df)
 }

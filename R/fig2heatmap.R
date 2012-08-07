@@ -11,6 +11,6 @@ fig2heatmap<-function(gw) {
     k<-ncol(df$x)
     g<-gw[[1]]
     w<-gw[[2]]
-    list( k * (g - dendroG - selectorG) / heatmapG,
-         n * (w - charmW) / (1-strangeW-charmW) + .5)
+    list( g = k * (g - dendroG - selectorG) / heatmapG,
+         w = n * (w - charmW) / (1-strangeW-charmW) + .5)
 }
