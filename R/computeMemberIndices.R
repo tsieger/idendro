@@ -1,4 +1,4 @@
-memberIndices<-function(h,clusterIdx) {
+computeMemberIndices<-function(h,clusterIdx) {
     clusterCount<-nrow(h$merge)
     indices<-rep(NA,clusterCount+1)
     indicesCount<-0

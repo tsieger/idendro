@@ -1,0 +1,13 @@
+features TODOs:
+===============
+
+- configurable layout (dendro, heatmap, brushedmap, dim annotations,
+  observation annotations) 
+- return cluster assignment
+- cluster assignment as input
+- configurable dendro orientation (left-to-right, right-to-left,
+  top-to-bottom, bottom-to-top)
+
+technical TODOs:
+================
+- align dendrogram with heatmap
