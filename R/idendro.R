@@ -138,13 +138,22 @@ idendro<-function(h,
     #### internal functions
     ####
 
-    # Color observations according top clusters they belong to.
+    # Color observations according to clusters they belong to.
     colorizeLeafs <- function(qx,df,params) {
         if (!is.null(qx)) {
             qx$.border<<-qx$.color<<-params$allColors[df$leafColorIdxs+1]
+            qx$.cluster<<-df$leafColorIdxs
         }
     }
     colorizeLeafs(qx,df,params)
+
+    # Mark observations belonging to the current cluster in the `qx' mutable data frame.
+    setCurrentClusterInQx <- function(qx,df) {
+        if (!is.null(qx)) {
+            qx$.currentCluster<<-df$leafColorIdxs==df$currentCluster
+        }
+    }
+    setCurrentClusterInQx(qx,df)
 
     # Determine color for cluster of given ID (starting at 1).
     clusterColor <- function(id) {
@@ -550,7 +559,6 @@ idendro<-function(h,
             if (dbg.dendro.select) cat('clusterSelectorImpl called\n')
             if (dbg.dendro.select) print(as.numeric(event$pos()))
 
-            df$currentCluster<<-guiWindow$getCurrentCluster()
             if (dbg.dendro.select) printVar(df$currentCluster)
 
             df<-selectCluster(event$pos())
@@ -561,6 +569,7 @@ idendro<-function(h,
         guiWindow$updateClusterInfos()
         guiWindow$update()
         colorizeLeafs(qx,df,params)
+        setCurrentClusterInQx(qx,df)
     }
 
     # Make GW to lie within given GW rectangle.
@@ -788,6 +797,7 @@ idendro<-function(h,
             #if (rv$clustersChanged) {
             # colorize leafs
             colorizeLeafs(qx,df,params)
+            setCurrentClusterInQx(qx,df)
             #}
             guiWindow$updateClusterInfos()
             guiWindow$update()
@@ -1116,6 +1126,12 @@ idendro<-function(h,
         this$clusterInfosBrushed<-vector('list',params$maxClusterCount)
         for (i in 1:params$maxClusterCount) {
             this$clusterSelectorButtons[[i]]<-Qt$QRadioButton(sprintf('%2d',i))
+            qconnect(clusterSelectorButtons[[i]], "pressed", function(i) {
+                if (attr(scene,'.sharedEnv')$df$currentCluster!=i) {
+                    attr(scene,'.sharedEnv')$df$currentCluster<-i
+                    setCurrentClusterInQx(qx,attr(scene,'.sharedEnv')$df)
+                }
+            },i)
             # TODO: create label with given background color instead of widget with explicit paintEvent handler
             this$clusterColoredRect[[i]]<-ColoredRect()
             this$clusterColoredRect[[i]]$setColor(params$clusterColors[i])
@@ -1159,7 +1175,6 @@ idendro<-function(h,
 
             if (dbg.dendro.select) cat('unselect button pressed\n')
 
-            .sharedEnv$df$currentCluster<-getCurrentCluster()
             rv<-unselectCurrentCluster(.sharedEnv$df)
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
@@ -1210,15 +1225,6 @@ idendro<-function(h,
             # close GUI
             close()
         })
-    })
-
-    qsetMethod("getCurrentCluster", Window, function() {
-        if (dbg.dendro.select) cat('getCurrentCluster called\n')
-        for (i in 1:params$maxClusterCount) {
-            if (clusterSelectorButtons[[i]]$isChecked()) return(i)
-        }
-        stop('No current cluster?!')
-        return(NA)
     })
 
     guiWindow<-Window()
