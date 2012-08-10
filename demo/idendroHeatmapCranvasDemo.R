@@ -1,4 +1,8 @@
-library(cranvas)
+## Demo showing `idendro' bidirectional communication between idendro
+## and cranvas qscatter plot.
+##
+
+require(cranvas)
 
 n<-10
 #x<-cbind(rnorm(n),rnorm(n))

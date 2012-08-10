@@ -1,3 +1,7 @@
+## Demo showing `idendro' bidirectional communication between idendro
+## and cranvas qscatter plot.
+##
+
 require(cranvas)
 
 # generate data in feature space
@@ -12,7 +16,7 @@ dx<-dist(x)
 hx<-hclust(dx)
 
 # prepare mutable data frame enabling bidirectional communication
-# in between qscatter (coloring observations according to clusters
+# between qscatter (coloring observations according to clusters
 # currently selected by idendro) and idendro (displaying brushed
 # observations)
 qx<-qdata(x)
