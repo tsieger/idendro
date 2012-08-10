@@ -3,18 +3,24 @@ idendro package by Tomas Sieger, tomas.sieger@seznam.cz
 To install, please see the INSTALL file.
 
 Demos:
-- demo showing dendrogram itself:
- > demo(idendroDemo)
 
-- demo showing dendrogram and heatmap:
- 
- > demo(idendroHeatmapDemo)
+ idendroDemo
+    - dendrogram demo
 
-- demo showing dendrogram, heatmap and bidirectional integration with
-  cranvas qscatter:
- 
- > demo(idendroCranvasDemo)
+ idendroHeatmapDemo
+    - dendrogram and heatmap demo
 
-- demo showing dendrogram performance on 5,000 observations:
+ idendroCranvasDemo
+    - demo showing bidirectional integration of dendrogram
+      with cranvas qscatter
 
- > demo(idednroBigDemo)
+ idendroHeatmapCranvasDemo
+    - demo showing bidirectional integration of dendrogram+heatmap
+      with cranvas qscatter
+
+ idendroUserCallbackDemo
+    - demo showing how user-supplied callback can interact with
+      idendro
+      
+ idendroBigDemo
+    - demo showing dendrogram performance on 5,000 observations
