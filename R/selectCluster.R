@@ -23,7 +23,7 @@ selectCluster<-function (pos) {
     zoom.limits.gw<-dendro2fig(dendroZoom)
     if (dbg.dendro.select) printVar(zoom.limits.gw)
     # branching points
-    printVar(dendro2fig(list(df$h$height,NULL)))
+    if (dbg.dendro.select) printVar(dendro2fig(list(df$h$height,NULL)))
     branches.g<-dendro2fig(list(df$h$height[df$clusterCount]-df$h$height,NULL))$g
     if (dbg.dendro.select) printVar(branches.g)
     branches.w<-df$branchCenterOffsets
