@@ -18,12 +18,12 @@ hx<-hclust(dx)
 qx<-qdata(x)
 
 # visualize clusters, qx mutaframe enriched with `.cluster'
-# and `.currentCluster' returned
+# and `.inCurrentCluster' returned
 qx<-idendro(hx,qx)
 
 # bind a listener to changes to cluster assignment and current cluster setting
 qx.listener <- add_listener(qx, function(i, j) {
-    idx = which(j == c('.cluster','.currentCluster'))
+    idx = which(j == c('.cluster','.inCurrentCluster'))
     if (length(idx) > 0) {
         cat('qx listener: current cluster changed\n')
         print(qx)
@@ -55,9 +55,9 @@ qsetClass("UserCallbackWindow", Qt$QWidget, function(parent = NULL) {
     qsetMethod("updateClusterInfo", UserCallbackWindow, function(qx) {
         this$label$setText(sprintf(
             'The current cluster consists of %d observation(s).\nThe mean x1 is %.3f, the mean x2 is %.3f.',
-            sum(qx$.currentCluster),
-            mean(qx$x1[qx$.currentCluster]),
-            mean(qx$x2[qx$.currentCluster])))
+            sum(qx$.inCurrentCluster),
+            mean(qx$x1[qx$.inCurrentCluster]),
+            mean(qx$x2[qx$.inCurrentCluster])))
     })
 })
 
