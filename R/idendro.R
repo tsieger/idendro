@@ -1,20 +1,176 @@
+idendro<-function
+### Interactive dendrogram.
+###
+### 'idendro' is an interactive plot enabling visualization and
+### inspection of the result of hierarchical clustering (dendrogram)
+### with heatmap optionally attached to it.
+### Clusters anywhere in the hierarchy can be selected.
+### The dendrogram can be zoomed and panned.
+### Integration with other plots and tools
+### is made possible by using mutable and dynamic data models
+### (mutaframes).
+### 'idendro' is able to display quite large dendrograms (tens
+### of thousands of observations, at least).
+
+
+
 #
-# return: qx
+# Usage:
 #
-idendro<-function(h,
+#
+# Arguments:
+#
+#        clusters: assignment of observations to clusters to start
+#                  with, typically the value of a previous call to
+#                  plotHca.
+#
+#  heatMapRelSize: relative size of heatmap (in respect to dendrogram
+#                  size)
+#
+#
+##details<<
+### 'idendro' displays an interactive dendrogram enriched, optionally,
+### by a heatmap and/or a brushedmap.
+###
+### The dendrogram depicts the process of a hierarchical clustering of
+### observations. There is an axis drawn by the side of the dendrogram
+### displaying the clustering "height": the clusters grow from 0
+### (the level of individual observations) to positive heights.
+###
+### The heatmap color-codes values of the observations.
+###
+### The brushedmap indicates which observations are currently
+### selected by some external plot/tool 'idendro' is integrated
+### with. Technically speaking, the selection is determined by
+### a hidden column in the 'qx' mutable data frame, being changed by
+### the external plot. 'idendro' listens to changes to this column.
+###
+### The dendrogram can be zoomed and panned. To zoom in to a
+### specific region, user can right click in the dendrogram and
+### move the mouse holding the right button. A shaded rectangle will
+### appear showing the region to zoom to.
+### The mouse wheel can also be used to zoom in and out around the
+### curent mouse position (the amount of zoom can be controlled by
+### 'zoomFactor'). To pan the zoomed dendrogram, press the middle
+### mouse button and move mouse. Zooming and panning history is
+### available (see 'GUI').
+###
+### User can select clusters manually one by one (by clicking
+### at individual clusters in the dendrogram), or automatically by
+### "cutting" the dendrogram at a specified height. To cut the
+### dendrogram, navigate the mouse close to the dendrogram axis, such
+### that a dashed line appears across the dendrogram at a specified
+### height, and left click. Clusters just beneath the cutting
+### height will get selected, replacing the clusters currently
+### selected. Selection history is available (see 'GUI').
+###
+###   Graphical User interface (GUI):
+### Besides the dendrogram window, there is a window holding a few
+### GUI controls. In the top part of the GUI window there are
+### cluster-specific controls and info panels arranged in rows. (The
+### number of rows is determined by the 'maxClusterCount' parameter.)
+### In each row, from left to right,
+### there is the current cluster indicator, the cluster number and
+### color code (determined by the 'clusterColors' parameter), and
+### cluster-specific statistics: the total number (and ratio) of
+### observations in the specific cluster (out of the total number
+### of observations in the data set), and the number (and ratio) of
+### observations in the cluster out of the observations brushed
+### externally. At any time, exactly one cluster is current. Manual
+### cluster selection (re)defines which cluster (as appearing in the
+### dendrogram) is represented by the current cluster (as shown in the
+### GUI). The observations forming the current cluster are indicated by
+### the '.inCurrentCluster' logical flag in the 'qx' mutaframe and can be
+### used by external applications to display the current
+### cluster-specific information (see 'idendroDemoWithUserCallback' to
+### learn more).
+### At the bottom of the GUI window, there are buttons controling zoom
+### and cluster selection:
+###
+### "Full view" - zooms dendrogram out maximally, restoring its original
+###     size
+###
+### "Zoom back" - retrieves the previous zoom region from history
+###
+### "Unselect" - unselects the current cluster (makes the current
+###     cluster empty, decolorizes dendrogram branches associated with
+###     the current cluster
+###
+### "unselect All" - unselects all clusters (decolorizes all the
+###     clusters in the dendrogram)
+###
+### "select Back" - retrieves the previous cluster selection from
+###     history
+###
+###  "Quit"
+###
+###
+(
+    h,
+    ### an object of class 'stats::hclust' describing a clustering
+
     qx=NULL,
+    ### a mutaframe a holding clustered observations, with attributes
+    ### for interaction, as created by 'cranvas::qdata'.
+    ### A regular data frame can be passed instead of a mutaframe, in
+    ### which case it will get converted into a mutaframe
+    ### automatically.
+    ### This parameter is optional.
+
     x=NULL,
+    ### a data frame holding clustered observations.
+    ### Heatmap will depict this data.
+    ### This parameter is optional. If missing, it will be guessed
+    ### from 'qx' by omitting any columns starting in '.'.
+
     zoomFactor=1/240,
+    ### the amount of zoom in/out as controlled by the mouse wheel
+
     observationAnnotationEnabled=NULL,
+    ### do show names of individual observations (rownames of 'x') next
+    ### to the dendrogram/heatmap?
+
     clusterColors=c('red','green','blue','yellow','magenta','cyan','darkred','darkgreen','purple','darkcyan'),
+    ### colors of individual clusters selected in the dendrogram
+
     unselectedClusterColor='black',
+    ### color of unselected dendrogram branches
+
     maxClusterCount=length(clusterColors),
+    ### maximum number of clusters user can select. If greater than
+    ### the number of 'clusterColors', cluster colors will get
+    ### recycled.
+    ### This parameter affects the size of GUI and the number of
+    ### clusters which can be selected automatically by "cutting" the
+    ### dendrogram.
+
     heatmapEnabled=NULL,
+    ### shall the heatmap be drawn?
+
     doSmoothHeatmap=TRUE,
-    heatmapColors=colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000")),#c("red", "blue"),space = "Lab"),
+    ### shall the heatmap depict the mean data values associated with
+    ### the clusters currently shown in the dendrogram (TRUE,
+    ### the dafult), or shall it depict all the individual observations
+    ### forming the clusters, even if the individual observations are
+    ### not currently visible in the dendrogram (FALSE)?
+
+    heatmapColors=colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000")),
+    ### heatmap color map scheme.
+
     heatmapColorCount=10,
+    ### the number of colors used by the heatmap, picked (interpolated)
+    ### from 'heatmapColors'.
+    ### WARNING: the number of different heatmap colors can influence
+    ### the time spent drawing the heatmap significantly (for large
+    ### data sets), so use with care.
+
     brushedmapEnabled=!is.null(qx)
+    ### shall brushed map be drawn?
     ) {
+
+
+##seealso<<hclust, plclust, identify.hclust, rect.hclust,
+## cutree, dendrogram, cranvas::qdata
 
     #### required libraries
     ####
@@ -150,7 +306,7 @@ idendro<-function(h,
     # Mark observations belonging to the current cluster in the `qx' mutable data frame.
     setCurrentClusterInQx <- function(qx,df) {
         if (!is.null(qx)) {
-            qx$.currentCluster<<-df$leafColorIdxs==df$currentCluster
+            qx$.inCurrentCluster<<-df$leafColorIdxs==df$currentCluster
         }
     }
     setCurrentClusterInQx(qx,df)
@@ -921,13 +1077,13 @@ idendro<-function(h,
     figLayer[1, 0] <- dendroLayer
     figLayer[1, 1] <- heatmapLayer
     figLayer[1, 2] <- brushedmapLayer
-    figLayer[1, 3] <- observationAnnotationLayer
+    if (!is.null(observationAnnotationLayer)) figLayer[1, 3] <- observationAnnotationLayer
     figLayer[2, 0] <- axisLayer
     figLayer[2, 1] <- backgroundClearingLayer1
     figLayer[2, 2] <- backgroundClearingLayer2
     figLayer[2, 3] <- backgroundClearingLayer3
     figLayer[0, 0] <- backgroundClearingLayer4
-    figLayer[0, 1] <- heatmapDimAnnotationLayer
+    if (!is.null(heatmapDimAnnotationLayer)) figLayer[0, 1] <- heatmapDimAnnotationLayer
     figLayer[0, 2] <- brushedmapAnnotationLayer
     figLayer[0, 3] <- backgroundClearingLayer5
     
@@ -1139,7 +1295,7 @@ idendro<-function(h,
             this$clusterInfosBrushed[[i]]<-Qt$QLabel('0 (0%)')
         }
 
-        this$fullViewButton<-Qt$QPushButton('Full view')
+        this$fullViewButton<-Qt$QPushButton('&Full view')
         qconnect(fullViewButton, "pressed", function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
@@ -1153,7 +1309,7 @@ idendro<-function(h,
             }
         })
 
-        this$zoomBackButton<-Qt$QPushButton('Zoom &back')
+        this$zoomBackButton<-Qt$QPushButton('&Zoom back')
         qconnect(zoomBackButton, "pressed", function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
@@ -1184,7 +1340,7 @@ idendro<-function(h,
             }
         })
 
-        this$unselectAllButton<-Qt$QPushButton('Unselect all')# clusters')
+        this$unselectAllButton<-Qt$QPushButton('Unselect &all')# clusters')
         qconnect(unselectAllButton, "pressed", function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
@@ -1231,4 +1387,10 @@ idendro<-function(h,
     guiWindow$show()
 
     qx
+### mutaframe carrying the (interactive) current cluster selection in
+### the '.cluster' column, and the flag determining whether each
+### observation is a member of the current cluster in the
+### '.inCurrentCluster' column. The '.cluster' column holds 0 for
+### rows of unselected observations, and the value of i > 0
+### representing observations forming the cluster `i'.
 }
