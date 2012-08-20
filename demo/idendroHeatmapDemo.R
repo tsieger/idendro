@@ -14,6 +14,5 @@ dx<-dist(x)
 hx<-hclust(dx)
 
 # visualize clusters, the heatmap is enabled by default
-idendro(hx,observationAnnotationEnabled=F,heatmapEnabled=F)#,brushedmapEnabled=T)
-#idendro(hx,x,heatmapEnabled=F)
+idendro(hx,x)
 
