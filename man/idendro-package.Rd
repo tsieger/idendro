@@ -1,41 +1,25 @@
 \name{idendro-package}
 \alias{idendro-package}
-\alias{idendro}
 \docType{package}
-\title{
-What the package does (short line)
-~~ package title ~~
-}
-\description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
-}
+\title{Interactive dendrogram}
+\description{Interactive dendrogram (with optional heatmap) enabling
+cluster selection, zooming, panning and bidirectional integration
+with other plots and tools by using mutable data frames.}
 \details{
-\tabular{ll}{
-Package: \tab idendro\cr
+\tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
+Title: \tab Interactive dendrogram\cr
 Version: \tab 1.0\cr
 Date: \tab 2012-06-11\cr
-License: \tab What license is it under?\cr
-LazyLoad: \tab yes\cr
+Author: \tab Tomas Sieger\cr
+Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc\cr
+URL: \tab http://github.com/tsieger/idendro\cr
+Maintainer: \tab Tomas Sieger <tomas.sieger@seznam.cz>\cr
+License: \tab TODO\cr
+LazyLoad: \tab yes\cr}
 }
-~~ An overview of how to use the package, including the most important functions ~~
-}
-\author{
-Who wrote it
+\author{Tomas Sieger}
 
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
-}
-\references{
-~~ Literature or other references for background information ~~
-}
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
 \keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
-#~~ simple examples of the most important functions ~~
-}
+
+

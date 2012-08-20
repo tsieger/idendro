@@ -1,0 +1,19 @@
+\name{computeLeafOrder}
+\alias{computeLeafOrder}
+\title{computeLeafOrder}
+
+\usage{computeLeafOrder(merging, dbg = 0)}
+\arguments{
+  \item{merging}{(n-1) by 2 matrix describing HCA merging, usually the
+'merge' component of the return value from 'hclust'}
+  \item{dbg}{debug level}
+}
+
+\value{leaf ordering}
+
+\author{Tomas Sieger}
+
+
+
+
+
