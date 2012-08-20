@@ -1,6 +1,10 @@
-# logical grow/width to physical x/y coord conversion
-gw2xy<-function(gw) {
+gw2xy<-function
+### Logical grow/width to physical x/y coord conversion.
+(
+    gw ##<< a list of 'g' and 'w' components
+) {
     xy<-gw
     names(xy)<-c('x','y')
-    xy
+    return(xy)
+    ### a list of 'x' and 'y' components
 }

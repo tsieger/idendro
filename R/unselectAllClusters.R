@@ -1,8 +1,8 @@
-# Unselect all clusters.
-# Returns list of `df' and boolean flag (selectionChanged) determing if
-# selection has changed (so the caller can learn whether to redraw
-# clusters).
-unselectAllClusters<-function (df) {
+unselectAllClusters<-function
+### Unselect all clusters.
+(
+    df ##<< shared data frame
+) {
     dbg<-gfc(dbg)
     dbg.dendro.select<-gfc(dbg.dendro.select)
 
@@ -24,4 +24,7 @@ unselectAllClusters<-function (df) {
         selectionChanged<-FALSE
     }
     return(list(df=df,selectionChanged=selectionChanged))
+    ### a list of a shared data frame 'df' and a boolean flag
+    ### 'selectionChanged' determing if cluster selection has changed
+    ### (so the caller can learn whether to redraw clusters).
 }

@@ -13,6 +13,7 @@ dx<-dist(x)
 # perform hierarchical clustering
 hx<-hclust(dx)
 
-# visualize clusters, the heatmpa is enabled by default
-idendro(hx,x)
+# visualize clusters, the heatmap is enabled by default
+idendro(hx,observationAnnotationEnabled=F,heatmapEnabled=F)#,brushedmapEnabled=T)
+#idendro(hx,x,heatmapEnabled=F)
 

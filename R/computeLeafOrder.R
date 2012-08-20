@@ -1,5 +1,11 @@
-# Compute the assignment of leafs in dendrogram to original observations.
-computeLeafOrder<-function(merging,dbg=0) {
+computeLeafOrder<-function
+## Compute the assignment of dendrogram leafs to the original
+## observations.
+(
+    merging, ##<< (n-1) by 2 matrix describing HCA merging, usually the
+    ## 'merge' component of the return value from 'hclust'
+    dbg=0  ##<< debug verbosity level
+) {
     # m = # of clusters
     m<-dim(merging)[1]
     if (dbg) printWithName(m)
@@ -38,4 +44,5 @@ computeLeafOrder<-function(merging,dbg=0) {
     }
     if (dbg) printWithName(ordering)
     return(ordering)
+    ### leaf ordering
 }

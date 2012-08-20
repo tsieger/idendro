@@ -1,4 +1,14 @@
-smoothHeatmap <- function(x,ch,dbg.heatmap) {
+smoothHeatmap<-function
+(
+    x, ##<< a data frame holding observations tha were clustered
+
+    ch, ##<< number of clusters specifying the amount of smoothing:
+    ## observations in clusters will get smoothed together, the value
+    ## of 'n' specifies no smoothing while the value of 1 would lead
+    ## to maximal smoothing
+
+    dbg.heatmap ##<< debug verbosity level
+) {
     
     i0<-0
     if (dbg.heatmap) chProcessed<-rep(FALSE,max(ch))
@@ -17,5 +27,6 @@ smoothHeatmap <- function(x,ch,dbg.heatmap) {
     }
     if (dbg.heatmap>2) printVar(x)
     return(x)
+    ### a data frame holding smoothed observations
 }
 

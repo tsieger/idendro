@@ -1,4 +1,10 @@
-cutDendro<-function(df,cutG,dendroZoom) {
+cutDendro<-function
+### Select clusters by cutting the current zoom of the dendrogram at a
+### specified height.
+    (df, ##<< shared data frame
+    cutG, ##<< cutting grow height
+    dendroZoom ##<< current dendro zoom region
+) {
 
     dbg.dendro.select<-gfc(dbg.dendro.select)
     dbg.dendro.cut<-gfc(dbg.dendro.cut)
@@ -18,7 +24,7 @@ cutDendro<-function(df,cutG,dendroZoom) {
     if (selectedClusterCandidateCount>1) {
         # allocate new clusters
         newClusters<-vector('list',selectedClusterCandidateCount)
-        for (i in seq(along=df$clusters)) {
+        for (i in 1:selectedClusterCandidateCount) {
             newClusters[[i]]<-list(indices=NULL,branches=NULL)
         }
 
@@ -95,4 +101,6 @@ cutDendro<-function(df,cutG,dendroZoom) {
     df$leafColorIdxs<-computeLeafColorIdxs(df)
 
     return(list(df=df,selectedClusterCount=selectedClusterCount))
+    ### A list of shared data frame 'df' with new cluster selection,
+    ### and the number of clusters selected.
 }

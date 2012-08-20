@@ -1,7 +1,11 @@
-# fig -> dendro coord conversion
-fig2dendro<-function(gw) {
+fig2dendro<-function
+### Fig -> dendro coord conversion.
+(
+    gw ##<< ##<< a list of 'g' and 'w' components
+) {
     dbg.tx<-gfc(dbg.tx)
     if (dbg.tx) print('fig2dendro called')
 
     return(gw)
+    ### converted values, a list of 'g' and 'w' components
 }

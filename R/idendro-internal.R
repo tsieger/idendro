@@ -1,3 +1,5 @@
+### Internal functions.
+
 .ls.objects <-
 function (pos = 1, pattern, order.by = "Size", decreasing=TRUE, head =     TRUE, n = 10) {
   # based on postings by Petr Pikal and David Hinds to the r-help list in 2004

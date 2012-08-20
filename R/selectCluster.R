@@ -1,4 +1,8 @@
-selectCluster<-function (pos) {
+selectCluster<-function
+### Select the nearest cluster to the position 'pos'.
+(
+    pos ## << position in the dendro figure
+) {
     dbg<-gfc(dbg)
     dbg.dendro.select<-gfc(dbg.dendro.select)
     if (dbg.dendro.select) print('selectCluster called')
@@ -72,4 +76,5 @@ selectCluster<-function (pos) {
 
     if (dbg.dendro.select>1) printWithName(df)
     return(df)
+    ### shared data frame
 }

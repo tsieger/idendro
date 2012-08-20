@@ -1,4 +1,10 @@
-computeSubclusterIndices<-function(h,clusterIdx) {
+computeSubclusterIndices<-function
+## Compute indices of all subclusters (even deep down the hierarchy)
+## appearing in given cluster.
+(
+    h, ##<< HCA result, usually 'hclust' return value
+    clusterIdx ##<< cluster index
+) {
     clusterCount<-nrow(h$merge)
     indices<-rep(NA,clusterCount)
     indicesCount<-0
@@ -22,4 +28,5 @@ computeSubclusterIndices<-function(h,clusterIdx) {
         }
     }
     return(indices[1:indicesCount])
+    ### subclusters indices
 }

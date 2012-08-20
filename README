@@ -22,5 +22,9 @@ Demos:
     - demo showing how user-supplied callback can interact with
       idendro
       
+ idendroAnnotationDemo
+    - demo showing how long names of observations/feature space
+      dimensions get rendered
+    
  idendroBigDemo
     - demo showing dendrogram performance on 5,000 observations

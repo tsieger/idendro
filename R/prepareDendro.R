@@ -1,4 +1,16 @@
-prepareDendro<-function(h,x=NULL,dbg=0) {
+prepareDendro<-function
+### Perform all computations needed to display a dendrogram and
+### initialize a shared data frame.
+###
+### This is an internal function not to be called by the user.
+(
+    h, ##<< an object of class 'stats::hclust' describing a clustering
+
+    x = NULL, ##<< a data frame holding observations tha were clustered
+    ## giving rise to 'h'
+
+    dbg = 0 ##<< debug verbosity level
+) {
 
     df<-NULL
     df$h<-h
@@ -111,15 +123,7 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
 
     if (dbg) cat('Initializing the shared data frame...\n')
     df$unselectedBranches<-df$allBranches<-list(indices=1:clusterCount,branches=data.frame(x1s=x1s,x2s=x2s,y1s=y1s,y2s=y2s))
-    df$fetchedBranches<-df$noBranches<-list(indices=c(),branches=data.frame(x1s=c(),x2s=c(),y1s=c(),y2s=c()))
-    df$fetchedLeafCount<-0
-    df$fetchedInfo<-NULL
-    if (dbg>1) printVar(df$fetchedMap)
-    fetchedMap<-matrix(rep(0,n),nrow=1)
-    df$fetchedMap<-matrix(rep(0,n),nrow=1)
-    if (dbg>1) printVar(df$fetchedMap)
-    df$emptyFetchedMap<-matrix(rep(0,n),nrow=1)
-    df$fetchedChanged<-FALSE
+    df$clusters<-NULL
     df$currentCluster<-1
     df$clusterCount<-clusterCount
     df$branchCenterOffsets<-branchCenterOffsets
@@ -130,4 +134,5 @@ prepareDendro<-function(h,x=NULL,dbg=0) {
     df$elemClusterCount<-df$n
 
     return(df)
+    ### shared data frame
 }

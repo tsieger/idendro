@@ -13,5 +13,6 @@ dx<-dist(x)
 hx<-hclust(dx)
 
 # visualize clusters
-idendro(hx)
+#idendro(hx)
+idendro(hx,brushedmapEnabled=TRUE)
 

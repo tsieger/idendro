@@ -1,5 +1,9 @@
-# Restore (and discard from history) the last dendro zoom.
-popDendroZoomHistory <- function(.sharedEnv) {
+popDendroZoomHistory <- function
+### Restore (and discard from history) the last dendro zoom.
+(
+    .sharedEnv ##<< shared environment (the environment of the
+    ## 'idendro' function)
+) {
     dbg.dendro.zoom<-gfc(dbg.dendro.zoom)
 
     if (dbg.dendro.zoom) cat('popDendroZoomHistory called\n')
@@ -13,4 +17,5 @@ popDendroZoomHistory <- function(.sharedEnv) {
     if (dbg.dendro.zoom) printVar(dendroZoom)
     if (dbg.dendro.zoom) printVar(length(.sharedEnv$df$dendroZoomHistory))
     return(dendroZoom)
+    ### dendro zoom
 }

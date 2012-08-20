@@ -1,5 +1,8 @@
-# Save the current cluster selection (as stored in df).
-pushSelectionHistory <- function(df) {
+pushSelectionHistory <- function
+### Save the current cluster selection (as stored in df).
+(
+    df ##<< shared data frame
+) {
     dbg.dendro.select<-gfc(dbg.dendro.select)
 
     if (dbg.dendro.select) cat('pushSelectionHistory called\n')
@@ -13,5 +16,8 @@ pushSelectionHistory <- function(df) {
         df$selectionHistory)
 
     if (dbg.dendro.select) printVar(length(df$selectionHistory))
+
     return(df)
+    ### shared data frame with cluster selection pushed on top of the
+    ### selection stack.
 }

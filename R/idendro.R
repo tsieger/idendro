@@ -1,172 +1,154 @@
 idendro<-function
 ### Interactive dendrogram.
 ###
-### 'idendro' is an interactive plot enabling visualization and
-### inspection of the result of hierarchical clustering (dendrogram)
-### with heatmap optionally attached to it.
-### Clusters anywhere in the hierarchy can be selected.
+### 'idendro' is a plot enabling visualization and interactive
+### inspection of a dendrogram, with a heatmap attached to it,
+### optionally.
+### Clusters anywhere in the dendrogram hierarchy can be selected.
 ### The dendrogram can be zoomed and panned.
-### Integration with other plots and tools
-### is made possible by using mutable and dynamic data models
-### (mutaframes).
-### 'idendro' is able to display quite large dendrograms (tens
+### 'idendro' can be integrated with other plots and tools
+### by communicating over a shared mutable data frames (mutaframes).
+### 'idendro' can be used to display quite large dendrograms (tens
 ### of thousands of observations, at least).
+###
+##details<<
+## 'idendro' displays an interactive dendrogram enriched, optionally,
+## with a heatmap and/or a brushedmap.
+##
+## The dendrogram depicts the result of a hierarchical cluster
+## analysis on a set of observations. There is an axis drawn by the
+## side of the dendrogram displaying the "height" of clusters. 
+##
+## The heatmap visualizes the observations living in k-dimensional
+## space by mapping their values onto a color scale and displaying
+## as a row of 'k' colored rectangles.
+##
+## The brushedmap indicates which observations are currently
+## being selected by some external plot/tool 'idendro' is integrated
+## with. Technically speaking, the current selection is determined by
+## a hidden column in the 'qx' mutable data frame being changed by
+## the external plot/tool. 'idendro' listens to changes to this column.
+##
+## The dendrogram can be zoomed and panned. To zoom in to a
+## specific region, right click and drag in the dendrogram.
+## Mouse wheel can also be used to zoom in and out (the amount of zoom
+## can be controlled by 'zoomFactor'). To pan a zoomed dendrogram,
+## middle click and drag the mouse. Zooming and panning history is
+## available (see 'GUI').
+##
+## User can select clusters manually one by one (by clicking
+## at individual clusters in the dendrogram), or automatically by
+## "cutting" the dendrogram at a specified height. To cut the
+## dendrogram, navigate the mouse close to the dendrogram axis
+## (a dashed line will appear across the dendrogram at a specified
+## height), and left click. Clusters just beneath the cutting
+## height will get selected, replacing the clusters being currently
+## selected. Selection history is available (see 'GUI').
+##
+##   \emph{Graphical User interface (GUI):}
+##
+## Besides the dendrogram window, there is a window offering a few
+## GUI controls. In the top part of the GUI window come
+## cluster-specific controls and info panels arranged in rows.
+## (The number of rows is determined by 'maxClusterCount')
+## In each row, from left to right,
+## there is the current cluster indicator, the cluster number and
+## color code (determined by 'clusterColors'), and
+## cluster-specific statistics: the total number (and ratio) of
+## observations in the specific cluster out of the total number
+## of observations in the data set, and the number (and ratio) of
+## observations in the cluster out of the observations brushed
+## externally. At any time, exactly one cluster is being the current
+## cluster. Manual cluster selection (re)defines which cluster (as
+## appearing in the dendrogram) is pointed to by the current cluster.
+## The observations forming the current cluster are indicated by
+## the '.inCurrentCluster' column in the 'qx' mutaframe, which can be
+## used by external applications to display the current
+## cluster-specific information (see 'idendroDemoWithUserCallback').
+## At the bottom of the GUI window, there are buttons controling
+## zooming and cluster selection:
+##
+## "Full view" - zooms dendrogram out maximally
+##
+## "Zoom back" - retrieves the previous zoom region from history
+##
+## "Unselect" - unselects the current cluster (makes the current
+##     cluster to point to no cluster in the dendrogram, so it
+##     decolorizes dendrogram branches associated with
+##     the current cluster)
+##
+## "unselect All" - unselects all clusters (decolorizes all the
+##     clusters in the dendrogram)
+##
+## "select Back" - retrieves the previous cluster selection from
+##     history
+##
+##  "Quit"
+##
+##
+(
+    h, ##<< an object of class 'stats::hclust' describing a clustering
 
+    qx=NULL,##<< a mutaframe holding observations tha were clustered
+    ## giving rise to 'h', with hidden columns for interaction, as created
+    ## by 'cranvas::qdata'. If 'qx' is enriched with 'idendro'-specific
+    ## hidden columns (i.e. '.cluster', '.inCurrentCluster'), the
+    ## initial cluster selection is based on them; otherwise there are
+    ## no clusters selected initially.
+    ## A regular data frame can be passed instead of a mutaframe, in
+    ## which case it will get converted into a mutaframe
+    ## automatically.
+    ## This parameter is optional.
 
+    x=qx, ##<< a data frame holding observations tha were clustered
+    ## giving rise to 'h'.
+    ## Heatmap will depict this data.
+    ## This parameter is optional. If missing, it will be guessed
+    ## from 'qx' by omitting any columns starting in '.'.
 
-#
-# Usage:
-#
-#
-# Arguments:
-#
-#        clusters: assignment of observations to clusters to start
-#                  with, typically the value of a previous call to
-#                  plotHca.
-#
+    zoomFactor=1/240, ##<<the amount of zoom in/out as controlled by the
+    ## mouse wheel
+
+    observationAnnotationEnabled=TRUE, ##<< shall the names of individual
+    ## observations (rownames of 'x') be shown next to the
+    ## dendrogram/heatmap?
+
+    clusterColors=c('red','green','blue','yellow','magenta','cyan','darkred','darkgreen','purple','darkcyan'),##<< colors
+    ## of individual clusters selected in the dendrogram
+
+    unselectedClusterColor='black',##<< the color of unselected dendrogram
+    ## branches
+
+    maxClusterCount=length(clusterColors), ##<< maximum number of
+    ## clusters user can select. If greater than the number of
+    ## 'clusterColors', cluster colors will get recycled.
+    ## This parameter affects the size of GUI and the number of
+    ## clusters which can be selected automatically by "cutting" the
+    ## dendrogram.
+
+    heatmapEnabled=TRUE, ##<< shall the heatmap be drawn?
+
+    doSmoothHeatmap=TRUE,##<< shall the heatmap depict the mean data
+    ## values associated with the clusters currently shown in the
+    ## dendrogram (TRUE, the defult), or shall it depict all the
+    ## individual observations forming the clusters, even if the
+    ## individual observations are not currently visible in the
+    ## dendrogram (FALSE)?
+
+    heatmapColors=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000")), ##<< heatmap
+    ## color map scheme
+
+    heatmapColorCount=10, ##<< the number of colors used by the heatmap,
+    ## picked (interpolated) from 'heatmapColors'.
+    ## WARNING: the number of colors used by heatmap can influence
+    ## the time spent drawing the heatmap significantly (for large
+    ## data sets).
+
+    brushedmapEnabled=!is.null(qx) ##<< shall brushed map be drawn?
+    ) {
+# TODO:
 #  heatMapRelSize: relative size of heatmap (in respect to dendrogram
 #                  size)
-#
-#
-##details<<
-### 'idendro' displays an interactive dendrogram enriched, optionally,
-### by a heatmap and/or a brushedmap.
-###
-### The dendrogram depicts the process of a hierarchical clustering of
-### observations. There is an axis drawn by the side of the dendrogram
-### displaying the clustering "height": the clusters grow from 0
-### (the level of individual observations) to positive heights.
-###
-### The heatmap color-codes values of the observations.
-###
-### The brushedmap indicates which observations are currently
-### selected by some external plot/tool 'idendro' is integrated
-### with. Technically speaking, the selection is determined by
-### a hidden column in the 'qx' mutable data frame, being changed by
-### the external plot. 'idendro' listens to changes to this column.
-###
-### The dendrogram can be zoomed and panned. To zoom in to a
-### specific region, user can right click in the dendrogram and
-### move the mouse holding the right button. A shaded rectangle will
-### appear showing the region to zoom to.
-### The mouse wheel can also be used to zoom in and out around the
-### curent mouse position (the amount of zoom can be controlled by
-### 'zoomFactor'). To pan the zoomed dendrogram, press the middle
-### mouse button and move mouse. Zooming and panning history is
-### available (see 'GUI').
-###
-### User can select clusters manually one by one (by clicking
-### at individual clusters in the dendrogram), or automatically by
-### "cutting" the dendrogram at a specified height. To cut the
-### dendrogram, navigate the mouse close to the dendrogram axis, such
-### that a dashed line appears across the dendrogram at a specified
-### height, and left click. Clusters just beneath the cutting
-### height will get selected, replacing the clusters currently
-### selected. Selection history is available (see 'GUI').
-###
-###   Graphical User interface (GUI):
-### Besides the dendrogram window, there is a window holding a few
-### GUI controls. In the top part of the GUI window there are
-### cluster-specific controls and info panels arranged in rows. (The
-### number of rows is determined by the 'maxClusterCount' parameter.)
-### In each row, from left to right,
-### there is the current cluster indicator, the cluster number and
-### color code (determined by the 'clusterColors' parameter), and
-### cluster-specific statistics: the total number (and ratio) of
-### observations in the specific cluster (out of the total number
-### of observations in the data set), and the number (and ratio) of
-### observations in the cluster out of the observations brushed
-### externally. At any time, exactly one cluster is current. Manual
-### cluster selection (re)defines which cluster (as appearing in the
-### dendrogram) is represented by the current cluster (as shown in the
-### GUI). The observations forming the current cluster are indicated by
-### the '.inCurrentCluster' logical flag in the 'qx' mutaframe and can be
-### used by external applications to display the current
-### cluster-specific information (see 'idendroDemoWithUserCallback' to
-### learn more).
-### At the bottom of the GUI window, there are buttons controling zoom
-### and cluster selection:
-###
-### "Full view" - zooms dendrogram out maximally, restoring its original
-###     size
-###
-### "Zoom back" - retrieves the previous zoom region from history
-###
-### "Unselect" - unselects the current cluster (makes the current
-###     cluster empty, decolorizes dendrogram branches associated with
-###     the current cluster
-###
-### "unselect All" - unselects all clusters (decolorizes all the
-###     clusters in the dendrogram)
-###
-### "select Back" - retrieves the previous cluster selection from
-###     history
-###
-###  "Quit"
-###
-###
-(
-    h,
-    ### an object of class 'stats::hclust' describing a clustering
-
-    qx=NULL,
-    ### a mutaframe a holding clustered observations, with attributes
-    ### for interaction, as created by 'cranvas::qdata'.
-    ### A regular data frame can be passed instead of a mutaframe, in
-    ### which case it will get converted into a mutaframe
-    ### automatically.
-    ### This parameter is optional.
-
-    x=NULL,
-    ### a data frame holding clustered observations.
-    ### Heatmap will depict this data.
-    ### This parameter is optional. If missing, it will be guessed
-    ### from 'qx' by omitting any columns starting in '.'.
-
-    zoomFactor=1/240,
-    ### the amount of zoom in/out as controlled by the mouse wheel
-
-    observationAnnotationEnabled=NULL,
-    ### do show names of individual observations (rownames of 'x') next
-    ### to the dendrogram/heatmap?
-
-    clusterColors=c('red','green','blue','yellow','magenta','cyan','darkred','darkgreen','purple','darkcyan'),
-    ### colors of individual clusters selected in the dendrogram
-
-    unselectedClusterColor='black',
-    ### color of unselected dendrogram branches
-
-    maxClusterCount=length(clusterColors),
-    ### maximum number of clusters user can select. If greater than
-    ### the number of 'clusterColors', cluster colors will get
-    ### recycled.
-    ### This parameter affects the size of GUI and the number of
-    ### clusters which can be selected automatically by "cutting" the
-    ### dendrogram.
-
-    heatmapEnabled=NULL,
-    ### shall the heatmap be drawn?
-
-    doSmoothHeatmap=TRUE,
-    ### shall the heatmap depict the mean data values associated with
-    ### the clusters currently shown in the dendrogram (TRUE,
-    ### the dafult), or shall it depict all the individual observations
-    ### forming the clusters, even if the individual observations are
-    ### not currently visible in the dendrogram (FALSE)?
-
-    heatmapColors=colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan","#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000")),
-    ### heatmap color map scheme.
-
-    heatmapColorCount=10,
-    ### the number of colors used by the heatmap, picked (interpolated)
-    ### from 'heatmapColors'.
-    ### WARNING: the number of different heatmap colors can influence
-    ### the time spent drawing the heatmap significantly (for large
-    ### data sets), so use with care.
-
-    brushedmapEnabled=!is.null(qx)
-    ### shall brushed map be drawn?
-    ) {
 
 
 ##seealso<<hclust, plclust, identify.hclust, rect.hclust,
@@ -186,21 +168,22 @@ idendro<-function
     # general debug
     dbg<-0
     dbg.args<-01*dbg
-    dbg.mouse<-01*dbg
-    dbg.gui<-01*dbg
+    dbg.mouse<-0*dbg
+    dbg.gui<-0*dbg
     dbg.tx<-0*dbg
     dbg.dendro<-1*dbg
-    dbg.dendro.zoom<-1*dbg
-    dbg.dendro.axis<-1*dbg
+    dbg.dendro.zoom<-0*dbg
+    dbg.dendro.axis<-0*dbg
     dbg.dendro.limits<-0*dbg
-    dbg.dendro.select<-1*dbg
-    dbg.dendro.cut<-1*dbg
-    dbg.dendro.info<-1*dbg
-    dbg.axis<-1*dbg
+    dbg.dendro.select<-0*dbg
+    dbg.dendro.cut<-0*dbg
+    dbg.dendro.info<-0*dbg
+    dbg.axis<-0*dbg
     dbg.heatmap<-1*dbg
     dbg.heatmap.text<-0*dbg
     dbg.heatmap.limits<-0*dbg
-    dbg.brushedmap<-1*dbg
+    dbg.brushedmap<-0*dbg
+    dbg.brushedmap.limits<-0*dbg
 
     #### arguments handling
     ####
@@ -211,11 +194,11 @@ idendro<-function
     if (dbg.args) printVar(brushedmapEnabled)
     if (dbg.args) printVar(observationAnnotationEnabled)
 
-    # do draw heatmap?
-    if (is.null(heatmapEnabled)) {
-        # if not determined by user, draw heatmap if possible
-        heatmapEnabled<-!is.null(x) || !is.null(qx)
+    if (heatmapEnabled && is.null(x) && is.null(qx)) {
+        # can't draw heatmap if we have no data
+        heatmapEnabled<-FALSE
     }
+
     # enable passing qdata in the `x' argument
     if (!is.mutaframe(qx)) {
         if (is.null(x)) {
@@ -223,13 +206,18 @@ idendro<-function
         }
         qx<-NULL
     }
+
     # create qdata from data, if possible
     if (is.null(qx) && !is.null(x)) qx<-qdata(x)
     # create data from qdata, if possible
-    if (is.null(x) && !is.null(qx)) {
-        # heuristics: try to get rid of columns added to the original data
-        x<-as.data.frame(qx[,-grep('^\\.',colnames(qx))])
+    if (is.null(x) && !is.null(qx)) x<-qx
+    if (is.mutaframe(x)) {
+        if (!is.null(colnames(x))) {
+            # heuristics: try to get rid of columns added to the original data
+            x<-as.data.frame(x[,-grep('^\\.',colnames(x))])
+        }
     }
+
     if (brushedmapEnabled && is.null(qx)) {
         qx<-qdata(1:(length(hx$height)+1))
     }
@@ -243,19 +231,36 @@ idendro<-function
     mouseMiddleButtonPressPos<-NULL
     axisCut<-NA
 
+
     df<-prepareDendro(h,x,dbg.dendro)
+    # initialize clusters from leaf colors, if supplied
+    if (!is.null(qx) && !is.null(colnames(qx)) && '.cluster'%in%colnames(qx)) {
+        if (dbg.dendro) cat('.cluster found in qx\n')
+        df<-createClustersFromLeafColors(df,qx$.cluster,maxClusterCount,dbg.dendro)
+        # set the current cluster, if it is one of the clusters visible in the data
+        currentClusterIndices<-qx$.cluster[qx$.inCurrentCluster]
+        if (length(currentClusterIndices)>0 && length(unique(currentClusterIndices))==1) {
+            df$currentCluster<-currentClusterIndices[1]
+        }
+    }
+    if (dbg.dendro>1) printVar(df)
+
+    # observation annotations
     if (!is.null(x) && !is.null(rownames(x))) {
         df$observationLabels<-rownames(x)
     } else {
         df$observationLabels<-hx$labels
     }
-    if (is.null(observationAnnotationEnabled)) {
-        # if user did not specify whether to draw observation annotations,
-        # draw them if available
-        observationAnnotationEnabled<-!is.null(df$observationLabels)
-    } else if (observationAnnotationEnabled && is.null(df$observationLabels)) {
+    if (observationAnnotationEnabled && is.null(df$observationLabels)) {
         # if annotation not available, nothing to draw
         observationAnnotationEnabled<-FALSE
+    }
+
+    # dim annotations
+    if (!is.null(x) && !is.null(colnames(x))) {
+        df$dimLabels<-colnames(x)
+    } else {
+        df$dimLabels<-NULL
     }
 
     df$dendroZoomHistory<-list()
@@ -286,16 +291,11 @@ idendro<-function
     params$heatmapColorCount<-heatmapColorCount
     params$brushedmapEnabled<-brushedmapEnabled
 
-    #### create environment to be shared by functions called from this
-    # function as well as functions called from within qtpaint/qtbase
-    .sharedEnv<-new.env()
-    for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn)),env=.sharedEnv)
-
     #### internal functions
     ####
 
     # Color observations according to clusters they belong to.
-    colorizeLeafs <- function(qx,df,params) {
+    colorizeLeafs<-function(qx,df,params) {
         if (!is.null(qx)) {
             qx$.border<<-qx$.color<<-params$allColors[df$leafColorIdxs+1]
             qx$.cluster<<-df$leafColorIdxs
@@ -304,7 +304,7 @@ idendro<-function
     colorizeLeafs(qx,df,params)
 
     # Mark observations belonging to the current cluster in the `qx' mutable data frame.
-    setCurrentClusterInQx <- function(qx,df) {
+    setCurrentClusterInQx<-function(qx,df) {
         if (!is.null(qx)) {
             qx$.inCurrentCluster<<-df$leafColorIdxs==df$currentCluster
         }
@@ -312,11 +312,11 @@ idendro<-function
     setCurrentClusterInQx(qx,df)
 
     # Determine color for cluster of given ID (starting at 1).
-    clusterColor <- function(id) {
+    clusterColor<-function(id) {
         params$clusterColors[((id-1)%%length(params$clusterColors))+1]
     }
 
-    #extendRange <- function(x,amount) {
+    #extendRange<-function(x,amount) {
     #    tmp<-diff(x)*amount/2
     #    x<-x+tmp*c(-1,1)
     #    x
@@ -325,7 +325,7 @@ idendro<-function
     # Painter clearing the whole layer with white color (considered
     # being backfround).
     # TODO: background color specification
-    clearLayerBackground <- function(layer,painter,borderSaving=c(0,0,0,0)) {
+    clearLayerBackground<-function(layer,painter,borderSaving=c(0,0,0,0)) {
         qdrawRect(painter,
             layer$limits()$left()+layer$limits()$width()*borderSaving[1],
             layer$limits()$top()+layer$limits()$height()*borderSaving[2],
@@ -338,22 +338,52 @@ idendro<-function
     ##################################################################
     ## scene#FOLD01
     ##################################################################
-    scene <- qscene()
+    scene<-qscene()
     attr(scene,'.sharedEnv')<-environment() # the current environment
-    attr(scene,'.df')<-df
-    .sharedEnv$scene<-scene
+    ## this environment will be shared by this function as well as
+    ## functions called from within qtpaint/qtbase
 
     ##################################################################
     ## painters#FOLD02
     ##################################################################
-    dendroPainter <- function(layer, painter) {
+
+    # Debug function drawing a filled rectangle depicting the extent of
+    # a layer.
+    drawLayerLimits<-function(painter,layer,layerName,fillColor,hilightSomePos=FALSE) {
+        if (hilightSomePos) {
+            qdrawText(painter,'0,0',0,0,col='black')
+            qdrawText(painter,'0,1',0,1,col='black')
+            qdrawText(painter,'.5,1',.5,1,col='black')
+            qdrawText(painter,'0,2',0,2,col='black')
+        }
+
+        eps<-.1
+        qdrawRect(painter,
+            layer$limits()$left()+eps,
+            layer$limits()$bottom()+eps,
+            layer$limits()$right()-eps,
+            layer$limits()$top()-eps,stroke=fillColor,fill=alpha(fillColor,.3))
+
+        cat(paste(layerName,':\n',sep=''))
+        #printVar(layer$limits())
+        printVar(layer$limits()$left())
+        printVar(layer$limits()$bottom())
+        printVar(layer$limits()$right())
+        printVar(layer$limits()$top())
+    }
+
+    dendroPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
         if (dbg.dendro) cat('dendroPainter called\n')
 
-        dendroPainterImpl <- function(layer, painter) {
+        dendroPainterImpl<-function(layer,painter) {
             if (dbg.dendro) cat('dendroPainterImpl called\n')
+            if (dbg.dendro>1) with(df$unselectedBranches$branches,printVar(x1s))
+            if (dbg.dendro>1) with(df$unselectedBranches$branches,printVar(y1s))
+            if (dbg.dendro>1) with(df$unselectedBranches$branches,printVar(x2s))
+            if (dbg.dendro>1) with(df$unselectedBranches$branches,printVar(y2s))
             with(df$unselectedBranches$branches,qdrawSegment(painter,x1s,y1s,x2s,y2s,stroke=qcolor('black')))
             for (i in seq(along=df$clusters)) {
                 if (!is.null(df$clusters[[i]]) && length(df$clusters[[i]]$branches)>0) {
@@ -375,24 +405,7 @@ idendro<-function
             qdrawRect(painter, xy$x[-length(xy$x)], xy$y[-length(xy$y)], xy$x[-1], xy$y[-1], stroke=clrs)
 
             if (dbg.dendro.limits) {
-                qdrawText(painter,'0,0',0,0,col='blue')
-                qdrawText(painter,'0,3',0,3,col='blue')
-                qdrawText(painter,'.5,1',.5,1,col='blue')
-                qdrawText(painter,'0,4',0,4,col='blue')
-
-                eps<-.1
-                qdrawRect(
-                    painter,layer$limits()$left()-eps,
-                    layer$limits()$bottom()+eps,
-                    layer$limits()$right()+eps,
-                    layer$limits()$top()-eps,stroke='blue')
-
-                print('dendro:')
-                #printVar(layer$limits())
-                printVar(layer$limits()$left())
-                printVar(layer$limits()$bottom())
-                printVar(layer$limits()$right())
-                printVar(layer$limits()$top())
+                drawLayerLimits(painter,layer,'dendro','blue')
             }
         }
         dendroPainterImpl(layer,painter)
@@ -401,7 +414,7 @@ idendro<-function
     ##
     ## brushedmap
     ##
-    brushedmapPainter <- function(layer, painter) {
+    brushedmapPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -410,7 +423,7 @@ idendro<-function
         if (dbg.brushedmap) printVar(brushedmapEnabled)
         if (!brushedmapEnabled) return()
 
-        brushedmapPainterImpl <- function(layer, painter) {
+        brushedmapPainterImpl<-function(layer,painter) {
             if (dbg.brushedmap) cat('brushedmapPainterImpl called\n')
 
             borderSize<-0
@@ -439,6 +452,10 @@ idendro<-function
             qdrawRect(painter,
                 coords1[[1]][i],coords1[[2]][i],coords2[[1]][i],coords2[[2]][i],
                 stroke=rgb(0,0,0,0),fill=qcolor('white'))
+
+            if (dbg.brushedmap.limits) {
+                drawLayerLimits(painter,layer,'brushedmap','yellow')
+            }
         }
         brushedmapPainterImpl(layer,painter)
     }
@@ -446,7 +463,7 @@ idendro<-function
     ##
     ## heatmap
     ##
-    heatmapPainter <- function(layer, painter) {
+    heatmapPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -455,7 +472,7 @@ idendro<-function
         if (dbg.heatmap) printVar(heatmapEnabled)
         if (!heatmapEnabled) return()
 
-        heatmapPainterImpl <- function(layer, painter) {
+        heatmapPainterImpl<-function(layer,painter) {
             if (dbg.heatmap) cat('heatmapPainterImpl called\n')
 
             g1<-rep(seq(0,ncol(df$x)-1),each=nrow(df$x))
@@ -493,24 +510,7 @@ idendro<-function
             }
 
             if (dbg.heatmap.limits) {
-                qdrawText(painter,'0,0',0,0,col='black')
-                qdrawText(painter,'0,1',0,1,col='black')
-                qdrawText(painter,'.5,1',.5,1,col='black')
-                qdrawText(painter,'0,2',0,2,col='black')
-
-                eps<-.1
-                qdrawRect(painter,
-                    layer$limits()$left()+eps,
-                    layer$limits()$bottom()+eps,
-                    layer$limits()$right()-eps,
-                    layer$limits()$top()-eps,stroke='blue',fill=NA)
-
-                cat('heatmap:\n')
-                #printVar(layer$limits())
-                printVar(layer$limits()$left())
-                printVar(layer$limits()$bottom())
-                printVar(layer$limits()$right())
-                printVar(layer$limits()$top())
+                drawLayerLimits(painter,layer,'heatmap','green')
             }
             df
         }
@@ -518,80 +518,110 @@ idendro<-function
         .sharedEnv$df<-df
     }
 
-    heatmapDimAnnotationPainter <- function(layer, painter) {
+    heatmapDimAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
         if (dbg.heatmap) cat('heatmapDimAnnotationPainter called\n')
 
-        if (!heatmapEnabled) return()
+        # clear the background to cover the branches of a zoomed
+        # dendrogram
+        clearLayerBackground(layer,painter)
 
-        heatmapDimAnnotationPainterImpl <- function(layer, painter) {
-            # clear background
-            clearLayerBackground(layer, painter)
-
+        heatmapDimAnnotationPainterImpl<-function(layer,painter) {
             gLabelDim<-seq(0,df$k-1)+.5
             wLabelDim<-rep(0,df$k)
             coordsLabelDim<-gw2xy(heatmap2fig(list(gLabelDim,wLabelDim)))
 
             if (dbg.heatmap.text) {
-                printVar(colnames(x))
+                printVar(df$dimLabels)
                 printVar(coordsLabelDim[[1]])
                 printVar(coordsLabelDim[[2]])
             }
-            qdrawText(painter,colnames(df$x),coordsLabelDim[[1]],coordsLabelDim[[2]],color='black',halign='left',rot=90)
+            qdrawText(painter,df$dimLabels,coordsLabelDim[[1]],coordsLabelDim[[2]],color='black',halign='left',rot=90)
+
+            if (!.sharedEnv$heatmapDimAnnotationLayerSized) {
+                # resize heatmapDimAnnotationLayer such that dim annotations fit in nicely
+                x0<-layer$mapToScene(0,0)$x()
+                labels<-df$dimLabels
+                if (brushedmapEnabled) labels<-c(labels,'brushed')
+                xs<-apply(as.array(labels),1,function(x)layer$mapToScene(qstrWidth(painter,x),qstrHeight(painter,x))$x())
+                layout$setRowMinimumHeight(0,max(xs)-x0)
+                .sharedEnv$heatmapDimAnnotationLayerSized<-TRUE
+                if (dbg.heatmap) cat('heatmapDimAnnotationLayer sized\n')
+            }
         }
-        heatmapDimAnnotationPainterImpl(layer,painter)
+        if (heatmapEnabled) {
+            # annotate data dimensions
+            heatmapDimAnnotationPainterImpl(layer,painter)
+        }
     }
 
-    brushedmapAnnotationPainter <- function(layer, painter) {
+    brushedmapAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
         if (dbg.brushedmap) cat('brushedmapAnnotationPainter called\n')
 
-        if (!brushedmapEnabled) return()
+        # clear the background to cover the branches of a zoomed
+        # dendrogram
+        clearLayerBackground(layer,painter)
 
-        brushedmapAnnotationPainterImpl <- function(layer, painter) {
-            # clear background
-            clearLayerBackground(layer, painter)
-
+        brushedmapAnnotationPainterImpl<-function(layer,painter) {
             gLabelDim<-.5
             wLabelDim<-0
             coordsLabelDim<-gw2xy(heatmap2fig(list(gLabelDim,wLabelDim)))
             qdrawText(painter,'brushed',coordsLabelDim[[1]],coordsLabelDim[[2]],color='black',halign='left',rot=90)
         }
-        brushedmapAnnotationPainterImpl(layer,painter)
+        if (brushedmapEnabled) {
+            # annotate the brushedmap
+            brushedmapAnnotationPainterImpl(layer,painter)
+        }
     }
 
-    observationAnnotationPainter <- function(layer, painter) {
+    observationAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
         if (dbg.heatmap) cat('observationAnnotationPainter called\n')
 
-        if (!observationAnnotationEnabled) return()
+        # clear the background to cover the branches of a zoomed
+        # dendrogram
+        clearLayerBackground(layer,painter)
 
-        observationAnnotationPainterImpl <- function(layer, painter) {
-            # clear background
-            clearLayerBackground(layer, painter)
-
+        observationAnnotationPainterImpl<-function(layer,painter) {
+            if (dbg.heatmap>1) printVar(df$observationLabels)
             gLabelObs<-rep(0,df$n)
             wLabelObs<-seq(1,df$n)
             coordsLabelObs<-gw2xy(heatmap2fig(list(gLabelObs,wLabelObs)))
             # annotate observations
             qdrawText(painter,df$observationLabels[df$leafOrder],coordsLabelObs[[1]],coordsLabelObs[[2]],color='black',halign='left')
+
+            if (!.sharedEnv$observationAnnotationLayerSized) {
+                # resize observationAnnotationLayer such that dim annotations fit in nicely
+                x0<-layer$mapToScene(0,0)$x()
+                xs<-apply(as.array(df$observationLabels),1,function(x)layer$mapToScene(qstrWidth(painter,x),qstrHeight(painter,x))$x())
+                layout$setColumnMinimumWidth(3,max(xs)-x0)
+                .sharedEnv$observationAnnotationLayerSized<-TRUE
+                if (dbg.heatmap) cat('observationAnnotationLayer sized\n')
+            }
+            if (dbg.heatmap.limits) {
+                drawLayerLimits(painter,layer,'observations','red')
+            }
         }
-        observationAnnotationPainterImpl(layer,painter)
+        if (observationAnnotationEnabled) {
+            # annotate the observations
+            observationAnnotationPainterImpl(layer,painter)
+        }
     }
 
-    axisPainter <- function(layer, painter) {
+    axisPainter<-function(layer,painter) {
         if (dbg.dendro.axis) cat('axisPainter called\n')
 
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         df<-.sharedEnv$df
 
-        clearLayerBackground(layer, painter)
+        clearLayerBackground(layer,painter)
 
         # axis
         xy<-gw2xy(list(g=c(0,last(df$h$height)),w=c(.5,.5)))
@@ -619,7 +649,7 @@ idendro<-function
     ##################################################################
     ## interactions#FOLD02
     ##################################################################
-    mousePressFun <- function(layer, event) {
+    mousePressFun<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         if (dbg.mouse) cat('mousePressFun called\n')
         if (event$button()==1) {
@@ -639,7 +669,7 @@ idendro<-function
         }
     }
 
-    mouseMoveFun <- function(layer, event) {
+    mouseMoveFun<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -686,7 +716,7 @@ idendro<-function
         }
     }
 
-    mouseReleaseFun <- function(layer, event) {
+    mouseReleaseFun<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         if (dbg.mouse) cat('mouseReleaseFun called\n')
         if (event$button()==1) {
@@ -705,13 +735,13 @@ idendro<-function
     }
 
     # select current cluster
-    clusterSelector <- function(layer, event) {
+    clusterSelector<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
         if (dbg.dendro.select) cat('clusterSelector called\n')
 
-        clusterSelectorImpl <- function(layer, event) {
+        clusterSelectorImpl<-function(layer, event) {
             if (dbg.dendro.select) cat('clusterSelectorImpl called\n')
             if (dbg.dendro.select) print(as.numeric(event$pos()))
 
@@ -743,14 +773,14 @@ idendro<-function
         gw
     }
 
-    dendroZoomSelectionStarter <- function(layer, event) {
+    dendroZoomSelectionStarter<-function(layer, event) {
         if (dbg.dendro.select) cat('dendroZoomSelectionStarter called\n')
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         .sharedEnv$dendroZoomMouseSelection<-xy2gw(list(x=rep(event$pos()$x(),2),y=rep(event$pos()$y(),2)))
         qupdate(.sharedEnv$dendroLayer)
     }
 
-    dendroZoomSelectionUpdater <- function(layer, event) {
+    dendroZoomSelectionUpdater<-function(layer, event) {
         if (dbg.dendro.select) cat('dendroZoomSelectionUpdater called\n')
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         gw<-xy2gw(list(x=event$pos()$x(),y=event$pos()$y()))
@@ -759,7 +789,7 @@ idendro<-function
         qupdate(.sharedEnv$dendroLayer)
     }
 
-    dendroZoomSelectionFinisher <- function(layer, event) {
+    dendroZoomSelectionFinisher<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -789,7 +819,7 @@ idendro<-function
     }
 
     # Dendrogram-zooming mouse wheel button handler.
-    dendroZoomer <- function(layer, event) {
+    dendroZoomer<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -798,7 +828,7 @@ idendro<-function
         pushDendroZoomHistory(.sharedEnv)
         lastDendroZoomHistorySaver<<-'dendroZoomer'
 
-        dendroZoomerImpl <- function(layer, event) {
+        dendroZoomerImpl<-function(layer, event) {
             delta<-event$delta()
             if (dbg.dendro.zoom>1) printVar(delta)
             pos<-as.numeric(event$pos())
@@ -892,14 +922,12 @@ idendro<-function
             tmp$setBottom(xy[[2]][2])
             heatmapLayer$setLimits(tmp)
 
+            # zoom observations
             observationAnnotationLayer<-.sharedEnv$observationAnnotationLayer
-            if (!is.null(observationAnnotationLayer)) {
-                # zoom observations
-                tmp<-observationAnnotationLayer$limits()
-                tmp$setTop(xy[[2]][1])
-                tmp$setBottom(xy[[2]][2])
-                observationAnnotationLayer$setLimits(tmp)
-            }
+            tmp<-observationAnnotationLayer$limits()
+            tmp$setTop(xy[[2]][1])
+            tmp$setBottom(xy[[2]][2])
+            observationAnnotationLayer$setLimits(tmp)
         }
 
         if (redrawRequested) {
@@ -960,29 +988,14 @@ idendro<-function
         }
     }
 
-    #keyPressFun<-function(layer, event) {
-    #    if (dbg) print(event)
-    #    print(event$key())
-    #    print(event$text())
-    #}
-
-    #titlePainter <- function(layer, painter) {
-    #    # clear background
-    #    clearLayerBackground(layer, painter)
-    #
-    #    qdrawText(painter, 'title',0.5,0.5,color=qcolor('black'))
-    #}
-
-    backgroundClearingPainter <- function(layer, painter) {
-        # clear background
-        clearLayerBackground(layer, painter)
-        #qdrawText(painter, 'empty',0,0,color=qcolor('red'))
+    backgroundClearingPainter<-function(layer,painter) {
+        # clear the background
+        clearLayerBackground(layer,painter)
     }
 
-    backgroundClearingPainterRigthToAxis <- function(layer, painter) {
-        # clear background
-        clearLayerBackground(layer, painter, c(0.05,0,0,0))
-        #qdrawText(painter, 'empty',0,0,color=qcolor('red'))
+    backgroundClearingPainterRigthToAxis<-function(layer,painter) {
+        # clear the background
+        clearLayerBackground(layer,painter, c(0.05,0,0,0))
     }
 
     ## dendrogram#FOLD01
@@ -991,14 +1004,12 @@ idendro<-function
     #dendroLimits$x<-extendRange(dendroLimits$x,.05)
     dendroLimits<-unlist(dendroLimits)
     if (dbg.dendro) printVar(dendroLimits)
-    dendroLayer <- qlayer(scene, paintFun = dendroPainter,
-            mousePressFun = mousePressFun,
-            mouseMoveFun = mouseMoveFun,
-            mouseReleaseFun = mouseReleaseFun,
-            wheelFun = dendroZoomer, clip = F, cache = F,#keyPressFun=keyPressFun,
-            limits = qrect(dendroLimits[1],dendroLimits[3],dendroLimits[2],dendroLimits[4]))
-            #qrect(0,0,dendroG,1),#qrect(dendroLimits[[1]][1],dendroLimits[[2]][1],dendroLimits[[1]][2],dendroLimits[[2]][2]),#,
-    .sharedEnv$dendroLayer<-dendroLayer
+    dendroLayer<-qlayer(scene,paintFun=dendroPainter,
+            mousePressFun=mousePressFun,
+            mouseMoveFun=mouseMoveFun,
+            mouseReleaseFun=mouseReleaseFun,
+            wheelFun=dendroZoomer,clip=FALSE,cache=FALSE,
+            limits=qrect(dendroLimits[1],dendroLimits[3],dendroLimits[2],dendroLimits[4]))
 
     axisLimits<-dendroZoomMin
     axisLimits$w<-c(0,1)
@@ -1007,158 +1018,156 @@ idendro<-function
     axisLimits<-unlist(axisLimits)
     if (dbg.dendro.axis) printVar(axisLimits)
 
-    axisLayer <- qlayer(scene, paintFun = axisPainter,
-            hoverMoveFun = axisCutterUpdate,
-            hoverEnterFun = axisCutterUpdate,
-            hoverLeaveFun = axisCutterLeave,
-            mousePressFun = axisCutter,
-            limits = qrect(axisLimits[1],axisLimits[3],axisLimits[2],axisLimits[4]),
-            clip = F)
+    axisLayer<-qlayer(scene,paintFun=axisPainter,
+            hoverMoveFun=axisCutterUpdate,
+            hoverEnterFun=axisCutterUpdate,
+            hoverLeaveFun=axisCutterLeave,
+            mousePressFun=axisCutter,
+            limits=qrect(axisLimits[1],axisLimits[3],axisLimits[2],axisLimits[4]),
+            clip=F)
 
     ## brushedmap#FOLD01
     ################
     #TODO: scale
     brushedmapLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=.5+df$n*c(0,1)))))
     if (dbg.brushedmap) printVar(brushedmapLimits)
-    brushedmapLayer <- qlayer(scene, paintFun = brushedmapPainter,clip = F,
-        limits = qrect(brushedmapLimits[1],brushedmapLimits[3],brushedmapLimits[2],brushedmapLimits[4]))
-    .sharedEnv$brushedmapLayer<-brushedmapLayer
+    brushedmapLayer<-qlayer(scene,paintFun=brushedmapPainter,clip=FALSE,cache=TRUE,
+        limits=qrect(brushedmapLimits[1],brushedmapLimits[3],brushedmapLimits[2],brushedmapLimits[4]))
 
     ## brushedmap annotation
     brushedmapAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,1)))))
-    brushedmapAnnotationLayer <- qlayer(scene, paintFun = brushedmapAnnotationPainter,
+    brushedmapAnnotationLayer<-qlayer(scene, paintFun=brushedmapAnnotationPainter,
         limits=qrect(brushedmapAnnotationLimits[1],brushedmapAnnotationLimits[3],
-                brushedmapAnnotationLimits[2],brushedmapAnnotationLimits[4]))
+                brushedmapAnnotationLimits[2],brushedmapAnnotationLimits[4]),cache=TRUE)
 
     ## heatmap#FOLD01
     ################
     #TODO: scale
-    heatmapLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,df$k),w=.5+df$n*c(0,1)))))
-    #heatmapLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,df$k),w=.5+df$n*c(-.025,1.025)))))
+    heatmapLimits<-unlist(gw2xy(heatmap2fig(list(
+        g=c(0,max(1,df$k)), # the positive difference in 'g' makes
+        # layers size manageable easily
+        w=.5+df$n*c(0,1)))))
     if (dbg.heatmap) printVar(heatmapLimits)
-    heatmapLayer <- qlayer(scene,paintFun=heatmapPainter,clip=F,cache=TRUE,
-            limits = qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4]))
-            #qrect(dendroG,0,1,1)))#qrect(heatmapLimits[[1]][1],heatmapLimits[[2]][1],heatmapLimits[[1]][2],heatmapLimits[[2]][2])))#
-    .sharedEnv$heatmapLayer<-heatmapLayer
+    heatmapLayer<-qlayer(scene,paintFun=heatmapPainter,clip=FALSE,cache=TRUE,
+            limits=qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4]))
 
     ## heatmap dim annotations
-    if (!is.null(x) && !is.null(colnames(x))) {
-        heatmapDimAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,df$k),w=c(0,1)))))
-        heatmapDimAnnotationLayer <- qlayer(scene, paintFun = heatmapDimAnnotationPainter,
-            limits=qrect(heatmapDimAnnotationLimits[1],heatmapDimAnnotationLimits[3],
-                heatmapDimAnnotationLimits[2],heatmapDimAnnotationLimits[4]))
-    } else {
-        heatmapDimAnnotationLayer <- NULL
-    }
+    heatmapDimAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(
+        g=c(0,max(1,df$k)), # the positive difference in 'g' makes
+        # layers size manageable easily
+        w=c(0,1)))))
+    heatmapDimAnnotationLayer<-qlayer(scene, paintFun=heatmapDimAnnotationPainter,
+        limits=qrect(heatmapDimAnnotationLimits[1],heatmapDimAnnotationLimits[3],
+            heatmapDimAnnotationLimits[2],heatmapDimAnnotationLimits[4]),
+        clip=FALSE,cache=TRUE)
+    heatmapDimAnnotationLayerSized<-FALSE
 
     ## observations annotations
-    if (observationAnnotationEnabled) {
-        observationAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,df$n)+.5))))
-        observationAnnotationLayer <- qlayer(scene, paintFun = observationAnnotationPainter,
-            limits=qrect(observationAnnotationLimits[1],observationAnnotationLimits[3],
-                observationAnnotationLimits[2],observationAnnotationLimits[4]))
-    } else {
-        observationAnnotationLayer <- NULL
-    }
-    .sharedEnv$observationAnnotationLayer<-observationAnnotationLayer
+    observationAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,df$n)+.5))))
+    observationAnnotationLayer<-qlayer(scene, paintFun=observationAnnotationPainter,
+        limits=qrect(observationAnnotationLimits[1],observationAnnotationLimits[3],
+            observationAnnotationLimits[2],observationAnnotationLimits[4]),
+            clip=FALSE,cache=TRUE)
+    observationAnnotationLayerSized<-FALSE
 
-    #titleLayer <- qlayer(scene, paintFun = titlePainter, limits=qrect(0,0,1,1))
-
-    backgroundClearingLayer1 <- qlayer(scene, paintFun = backgroundClearingPainter, limits=qrect(0,0,1,1))
-    backgroundClearingLayer2 <- qlayer(scene, paintFun = backgroundClearingPainter, limits=qrect(0,0,1,1))
-    backgroundClearingLayer3 <- qlayer(scene, paintFun = backgroundClearingPainter, limits=qrect(0,0,1,1))
-    backgroundClearingLayer4 <- qlayer(scene, paintFun = backgroundClearingPainter, limits=qrect(0,0,1,1))
-    backgroundClearingLayer5 <- qlayer(scene, paintFun = backgroundClearingPainter, limits=qrect(0,0,1,1))
+    backgroundClearingLayer1<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
+    backgroundClearingLayer2<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
+    backgroundClearingLayer3<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
+    backgroundClearingLayer4<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
+    backgroundClearingLayer5<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
 
     #############
     ## layout#FOLD01
     #############
-    figLayer <- qlayer(scene)
-    figLayer[1, 0] <- dendroLayer
-    figLayer[1, 1] <- heatmapLayer
-    figLayer[1, 2] <- brushedmapLayer
-    if (!is.null(observationAnnotationLayer)) figLayer[1, 3] <- observationAnnotationLayer
-    figLayer[2, 0] <- axisLayer
-    figLayer[2, 1] <- backgroundClearingLayer1
-    figLayer[2, 2] <- backgroundClearingLayer2
-    figLayer[2, 3] <- backgroundClearingLayer3
-    figLayer[0, 0] <- backgroundClearingLayer4
-    if (!is.null(heatmapDimAnnotationLayer)) figLayer[0, 1] <- heatmapDimAnnotationLayer
-    figLayer[0, 2] <- brushedmapAnnotationLayer
-    figLayer[0, 3] <- backgroundClearingLayer5
-    
-    layout <- figLayer$gridLayout()
+    figLayer<-qlayer(scene)
+    figLayer[1,0]<-dendroLayer
+    figLayer[1,1]<-heatmapLayer
+    figLayer[1,2]<-brushedmapLayer
+    figLayer[1,3]<-observationAnnotationLayer
+    figLayer[2,0]<-axisLayer
+    figLayer[2,1]<-backgroundClearingLayer1
+    figLayer[2,2]<-backgroundClearingLayer2
+    figLayer[2,3]<-backgroundClearingLayer3
+    figLayer[0,0]<-backgroundClearingLayer4
+    if (!is.null(heatmapDimAnnotationLayer)) figLayer[0,1]<-heatmapDimAnnotationLayer
+    figLayer[0,2]<-brushedmapAnnotationLayer
+    figLayer[0,3]<-backgroundClearingLayer5
+
+    layout<-figLayer$gridLayout()
     # heatmap dimensions annotation
     if (heatmapEnabled) {
-        layout$setRowPreferredHeight(0, 75)
+        layout$setRowPreferredHeight(0,75)
     } else {
-        layout$setRowMaximumHeight(0, 0)
+        layout$setRowMaximumHeight(0,0)
     }
     # dendro+heatmap+brushedmap+observations annotation
-    layout$setRowPreferredHeight(1, 200)
+    layout$setRowPreferredHeight(1,200)
     # axis
-    layout$setRowPreferredHeight(2, 50)
+    layout$setRowPreferredHeight(2,50)
     # heatmap dimensions annotation: fixed
-    layout$setRowStretchFactor(0, 0)
+    layout$setRowStretchFactor(0,0)
     # dendro+heatmap+brushedmap+observations annotation: stretchable
-    layout$setRowStretchFactor(1, 1)
+    layout$setRowStretchFactor(1,1)
     # axis: fixed
-    layout$setRowStretchFactor(2, 0)
+    layout$setRowStretchFactor(2,0)
 
     # dendro
-    layout$setColumnPreferredWidth(0, 400)
+    if (heatmapEnabled) {
+        layout$setColumnPreferredWidth(0,400)
+    } else {
+        layout$setColumnPreferredWidth(0,500)
+    }
     # heatmap
     if (heatmapEnabled) {
-        layout$setColumnPreferredWidth(1, 100)
+        layout$setColumnPreferredWidth(1,100)
     } else {
-        layout$setColumnMaximumWidth(1, 0)
+        layout$setColumnMaximumWidth(1,0)
     }
     # brushedmap
     if (brushedmapEnabled) {
-        layout$setColumnPreferredWidth(2, 25)
+        layout$setColumnPreferredWidth(2,25)
     } else {
-        layout$setColumnMaximumWidth(2, 0)
+        layout$setColumnMaximumWidth(2,0)
     }
     # observations annotation
-    layout$setColumnPreferredWidth(3, 50)
+    if (observationAnnotationEnabled) {
+        layout$setColumnPreferredWidth(3,50)
+    } else {
+        layout$setColumnPreferredWidth(3,0)
+    }
 
     # dendro stretchable
-    layout$setColumnStretchFactor(0, 4)
+    layout$setColumnStretchFactor(0,4)
     # heatmap stretchable
-    layout$setColumnStretchFactor(1, 1)
+    layout$setColumnStretchFactor(1,1)
     # brushedmap: fixed size
-    layout$setColumnStretchFactor(2, 0)#1/df$k)
+    layout$setColumnStretchFactor(2,0)
     # observations annotations: fixed size
-    layout$setColumnStretchFactor(3, 0)
-
-    #print(layout$addItem)
-    #layout$addWidget(createFirstExclusiveGroup(), 0, 0)
-    #layout$addWidget(Qt$QRadioButton("&Radio button 1"),0,0)
-    #layout$addItem(Qt$QLabel("&Radio button 1"),0,0)
+    layout$setColumnStretchFactor(3,0)
 
     ## listeners on the data (which column updates which layer(s))
     if (!is.null(qx)) {
-        qx.listener <- add_listener(qx, function(i, j) {
-            idx = which(j == c('.brushed'))
-            if (length(idx) > 0) {
+        qx.listener<-add_listener(qx,function(i,j) {
+            idx<-which(j==c('.brushed'))
+            if (length(idx)>0) {
                 if (dbg.brushedmap) cat('qx listener: brushed status changed\n')
-                qupdate(.sharedEnv$brushedmapLayer)
+                qupdate(brushedmapLayer)
                 guiWindow$updateClusterInfos()
             }
         })
-        qconnect(.sharedEnv$dendroLayer, 'destroyed', function(x) {
+        qconnect(dendroLayer,'destroyed',function(x) {
             remove_listener(qx, qx.listener)
         })
     }
 
-    view <- qplotView(scene = scene)
+    view<-qplotView(scene=scene)
     print(view)
 
     #######################################################
     #######################################################
     ## GUI#FOLD01
     if (dbg.gui) cat('initializing GUI\n')
-    qsetClass("Window", Qt$QWidget, function(parent = NULL) {
+    qsetClass("Window",Qt$QWidget,function(parent=NULL) {
         super(parent)
   
         createButtons()
@@ -1187,8 +1196,8 @@ idendro<-function
             #layout$addWidget(Qt$QPicture())
             mainLayout$addLayout(layout)
         }
-        # initially, the first cluster is the current one
-        this$clusterSelectorButtons[[1]]$setChecked(TRUE)
+        # set the current cluster
+        this$clusterSelectorButtons[[df$currentCluster]]$setChecked(TRUE)
 
         zoomLayout<-Qt$QHBoxLayout()
         zoomLayout$addWidget(fullViewButton)
@@ -1209,12 +1218,12 @@ idendro<-function
         mainLayout$addLayout(quitLayout)
 
         setWindowTitle("idendro")
-        resize(480, 320)
+        #resize(480, 320)
         if (dbg.gui) cat('Window created\n')
 
     },where=environment())
 
-    getClusterInfoTotal <- function(idx) {
+    getClusterInfoTotal<-function(idx) {
         info<-'0 (0%)'
         if (dbg.dendro.select>1) printVar(df$clusters)
         if (!is.null(df$clusters)) {
@@ -1227,7 +1236,7 @@ idendro<-function
         }
         return(info)
     }
-    getClusterInfoBrushed <- function(idx) {
+    getClusterInfoBrushed<-function(idx) {
         info<-'0 (0%)'
         if (brushedmapEnabled) {
             if (dbg.dendro.select>1) printVar(df$clusters)
@@ -1263,16 +1272,16 @@ idendro<-function
 
         ## colored rectangle identifying clusters
         ##
-        qsetClass("ColoredRect", Qt$QWidget, function(parent = NULL) {
+        qsetClass("ColoredRect",Qt$QWidget,function(parent=NULL) {
             super(parent)
         })
-        qsetMethod("setColor", ColoredRect, function(color) {
+        qsetMethod("setColor",ColoredRect,function(color) {
             this$color<-color
         })
-        qsetMethod("paintEvent", ColoredRect, function(event) {
-            painter <- Qt$QPainter(this)
-            redrawRect <- event$rect()  
-            painter$fillRect(redrawRect, qbrush(this$color)) # clear area
+        qsetMethod("paintEvent",ColoredRect,function(event) {
+            painter<-Qt$QPainter(this)
+            redrawRect<-event$rect()  
+            painter$fillRect(redrawRect,qbrush(this$color)) # clear area
             #painter$drawText(10,10,'asd')
             painter$end()
         })
@@ -1282,7 +1291,7 @@ idendro<-function
         this$clusterInfosBrushed<-vector('list',params$maxClusterCount)
         for (i in 1:params$maxClusterCount) {
             this$clusterSelectorButtons[[i]]<-Qt$QRadioButton(sprintf('%2d',i))
-            qconnect(clusterSelectorButtons[[i]], "pressed", function(i) {
+            qconnect(clusterSelectorButtons[[i]],"pressed",function(i) {
                 if (attr(scene,'.sharedEnv')$df$currentCluster!=i) {
                     attr(scene,'.sharedEnv')$df$currentCluster<-i
                     setCurrentClusterInQx(qx,attr(scene,'.sharedEnv')$df)
@@ -1296,7 +1305,7 @@ idendro<-function
         }
 
         this$fullViewButton<-Qt$QPushButton('&Full view')
-        qconnect(fullViewButton, "pressed", function() {
+        qconnect(fullViewButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -1310,7 +1319,7 @@ idendro<-function
         })
 
         this$zoomBackButton<-Qt$QPushButton('&Zoom back')
-        qconnect(zoomBackButton, "pressed", function() {
+        qconnect(zoomBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -1325,7 +1334,7 @@ idendro<-function
         })
 
         this$unselectButton<-Qt$QPushButton('&Unselect')# current cluster')
-        qconnect(unselectButton, "pressed", function() {
+        qconnect(unselectButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -1341,7 +1350,7 @@ idendro<-function
         })
 
         this$unselectAllButton<-Qt$QPushButton('Unselect &all')# clusters')
-        qconnect(unselectAllButton, "pressed", function() {
+        qconnect(unselectAllButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -1357,7 +1366,7 @@ idendro<-function
         })
 
         this$selectBackButton<-Qt$QPushButton('Select &back')
-        qconnect(selectBackButton, "pressed", function() {
+        qconnect(selectBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
 
@@ -1375,7 +1384,7 @@ idendro<-function
         })
 
         this$quitButton<-Qt$QPushButton('&Quit')
-        qconnect(quitButton, "pressed", function() {
+        qconnect(quitButton,"pressed",function() {
             # close dendrogram
             view$close()
             # close GUI
@@ -1387,10 +1396,23 @@ idendro<-function
     guiWindow$show()
 
     qx
-### mutaframe carrying the (interactive) current cluster selection in
-### the '.cluster' column, and the flag determining whether each
-### observation is a member of the current cluster in the
-### '.inCurrentCluster' column. The '.cluster' column holds 0 for
-### rows of unselected observations, and the value of i > 0
-### representing observations forming the cluster `i'.
+    ### a mutaframe 'qx' (or a mutaframe created from regular data
+    ### frame 'x') enriched with dynamic (interactive) clusters
+    ### selection ('.cluster' column), and a flag determining which
+    ### observations form the current cluster ('.inCurrentCluster'
+    ###column). Observations not appearing in any cluster have 0 in the
+    ### '.cluster' column, while observations forming the 'i'-th
+    ### cluster have the value 'i' there.
+    ### The '.inCurrentCluster' column holds logical flags determining
+    ### whether given observation is a member of the current cluster.
+    ### The returned mutaframe can be used for bidirectional
+    ### interaction with 'idendro': external plot(s)/tool(s) can brush
+    ### some observations ('idendro' will notice it and update the
+    ### brushedmap), and also respond to any changes made to cluster
+    ### assignment and/or the current cluster selection.
+    ###
+    ### Note that if the value returned is passed to a subsequent call
+    ### to 'idendro', the cluster selection saved in the mutaframe will
+    ### be restored. This feature can be regarded as a simple means of
+    ### cluster selection persistency.
 }

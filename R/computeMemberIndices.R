@@ -1,4 +1,9 @@
-computeMemberIndices<-function(h,clusterIdx) {
+computeMemberIndices<-function
+## Compute indices of observations forming given cluster.
+(
+    h, ##<< HCA result, usually 'hclust' return value
+    clusterIdx ##<< cluster index
+) {
     clusterCount<-nrow(h$merge)
     indices<-rep(NA,clusterCount+1)
     indicesCount<-0
@@ -26,4 +31,5 @@ computeMemberIndices<-function(h,clusterIdx) {
         }
     }
     return(indices[1:indicesCount])
+    ### indices of observations forming cluster 'clusterIdx'
 }
