@@ -1,4 +1,4 @@
-idendro<-function
+idendro<-structure(function
 ### Interactive dendrogram.
 ###
 ### 'idendro' is a plot enabling visualization and interactive
@@ -998,13 +998,10 @@ idendro<-function
         clearLayerBackground(layer,painter, c(0.05,0,0,0))
     }
 
-    ## hack: disable warnings for a while (to disable warnings like:
+    ## hack: to disable warnings in 'qlayer' like:
     ## In qlayer(scene, paintFun = brushedmapPainter, clip = FALSE, cache = TRUE,  :
     ##  Enabling caching implicitly enables clipping
-    ## because it seems not to be true that enabling caching implicitly
-    ## enables clipping, and we need caching without clipping.
-    warnLevel<-getOption('warn')
-    options(warn=-1)
+    ## we use 'suppressWarnings()'
 
     ## dendrogram#FOLD01
     ################
@@ -1012,12 +1009,12 @@ idendro<-function
     #dendroLimits$x<-extendRange(dendroLimits$x,.05)
     dendroLimits<-unlist(dendroLimits)
     if (dbg.dendro) printVar(dendroLimits)
-    dendroLayer<-qlayer(scene,paintFun=dendroPainter,
+    dendroLayer<-suppressWarnings(qlayer(scene,paintFun=dendroPainter,
             mousePressFun=mousePressFun,
             mouseMoveFun=mouseMoveFun,
             mouseReleaseFun=mouseReleaseFun,
             wheelFun=dendroZoomer,clip=FALSE,cache=FALSE,
-            limits=qrect(dendroLimits[1],dendroLimits[3],dendroLimits[2],dendroLimits[4]))
+            limits=qrect(dendroLimits[1],dendroLimits[3],dendroLimits[2],dendroLimits[4])))
 
     axisLimits<-dendroZoomMin
     axisLimits$w<-c(0,1)
@@ -1032,15 +1029,15 @@ idendro<-function
             hoverLeaveFun=axisCutterLeave,
             mousePressFun=axisCutter,
             limits=qrect(axisLimits[1],axisLimits[3],axisLimits[2],axisLimits[4]),
-            clip=F)
+            clip=FALSE)
 
     ## brushedmap#FOLD01
     ################
     #TODO: scale
     brushedmapLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=.5+df$n*c(0,1)))))
     if (dbg.brushedmap) printVar(brushedmapLimits)
-    brushedmapLayer<-qlayer(scene,paintFun=brushedmapPainter,clip=FALSE,cache=TRUE,
-        limits=qrect(brushedmapLimits[1],brushedmapLimits[3],brushedmapLimits[2],brushedmapLimits[4]))
+    brushedmapLayer<-suppressWarnings(qlayer(scene,paintFun=brushedmapPainter,clip=FALSE,cache=TRUE,
+        limits=qrect(brushedmapLimits[1],brushedmapLimits[3],brushedmapLimits[2],brushedmapLimits[4])))
 
     ## brushedmap annotation
     brushedmapAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,1)))))
@@ -1056,26 +1053,28 @@ idendro<-function
         # layers size manageable easily
         w=.5+df$n*c(0,1)))))
     if (dbg.heatmap) printVar(heatmapLimits)
-    heatmapLayer<-qlayer(scene,paintFun=heatmapPainter,clip=FALSE,cache=TRUE,
-            limits=qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4]))
+    heatmapLayer<-suppressWarnings(qlayer(scene,paintFun=heatmapPainter,clip=FALSE,cache=TRUE,
+            limits=qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4])))
 
     ## heatmap dim annotations
     heatmapDimAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(
         g=c(0,max(1,df$k)), # the positive difference in 'g' makes
         # layers size manageable easily
         w=c(0,1)))))
-    heatmapDimAnnotationLayer<-qlayer(scene, paintFun=heatmapDimAnnotationPainter,
+    heatmapDimAnnotationLayer<-suppressWarnings(qlayer(scene,
+        paintFun=heatmapDimAnnotationPainter,
         limits=qrect(heatmapDimAnnotationLimits[1],heatmapDimAnnotationLimits[3],
             heatmapDimAnnotationLimits[2],heatmapDimAnnotationLimits[4]),
-        clip=FALSE,cache=TRUE)
+        clip=FALSE,cache=TRUE))
     heatmapDimAnnotationLayerSized<-FALSE
 
     ## observations annotations
     observationAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,df$n)+.5))))
-    observationAnnotationLayer<-qlayer(scene, paintFun=observationAnnotationPainter,
+    observationAnnotationLayer<-suppressWarnings(qlayer(scene,
+        paintFun=observationAnnotationPainter,
         limits=qrect(observationAnnotationLimits[1],observationAnnotationLimits[3],
             observationAnnotationLimits[2],observationAnnotationLimits[4]),
-            clip=FALSE,cache=TRUE)
+            clip=FALSE,cache=TRUE))
     observationAnnotationLayerSized<-FALSE
 
     backgroundClearingLayer1<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
@@ -1083,8 +1082,6 @@ idendro<-function
     backgroundClearingLayer3<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
     backgroundClearingLayer4<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
     backgroundClearingLayer5<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
-
-    options(warn=warnLevel)
 
     #############
     ## layout#FOLD01
@@ -1177,7 +1174,7 @@ idendro<-function
     #######################################################
     ## GUI#FOLD01
     if (dbg.gui) cat('initializing GUI\n')
-    qsetClass("Window",Qt$QWidget,function(parent=NULL) {
+    suppressWarnings(qsetClass("Window",Qt$QWidget,function(parent=NULL) {
         super(parent)
   
         createButtons()
@@ -1198,7 +1195,7 @@ idendro<-function
 
         for (i in 1:params$maxClusterCount) {
             layout<-Qt$QHBoxLayout()
-            layout$addWidget(clusterSelectorButtons[[i]],1)#,Qt$Qt$AlignLeft)
+            layout$addWidget(clusterSelectorButtons[[i]],Qt$Qt$AlignRight)
             layout$addWidget(clusterColoredRect[[i]],1)
             layout$addStretch(1)
             layout$addWidget(clusterInfosTotal[[i]],3)
@@ -1231,7 +1228,7 @@ idendro<-function
         #resize(480, 320)
         if (dbg.gui) cat('Window created\n')
 
-    },where=environment())
+    },where=environment()))
 
     getClusterInfoTotal<-function(idx) {
         info<-'0 (0%)'
@@ -1282,9 +1279,9 @@ idendro<-function
 
         ## colored rectangle identifying clusters
         ##
-        qsetClass("ColoredRect",Qt$QWidget,function(parent=NULL) {
+        suppressWarnings(qsetClass("ColoredRect",Qt$QWidget,function(parent=NULL) {
             super(parent)
-        })
+        }))
         qsetMethod("setColor",ColoredRect,function(color) {
             this$color<-color
         })
@@ -1405,7 +1402,7 @@ idendro<-function
     guiWindow<-Window()
     guiWindow$show()
 
-    qx
+    return(invisible(qx))
     ### a mutaframe 'qx' (or a mutaframe created from regular data
     ### frame 'x') enriched with dynamic (interactive) clusters
     ### selection ('.cluster' column), and a flag determining which
@@ -1425,4 +1422,11 @@ idendro<-function
     ### to 'idendro', the cluster selection saved in the mutaframe will
     ### be restored. This feature can be regarded as a simple means of
     ### cluster selection persistency.
-}
+},ex=function() {
+    x<-data.frame(x1=1:10,x2=seq(10,1,-1))
+    hx<-hclust(dist(x))
+    idendro(hx,x)
+
+    # for more examples please see demos
+})
+
