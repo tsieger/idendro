@@ -998,6 +998,14 @@ idendro<-function
         clearLayerBackground(layer,painter, c(0.05,0,0,0))
     }
 
+    ## hack: disable warnings for a while (to disable warnings like:
+    ## In qlayer(scene, paintFun = brushedmapPainter, clip = FALSE, cache = TRUE,  :
+    ##  Enabling caching implicitly enables clipping
+    ## because it seems not to be true that enabling caching implicitly
+    ## enables clipping, and we need caching without clipping.
+    warnLevel<-getOption('warn')
+    options(warn=-1)
+
     ## dendrogram#FOLD01
     ################
     dendroLimits<-gw2xy(dendro2fig(dendroZoomMin))
@@ -1075,6 +1083,8 @@ idendro<-function
     backgroundClearingLayer3<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
     backgroundClearingLayer4<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
     backgroundClearingLayer5<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
+
+    options(warn=warnLevel)
 
     #############
     ## layout#FOLD01
