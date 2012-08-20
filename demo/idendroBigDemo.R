@@ -8,5 +8,4 @@ colnames(x)<-1:ncol(x)
 rownames(x)<-1:nrow(x)
 
 # visualize clusters
-#idendro(hx,x,brushedmapEnabled=FALSE,observationAnnotationEnabled=FALSE,heatmapEnabled=TRUE)
-idendro(hx,x,brushedmapEnabled=FALSE,observationAnnotationEnabled=TRUE,heatmapEnabled=TRUE)
+idendro(hx,x,brushedmapEnabled=FALSE,observationAnnotationEnabled=FALSE,heatmapEnabled=TRUE)
