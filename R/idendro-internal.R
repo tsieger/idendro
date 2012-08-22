@@ -97,10 +97,8 @@ gfc<-function(nm) {
     if (rv$found) {
         return(rv$value)
     } else {
-#        rv<-findVar('scene')
         if (!rv$found) {
-            print(tb())
-            #stop(paste('\'scene\' not found in caller stack'))
+            print(traceback())
             stop(paste('\'',deparse(substitute(nm)),'\' not found in caller stack',sep=''))
         }
         return(attr(rv$value,'.sharedEnv')[deparse(substitute(nm))])
