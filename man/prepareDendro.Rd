@@ -10,7 +10,7 @@ This is an internal function not to be called by the user.}
   \item{h}{an object of class 'stats::hclust' describing a clustering}
   \item{x}{a data frame holding observations tha were clustered
 giving rise to 'h'}
-  \item{dbg}{debug control}
+  \item{dbg}{debug verbosity level}
 }
 
 \value{shared data frame}
