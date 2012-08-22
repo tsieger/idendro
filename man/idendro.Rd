@@ -168,4 +168,10 @@ cluster selection persistency.}
 
 \seealso{hclust, plclust, identify.hclust, rect.hclust,
 cutree, dendrogram, cranvas::qdata}
+\examples{
+x<-data.frame(x1=1:10,x2=seq(10,1,-1))
+hx<-hclust(dist(x))
+idendro(hx,x)
 
+# for more examples please see demos
+}
