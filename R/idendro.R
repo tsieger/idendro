@@ -219,7 +219,7 @@ idendro<-structure(function
     }
 
     if (brushedmapEnabled && is.null(qx)) {
-        qx<-qdata(1:(length(hx$height)+1))
+        qx<-qdata(1:(length(h$height)+1))
     }
     n<-length(h$height)+1
 
@@ -249,7 +249,7 @@ idendro<-structure(function
     if (!is.null(x) && !is.null(rownames(x))) {
         df$observationLabels<-rownames(x)
     } else {
-        df$observationLabels<-hx$labels
+        df$observationLabels<-h$labels
     }
     if (observationAnnotationEnabled && is.null(df$observationLabels)) {
         # if annotation not available, nothing to draw
@@ -1426,8 +1426,8 @@ idendro<-structure(function
     ### cluster selection persistency.
 },ex=function() {
     x<-data.frame(x1=1:10,x2=seq(10,1,-1))
-    hx<-hclust(dist(x))
-    idendro(hx,x)
+    h<-hclust(dist(x))
+    idendro(h,x)
 
     # for more examples please see demos
 })
