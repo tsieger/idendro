@@ -351,10 +351,10 @@ idendro<-structure(function
     # a layer.
     drawLayerLimits<-function(painter,layer,layerName,fillColor,hilightSomePos=FALSE) {
         if (hilightSomePos) {
-            qdrawText(painter,'0,0',0,0,col='black')
-            qdrawText(painter,'0,1',0,1,col='black')
-            qdrawText(painter,'.5,1',.5,1,col='black')
-            qdrawText(painter,'0,2',0,2,col='black')
+            qdrawText(painter,'0,0',0,0,color='black')
+            qdrawText(painter,'0,1',0,1,color='black')
+            qdrawText(painter,'.5,1',.5,1,color='black')
+            qdrawText(painter,'0,2',0,2,color='black')
         }
 
         eps<-.1
@@ -374,7 +374,7 @@ idendro<-structure(function
 
     dendroPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro) cat('dendroPainter called\n')
 
@@ -416,7 +416,7 @@ idendro<-structure(function
     ##
     brushedmapPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.brushedmap) cat('brushedmapPainter called\n')
 
@@ -465,7 +465,7 @@ idendro<-structure(function
     ##
     heatmapPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.heatmap) cat('heatmapPainter called\n')
 
@@ -520,7 +520,7 @@ idendro<-structure(function
 
     heatmapDimAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.heatmap) cat('heatmapDimAnnotationPainter called\n')
 
@@ -559,7 +559,7 @@ idendro<-structure(function
 
     brushedmapAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.brushedmap) cat('brushedmapAnnotationPainter called\n')
 
@@ -581,7 +581,7 @@ idendro<-structure(function
 
     observationAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.heatmap) cat('observationAnnotationPainter called\n')
 
@@ -671,7 +671,7 @@ idendro<-structure(function
 
     mouseMoveFun<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.mouse) cat('mouseMoveFun called\n')
         if (dbg.mouse>1) print(event$pos())
@@ -737,7 +737,7 @@ idendro<-structure(function
     # select current cluster
     clusterSelector<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.select) cat('clusterSelector called\n')
 
@@ -791,7 +791,7 @@ idendro<-structure(function
 
     dendroZoomSelectionFinisher<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.select) cat('dendroZoomSelectionFinisher called\n')
         if (event$button()==2) {
@@ -821,7 +821,7 @@ idendro<-structure(function
     # Dendrogram-zooming mouse wheel button handler.
     dendroZoomer<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.zoom) cat('dendroZoomer called\n')
 
@@ -874,7 +874,7 @@ idendro<-structure(function
 
     zoomDendroBrushedmapAndHeatmap<-function(scene) {
         .sharedEnv<-attr(scene,'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.zoom) cat('zoomDendroBrushedmapAndHeatmap called\n')
 
@@ -937,7 +937,7 @@ idendro<-structure(function
 
     axisCutterUpdate<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.axis) cat('axisCutterUpdate called\n')
         .sharedEnv$axisCut<-xy2gw(list(x=event$pos()$x(),y=event$pos()$y()))$g
@@ -947,7 +947,7 @@ idendro<-structure(function
 
     axisCutterLeave<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.axis) cat('axisCutterLeave called\n')
         .sharedEnv$axisCut<-NA
@@ -957,7 +957,7 @@ idendro<-structure(function
 
     axisCutter<-function(layer, event) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
-        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+        for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.dendro.axis) cat('axisCutter called\n')
         cutG<-xy2gw(list(x=event$pos()$x(),y=event$pos()$y()))$g
@@ -1316,7 +1316,7 @@ idendro<-structure(function
         this$fullViewButton<-Qt$QPushButton('&Full view')
         qconnect(fullViewButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
-            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
             # do not attempt to change zoom if zoomed fully already
             if (!(dendroZoom$g==dendroZoomMin$g && dendroZoom$w==dendroZoomMin$w)) {
@@ -1330,7 +1330,7 @@ idendro<-structure(function
         this$zoomBackButton<-Qt$QPushButton('&Zoom back')
         qconnect(zoomBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
-            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
             if (dbg.dendro.zoom) cat('zoomBack button pressed\n')
 
@@ -1345,7 +1345,7 @@ idendro<-structure(function
         this$unselectButton<-Qt$QPushButton('&Unselect')# current cluster')
         qconnect(unselectButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
-            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
             if (dbg.dendro.select) cat('unselect button pressed\n')
 
@@ -1361,7 +1361,7 @@ idendro<-structure(function
         this$unselectAllButton<-Qt$QPushButton('Unselect &all')# clusters')
         qconnect(unselectAllButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
-            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
             if (dbg.dendro.select) cat('unselectAll button pressed\n')
 
@@ -1377,7 +1377,7 @@ idendro<-structure(function
         this$selectBackButton<-Qt$QPushButton('Select &back')
         qconnect(selectBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
-            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),env=.sharedEnv))
+            for (vn in sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
             if (dbg.dendro.select) cat('selectBack button pressed\n')
 
@@ -1425,7 +1425,9 @@ idendro<-structure(function
     ### be restored. This feature can be regarded as a simple means of
     ### cluster selection persistency.
 },ex=function() {
+    # data to be clustered
     x<-data.frame(x1=1:10,x2=seq(10,1,-1))
+    # clustered data (dendrogram)
     h<-hclust(dist(x))
     idendro(h,x)
 
