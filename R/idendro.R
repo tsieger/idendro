@@ -1041,9 +1041,11 @@ idendro<-structure(function
 
     ## brushedmap annotation
     brushedmapAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,1)))))
-    brushedmapAnnotationLayer<-qlayer(scene, paintFun=brushedmapAnnotationPainter,
+    brushedmapAnnotationLayer<-suppressWarnings(qlayer(scene,
+        paintFun=brushedmapAnnotationPainter,
         limits=qrect(brushedmapAnnotationLimits[1],brushedmapAnnotationLimits[3],
-                brushedmapAnnotationLimits[2],brushedmapAnnotationLimits[4]),clip=FALSE,cache=TRUE)
+                brushedmapAnnotationLimits[2],brushedmapAnnotationLimits[4]),
+        clip=FALSE,cache=TRUE))
 
     ## heatmap#FOLD01
     ################
