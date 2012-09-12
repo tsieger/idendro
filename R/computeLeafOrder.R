@@ -1,6 +1,6 @@
 computeLeafOrder<-function
-## Compute the assignment of dendrogram leafs to the original
-## observations.
+### Compute the assignment of dendrogram leafs to the original
+### observations.
 (
     merging, ##<< (n-1) by 2 matrix describing HCA merging, usually the
     ## 'merge' component of the return value from 'hclust'

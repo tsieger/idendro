@@ -1,4 +1,5 @@
 smoothHeatmap<-function
+### Smooth heatmap by averaging data over observations in clusters.
 (
     x, ##<< a data frame holding observations tha were clustered
 
@@ -29,4 +30,3 @@ smoothHeatmap<-function
     return(x)
     ### a data frame holding smoothed observations
 }
-

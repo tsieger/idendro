@@ -1,7 +1,8 @@
 \name{createClustersFromLeafColors}
 \alias{createClustersFromLeafColors}
 \title{createClustersFromLeafColors}
-
+\description{Initialize clusters (i.e. cluster selection) from leaf colors (i.e.
+assignment of some observations to some clusters)}
 \usage{createClustersFromLeafColors(df, leafColors, maxClusterCount, 
     dbg = 0)}
 \arguments{

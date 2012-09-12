@@ -1,7 +1,7 @@
 \name{smoothHeatmap}
 \alias{smoothHeatmap}
 \title{smoothHeatmap}
-
+\description{Smooth heatmap by averaging data over observations in clusters.}
 \usage{smoothHeatmap(x, ch, dbg.heatmap)}
 \arguments{
   \item{x}{a data frame holding observations tha were clustered}

@@ -1,4 +1,3 @@
-#
 dendro2fig<-function
 ### Dendrogram -> figure coords conversion.
 (

@@ -8,5 +8,4 @@ xy2gw<-function
     names(gw)<-c('g','w')
     gw
     ### a list of 'g' and 'w' components
-
 }

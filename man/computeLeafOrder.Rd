@@ -1,7 +1,8 @@
 \name{computeLeafOrder}
 \alias{computeLeafOrder}
 \title{computeLeafOrder}
-
+\description{Compute the assignment of dendrogram leafs to the original
+observations.}
 \usage{computeLeafOrder(merging, dbg = 0)}
 \arguments{
   \item{merging}{(n-1) by 2 matrix describing HCA merging, usually the

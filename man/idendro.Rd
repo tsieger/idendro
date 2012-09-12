@@ -169,9 +169,11 @@ cluster selection persistency.}
 \seealso{hclust, plclust, identify.hclust, rect.hclust,
 cutree, dendrogram, cranvas::qdata}
 \examples{
+# data to be clustered
 x<-data.frame(x1=1:10,x2=seq(10,1,-1))
-hx<-hclust(dist(x))
-idendro(hx,x)
+# clustered data (dendrogram)
+h<-hclust(dist(x))
+idendro(h,x)
 
 # for more examples please see demos
 }
