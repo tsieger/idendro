@@ -4,8 +4,7 @@
 \description{Select the nearest cluster to the position 'pos'.}
 \usage{selectCluster(pos)}
 \arguments{
-  \item{pos}{
-}
+  \item{pos}{position in the dendro figure}
 }
 
 \value{shared data frame}
@@ -16,3 +15,5 @@
 
 
 
+
+\keyword{internal}

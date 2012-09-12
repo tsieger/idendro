@@ -1,13 +1,14 @@
 selectCluster<-function
 ### Select the nearest cluster to the position 'pos'.
+##keyword<<internal
 (
-    pos ## << position in the dendro figure
+    pos ##<< position in the dendro figure
 ) {
-    dbg<-gfc(dbg)
-    dbg.dendro.select<-gfc(dbg.dendro.select)
+    dbg<-.gfc(dbg)
+    dbg.dendro.select<-.gfc(dbg.dendro.select)
     if (dbg.dendro.select) print('selectCluster called')
 
-    df<-gfc(df)
+    df<-.gfc(df)
 
     # remember current selection
     df<-pushSelectionHistory(df)
@@ -23,7 +24,7 @@ selectCluster<-function
 
     ## find nearest cluster merging points
     # zoom region determines scaling
-    dendroZoom<-gfc(dendroZoom)
+    dendroZoom<-.gfc(dendroZoom)
     zoom.limits.gw<-dendro2fig(dendroZoom)
     if (dbg.dendro.select) printVar(zoom.limits.gw)
     # branching points

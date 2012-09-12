@@ -1,5 +1,6 @@
 computeMemberIndices<-function
 ### Compute indices of observations forming given cluster.
+##keyword<<internal
 (
     h, ##<< HCA result, usually 'hclust' return value
     clusterIdx ##<< cluster index

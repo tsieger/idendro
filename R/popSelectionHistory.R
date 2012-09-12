@@ -1,9 +1,10 @@
 popSelectionHistory <- function
 ### Restore (and discard from history) the last cluster selection.
+##keyword<<internal
 (
     df ##<< shared data frame
 ) {
-    dbg.dendro.select<-gfc(dbg.dendro.select)
+    dbg.dendro.select<-.gfc(dbg.dendro.select)
     if (dbg.dendro.select) cat('popSelectionHistory called\n')
 
     if (length(df$selectionHistory)>0) {

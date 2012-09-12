@@ -1,5 +1,6 @@
 clusterId2SegmentIds<-function
 ### Convert cluster IDs to indices of dendrogram segments.
+##keyword<<internal
 (
     ids ##<< cluster IDs
 ) {

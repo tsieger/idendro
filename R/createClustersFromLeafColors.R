@@ -1,6 +1,7 @@
 createClustersFromLeafColors<-function
 ### Initialize clusters (i.e. cluster selection) from leaf colors (i.e.
 ### assignment of some observations to some clusters)
+##keyword<<internal
 (
     df, ##<< shared data frame, see 'prepareDendro'
 

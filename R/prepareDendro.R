@@ -3,6 +3,7 @@ prepareDendro<-function
 ### initialize a shared data frame.
 ###
 ### This is an internal function not to be called by the user.
+##keyword<<internal
 (
     h, ##<< an object of class 'stats::hclust' describing a clustering
 

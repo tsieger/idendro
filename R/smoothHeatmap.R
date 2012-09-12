@@ -1,5 +1,6 @@
 smoothHeatmap<-function
 ### Smooth heatmap by averaging data over observations in clusters.
+##keyword<<internal
 (
     x, ##<< a data frame holding observations tha were clustered
 

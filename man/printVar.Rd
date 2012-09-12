@@ -1,11 +1,10 @@
 \name{printVar}
 \alias{printVar}
-\title{printVar}
+\title{# Print the name, type and value of a variable.}
 
 \usage{printVar(x)}
 \arguments{
-  \item{x}{
-}
+  \item{x}{variable to print}
 }
 
 
@@ -16,3 +15,5 @@
 
 
 
+
+\keyword{internal}

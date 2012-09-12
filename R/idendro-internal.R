@@ -3,7 +3,7 @@
 .ls.objects <-
 function (pos = 1, pattern, order.by = "Size", decreasing=TRUE, head =     TRUE, n = 10) {
   # based on postings by Petr Pikal and David Hinds to the r-help list in 2004
-  # modified by: Dirk Eddelbuettel (http://stackoverflow.com/questions/1358003/tricks-to-    manage-the-available-memory-in-an-r-session) 
+  # modified by: Dirk Eddelbuettel (http://stackoverflow.com/questions/1358003/tricks-to-manage-the-available-memory-in-an-r-session)
   # I then gave it a few tweaks (show size as megabytes and use defaults that I like)
   # a data frame of the objects and their associated storage needs.
   napply <- function(names, fn) sapply(names, function(x)
@@ -25,26 +25,37 @@ function (pos = 1, pattern, order.by = "Size", decreasing=TRUE, head =     TRUE,
   out
 }
 
-dbg.internal<-0
+.dbg.internal<-0
 
 
-# Sequence generation resembling matlab ':' operator.
-# The difference from R `seq' is the behaviour in case when
-# from=2, to=1 and b=1 - in that case R seq raises an error, while
-# matlab returns an empty sequence.
-# This function returns an empty sequence as well in this case.
-mySeq <- function(from,to,by=1) {
+mySeq <- function
+### Sequence generation resembling matlab ':' operator.
+### The difference from R `seq' is the behaviour in case when
+### from=2, to=1 and b=1 - in that case R seq raises an error, while
+### matlab returns an empty sequence.
+### This function returns an empty sequence as well in this case.
+##keyword<<internal
+(from,##<< starting value
+to,##<< ending value
+by=1##<< step (defaults to 1)
+){
     if ((from<to) == (by>0)) return(seq(from,to,by))
     else if (from==to) return(from)
     else return(vector(class(from),0))
 }
 
-printWithName<-function (x) {
+printWithName<-function## Print the name and value of a variable.
+##keyword<<internal
+(x##<< variable to print
+) {
     cat(paste(deparse(substitute(x)),'\n',sep=''))
     print(x)
 }
 
-printVar<-function (x) {
+printVar<-function## Print the name, type and value of a variable.
+##keyword<<internal
+(x##<< variable to print
+) {
     #cat(paste(deparse(substitute(x)),' [',class(x),', ',length(x),']: ',paste(x,collapse=' '),'\n',sep=''))
     cat(paste(deparse(substitute(x)),
         ' [',paste(class(x),collapse=','),', ',
@@ -70,7 +81,7 @@ printVar<-function (x) {
     #print(x)
 }
 
-findVar<-function(idfName) {
+.findVar<-function(idfName) {
     found<-FALSE
     value<-NA
     #print(sys.nframe())
@@ -86,14 +97,14 @@ findVar<-function(idfName) {
 }
 
 # GFC: "get from caller" function making given variable appearing in
-# the environment of some caller of the function calling the `gfc'
-# function usable directly by the caller of the `gfc' function.
+# the environment of some caller of the function calling the `.gfc'
+# function usable directly by the caller of the `.gfc' function.
 # Example:
 #  f1() { a<-1; f2()}
-#  f2() { a<-gfc(a); <<now a copy of `a' appears in f2>> }
-gfc<-function(nm) {
-    if (dbg.internal) cat(paste('gcf: looking for \'',deparse(substitute(nm)),'\'\n',sep=''))
-    rv<-findVar(deparse(substitute(nm)))
+#  f2() { a<-.gfc(a); <<now a copy of `a' appears in f2>> }
+.gfc<-function(nm) {
+    if (.dbg.internal) cat(paste('gcf: looking for \'',deparse(substitute(nm)),'\'\n',sep=''))
+    rv<-.findVar(deparse(substitute(nm)))
     if (rv$found) {
         return(rv$value)
     } else {
@@ -105,11 +116,15 @@ gfc<-function(nm) {
     }
 }
 
-last<-function(x) tail(x,1)
-first<-function(x) head(x,1)
+last<-function
+##keyword<<internal
+(x) tail(x,1)
 
+first<-function
+##keyword<<internal
+(x) head(x,1)
 
-sharedVarNames<-function() {
+.sharedVarNames<-function() {
     list(
     'dbg',
     'dbg.args',

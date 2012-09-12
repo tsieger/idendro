@@ -1,0 +1,16 @@
+=======================================================================
+features
+=======================================================================
+
+- configurable layout of dendro window components (relative/absolute
+  size)
+- configurable layout of windows (dendro and GUI)
+- configurable dendro orientation (left-to-right, right-to-left,
+  top-to-bottom, bottom-to-top)
+
+
+=======================================================================
+technical TODOs
+=======================================================================
+- align dendrogram with heatmap perfectly, clean any "noise" at the
+  edges

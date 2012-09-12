@@ -1,10 +1,11 @@
 unselectAllClusters<-function
 ### Unselect all clusters.
+##keyword<<internal
 (
     df ##<< shared data frame
 ) {
-    dbg<-gfc(dbg)
-    dbg.dendro.select<-gfc(dbg.dendro.select)
+    dbg<-.gfc(dbg)
+    dbg.dendro.select<-.gfc(dbg.dendro.select)
 
     if (dbg.dendro.select) cat('unselectAllClusters called\n')
 

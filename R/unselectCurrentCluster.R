@@ -1,9 +1,10 @@
 unselectCurrentCluster<-function
 ### Unselect the current cluster.
+##keyword<<internal
 (
     df ##<< shared data frame
 ) {
-    dbg.dendro.select<-gfc(dbg.dendro.select)
+    dbg.dendro.select<-.gfc(dbg.dendro.select)
 
     if (dbg.dendro.select) cat('unselectCluster called\n')
     if (dbg.dendro.select) printVar(df$currentCluster)

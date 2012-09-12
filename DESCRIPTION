@@ -10,5 +10,5 @@ Maintainer: Tomas Sieger <tomas.sieger@seznam.cz>
 Description: Interactive dendrogram (with optional heatmap) enabling
     cluster selection, zooming, panning and bidirectional integration
     with other plots and tools by using mutable data frames.
-License: TODO
+License: GPL-3
 LazyLoad: yes

@@ -1,6 +1,7 @@
 computeLeafColorIdxs<-function
 ### Compute colors of all leafs in dendrogram according to the current
 ### cluster selection.
+##keyword<<internal
 (
     df ##<< dhared data frame, see 'prepareDendro'
 ) {

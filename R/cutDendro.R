@@ -1,13 +1,15 @@
 cutDendro<-function
 ### Select clusters by cutting the current zoom of the dendrogram at a
 ### specified height.
-    (df, ##<< shared data frame
+##keyword<<internal
+(
+    df, ##<< shared data frame
     cutG, ##<< cutting grow height
     dendroZoom ##<< current dendro zoom region
 ) {
 
-    dbg.dendro.select<-gfc(dbg.dendro.select)
-    dbg.dendro.cut<-gfc(dbg.dendro.cut)
+    dbg.dendro.select<-.gfc(dbg.dendro.select)
+    dbg.dendro.cut<-.gfc(dbg.dendro.cut)
 
     if (dbg.dendro.cut) printVar(dendroZoom)
     if (dbg.dendro.cut) printVar(dendroZoom$g)

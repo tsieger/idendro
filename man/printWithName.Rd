@@ -1,11 +1,10 @@
 \name{printWithName}
 \alias{printWithName}
-\title{printWithName}
+\title{# Print the name and value of a variable.}
 
 \usage{printWithName(x)}
 \arguments{
-  \item{x}{
-}
+  \item{x}{variable to print}
 }
 
 
@@ -16,3 +15,5 @@
 
 
 
+
+\keyword{internal}

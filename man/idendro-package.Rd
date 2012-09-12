@@ -15,7 +15,7 @@ Author: \tab Tomas Sieger\cr
 Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc\cr
 URL: \tab http://github.com/tsieger/idendro\cr
 Maintainer: \tab Tomas Sieger <tomas.sieger@seznam.cz>\cr
-License: \tab TODO\cr
+License: \tab GPL-3\cr
 LazyLoad: \tab yes\cr}
 }
 \author{Tomas Sieger}

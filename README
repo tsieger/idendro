@@ -1,30 +1,9 @@
-idendro package by Tomas Sieger, tomas.sieger@seznam.cz
+idendro (interactive dendrogram) package 
+written by Tomas Sieger (tomas.sieger@seznam.cz)
+as a "Google Summer of Code 2012" project
 
-To install, please see the INSTALL file.
+up-to-date version can be found at https://github.com/tsieger/idendro
 
-Demos:
+For installation, please see the INSTALL file.
 
- idendroDemo
-    - dendrogram demo
-
- idendroHeatmapDemo
-    - dendrogram and heatmap demo
-
- idendroCranvasDemo
-    - demo showing bidirectional integration of dendrogram
-      with cranvas qscatter
-
- idendroHeatmapCranvasDemo
-    - demo showing bidirectional integration of dendrogram+heatmap
-      with cranvas qscatter
-
- idendroUserCallbackDemo
-    - demo showing how user-supplied callback can interact with
-      idendro
-      
- idendroAnnotationDemo
-    - demo showing how long names of observations/feature space
-      dimensions get rendered
-    
- idendroBigDemo
-    - demo showing dendrogram performance on 5,000 observations
+For demos, please run `demo(package="idendro")'.

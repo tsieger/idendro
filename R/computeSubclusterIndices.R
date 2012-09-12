@@ -1,6 +1,7 @@
 computeSubclusterIndices<-function
 ### Compute indices of all subclusters (even deep down the hierarchy)
 ### appearing in given cluster.
+##keyword<<internal
 (
     h, ##<< HCA result, usually 'hclust' return value
     clusterIdx ##<< cluster index
