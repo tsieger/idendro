@@ -44,7 +44,8 @@ by=1##<< step (defaults to 1)
     else return(vector(class(from),0))
 }
 
-printWithName<-function## Print the name and value of a variable.
+printWithName<-function
+### Print the name and value of a variable.
 ##keyword<<internal
 (x##<< variable to print
 ) {
@@ -52,7 +53,8 @@ printWithName<-function## Print the name and value of a variable.
     print(x)
 }
 
-printVar<-function## Print the name, type and value of a variable.
+printVar<-function
+### Print the name, type and value of a variable.
 ##keyword<<internal
 (x##<< variable to print
 ) {
@@ -117,10 +119,12 @@ printVar<-function## Print the name, type and value of a variable.
 }
 
 last<-function
+###Extract the first element of the argument.
 ##keyword<<internal
 (x) tail(x,1)
 
 first<-function
+###Extract the last element of the argument.
 ##keyword<<internal
 (x) head(x,1)
 

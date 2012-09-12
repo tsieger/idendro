@@ -1,4 +1,4 @@
-idendro<-structure(function# Interactive dendrogram
+idendro<-structure(function# Interactive Dendrogram
 ###
 ### 'idendro' is a plot enabling visualization and interactive
 ### inspection of a dendrogram, with a heatmap attached to it,

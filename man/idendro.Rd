@@ -1,6 +1,6 @@
 \name{idendro}
 \alias{idendro}
-\title{Interactive dendrogram}
+\title{Interactive Dendrogram}
 \description{
 'idendro' is a plot enabling visualization and interactive
 inspection of a dendrogram, with a heatmap attached to it,

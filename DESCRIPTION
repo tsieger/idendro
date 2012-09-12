@@ -2,7 +2,7 @@ Package: idendro
 Type: Package
 Title: Interactive dendrogram
 Version: 1.0
-Date: 2012-06-11
+Date: 2012-08-20
 Author: Tomas Sieger
 Depends: qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc
 URL: http://github.com/tsieger/idendro

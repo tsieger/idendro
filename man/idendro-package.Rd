@@ -10,7 +10,7 @@ with other plots and tools by using mutable data frames.}
 Type: \tab Package\cr
 Title: \tab Interactive dendrogram\cr
 Version: \tab 1.0\cr
-Date: \tab 2012-06-11\cr
+Date: \tab 2012-08-20\cr
 Author: \tab Tomas Sieger\cr
 Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc\cr
 URL: \tab http://github.com/tsieger/idendro\cr
