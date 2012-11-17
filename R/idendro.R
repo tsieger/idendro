@@ -143,7 +143,16 @@ idendro<-structure(function# Interactive Dendrogram
     ## the time spent drawing the heatmap significantly (for large
     ## data sets).
 
-    brushedmapEnabled=!is.null(qx) ##<< shall brushed map be drawn?
+    brushedmapEnabled=!is.null(qx), ##<< shall brushed map be drawn?
+
+    separateGui=FALSE, ##<< shall GUI be integrated into the dendrogram window,
+    ## or shall it be separated in a standalone window?
+    ## (defaults to integrated GUI)
+
+    graphicalClusterInfos=TRUE, ##<< depict cluster-specific statistics graphically? (defaults to TRUE)
+
+    textualClusterInfos=TRUE ##<< depict cluster-specific statistics textually? (defaults to TRUE)
+
 ) {
 # TODO:
 #  heatMapRelSize: relative size of heatmap (in respect to dendrogram
@@ -155,6 +164,7 @@ idendro<-structure(function# Interactive Dendrogram
 
     #### required libraries
     ####
+    require(scales) # alpha
     require(qtpaint)
     require(qtbase)
     require(cranvas) # qdata
@@ -1169,7 +1179,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     view<-qplotView(scene=scene)
-    print(view)
+    if (separateGui) print(view)
 
     #######################################################
     #######################################################
@@ -1177,53 +1187,94 @@ idendro<-structure(function# Interactive Dendrogram
     if (dbg.gui) cat('initializing GUI\n')
     suppressWarnings(qsetClass("Window",Qt$QWidget,function(parent=NULL) {
         super(parent)
-  
-        createButtons()
-        this$mainLayout<-Qt$QVBoxLayout()
+
+        # +--------------------- windowLayout ----------------------+
+        # | +------------- guiLayout ------------+ +---- view ----+ |
+        # | | +-------- clustersLayout --------+ | |              | |
+        # | | | cluster  123 total  42 brushed | | |              | |
+        # | | |   1        6 (5%)     0 (0%)   | | |              | |
+        # | | |   2        0 (0%)     0 (0%)   | | |  dendrogram  | |
+        # | | |   3        0 (0%)     0 (0%)   | | |              | |
+        # | | +--------------------------------+ | |              | |
+        # | |              GUI                   | |              | |
+        # | |            buttons                 | |              | |
+        # | |                                    | |              | |
+        # | +------------------------------------+ +--------------+ |
+        # +---------------------------------------------------------+
+        guiLayout<-Qt$QVBoxLayout()
+        guiLayout$setAlignment(Qt$Qt$AlignVCenter)
         ## NOTE: the layout does not take ownership of the widgets, so we
         ## need to assign the layout to our widget up-front. Our widget then
         ## takes ownership of the widgets in the layout.
-        setLayout(mainLayout)
 
-        descLayout<-Qt$QHBoxLayout()
-        descLayout$addWidget(Qt$QLabel('cluster'),0)
-        descLayout$addWidget(Qt$QLabel(''),1)
-        descLayout$addStretch(1)
-        descLayout$addWidget(Qt$QLabel(paste('of',df$n,'total')),3)
-        this$brushedDesc<-Qt$QLabel('of 0 brushed')
-        descLayout$addWidget(brushedDesc,3)
-        mainLayout$addLayout(descLayout)
-
+        clustersLayout<-Qt$QGridLayout()
+        # 'cluster' label
+        clusterLabel<-Qt$QLabel('cluster')
+        clustersLayout$addWidget(clusterLabel,1,1)#,Qt$Qt$AlignJustify) # left
+        # 'N total' label
+        label<-Qt$QLabel(paste(df$n,'total'))
+        clustersLayout$addWidget(label,1,2,Qt$Qt$AlignJustify)
+        if (brushedmapEnabled) {
+            # 'M brushed' label
+            this$brushedDesc<-Qt$QLabel('0 brushed')
+            this$brushedDesc$setMinimumWidth(computeMaxLabelWidth('',' brushed'))
+            clustersLayout$addWidget(brushedDesc,1,3,Qt$Qt$AlignJustify)
+        }
+        # populate clustersLayout with ...
+        createButtons(clusterLabel$sizeHint$width())
         for (i in 1:params$maxClusterCount) {
-            layout<-Qt$QHBoxLayout()
-            layout$addWidget(clusterSelectorButtons[[i]],Qt$Qt$AlignRight)
-            layout$addWidget(clusterColoredRect[[i]],1)
-            layout$addStretch(1)
-            layout$addWidget(clusterInfosTotal[[i]],3)
-            layout$addWidget(clusterInfosBrushed[[i]],3)
-            #layout$addWidget(Qt$QPicture())
-            mainLayout$addLayout(layout)
+            # ... currentCluster selectors,
+            clustersLayout$addWidget(clusterSelectorButtons[[i]],i+1,1)
+            # ... clusterInfos (out of total number of observations)
+            clustersLayout$addWidget(clusterInfosTotal[[i]],i+1,2)
+            if (brushedmapEnabled) {
+                # ... clusterInfos (out of brushed observations)
+                clustersLayout$addWidget(clusterInfosBrushed[[i]],i+1,3)
+            }
         }
         # set the current cluster
         this$clusterSelectorButtons[[df$currentCluster]]$setChecked(TRUE)
 
-        zoomLayout<-Qt$QHBoxLayout()
-        zoomLayout$addWidget(fullViewButton)
-        zoomLayout$addWidget(zoomBackButton)
-        mainLayout$addLayout(zoomLayout)
+        guiLayout$addLayout(clustersLayout,0)
 
-        selectionLayout<-Qt$QHBoxLayout()
-        selectionLayout$addWidget(unselectButton)
-        selectionLayout$addWidget(unselectAllButton)
-        selectionLayout$addWidget(selectBackButton)
-        mainLayout$addLayout(selectionLayout)
+        # GUI buttons
+        zoomLayout1<-Qt$QHBoxLayout()
+        zoomLayout1$addStretch(1)
+        zoomLayout1$addWidget(fullViewButton)
+        zoomLayout1$addStretch(1)
+        zoomLayout2<-Qt$QHBoxLayout()
+        zoomLayout2$addStretch(1)
+        zoomLayout2$addWidget(zoomBackButton)
+        zoomLayout2$addStretch(1)
+        guiLayout$addLayout(zoomLayout1)
+        guiLayout$addLayout(zoomLayout2)
 
-        mainLayout$addStretch(1)
+        selectionLayout1<-Qt$QHBoxLayout()
+        selectionLayout1$addStretch(1)
+        selectionLayout1$addWidget(unselectButton)
+        selectionLayout1$addStretch(1)
+        selectionLayout2<-Qt$QHBoxLayout()
+        selectionLayout2$addStretch(1)
+        selectionLayout2$addWidget(unselectAllButton)
+        selectionLayout2$addStretch(1)
+        guiLayout$addLayout(selectionLayout1,0)
+        guiLayout$addLayout(selectionLayout2,0)
+        selectBackLayout<-Qt$QHBoxLayout()
+        selectBackLayout$addStretch(1)
+        selectBackLayout$addWidget(selectBackButton)
+        selectBackLayout$addStretch(1)
+        guiLayout$addLayout(selectBackLayout,0)
+
         quitLayout<-Qt$QHBoxLayout()
         quitLayout$addStretch(1)
-        quitLayout$addWidget(quitButton,0)
+        quitLayout$addWidget(quitButton)
         quitLayout$addStretch(1)
-        mainLayout$addLayout(quitLayout)
+        guiLayout$addLayout(quitLayout,0)
+
+        windowLayout<-Qt$QHBoxLayout()
+        windowLayout$addLayout(guiLayout,0)
+        if (!separateGui) windowLayout$addWidget(view,1)
+        setLayout(windowLayout)
 
         setWindowTitle("idendro")
         #resize(480, 320)
@@ -1233,32 +1284,38 @@ idendro<-structure(function# Interactive Dendrogram
 
     getClusterInfoTotal<-function(idx) {
         info<-'0 (0%)'
+        ratio<-0
         if (dbg.dendro.select>1) printVar(df$clusters)
         if (!is.null(df$clusters)) {
             if (idx<=length(df$clusters) && !is.null(df$clusters[idx]) && length(df$clusters[[idx]]$indices)>0) {
                 clusterSize<-length(df$clusters[[idx]]$indices)+1
+                ratio<-clusterSize/df$n
                 info<-paste(
-                    clusterSize,' (',round(100*clusterSize/df$n),'%)',
+                    clusterSize,' (',round(100*ratio),'%)',
                     sep='')
             }
         }
-        return(info)
+        return(list(info=info,ratio=ratio))
     }
     getClusterInfoBrushed<-function(idx) {
-        info<-'0 (0%)'
+        info<-'--'
+        ratio<-0
         if (brushedmapEnabled) {
             if (dbg.dendro.select>1) printVar(df$clusters)
             if (!is.null(df$clusters)) {
                 if (idx<=length(df$clusters) && !is.null(df$clusters[idx]) && length(df$clusters[[idx]]$indices)>0) {
                     clusterBrushedSize<-sum(df$leafColorIdxs==idx & qx$.brushed)
                     brushedSize<-sum(qx$.brushed)
-                    info<-paste(
-                        clusterBrushedSize,' (',round(100*clusterBrushedSize/brushedSize),'%)',
-                        sep='')
+                    if (brushedSize>0) {
+                        ratio<-clusterBrushedSize/brushedSize
+                        info<-paste(
+                            clusterBrushedSize,' (',round(100*ratio),'%)',
+                            sep='')
+                    }
                 }
             }
         }
-        return(info)
+        return(list(info=info,ratio=ratio))
     }
 
     qsetMethod("updateClusterInfos", Window, function() {
@@ -1266,50 +1323,115 @@ idendro<-structure(function# Interactive Dendrogram
         .sharedEnv<-attr(scene,'.sharedEnv')
         df<-.sharedEnv$df
         if (brushedmapEnabled) {
-            this$brushedDesc$setText(paste('out of',sum(qx$.brushed),'brushed'))
+            this$brushedDesc$setText(paste(sum(qx$.brushed),'brushed'))
         }
         for (i in 1:params$maxClusterCount) {
-                this$clusterInfosTotal[[i]]$setText(getClusterInfoTotal(i))
-                this$clusterInfosBrushed[[i]]$setText(getClusterInfoBrushed(i))
+            ci<-getClusterInfoTotal(i)
+            this$clusterInfosTotal[[i]]$setText(ci$info)
+            this$clusterInfosTotal[[i]]$setRelWidth(ci$ratio)
+            if (brushedmapEnabled) {
+                ci<-getClusterInfoBrushed(i)
+                this$clusterInfosBrushed[[i]]$setText(ci$info)
+                this$clusterInfosBrushed[[i]]$setRelWidth(ci$ratio)
+            }
         }
         update()
     })
 
-    qsetMethod("createButtons", Window, function() {
+    qsetMethod("createButtons", Window, function(clusterLabelWidth) {
         if (dbg.gui) cat('createButtons called\n')
 
-        ## colored rectangle identifying clusters
-        ##
-        suppressWarnings(qsetClass("ColoredRect",Qt$QWidget,function(parent=NULL) {
-            super(parent)
-        }))
-        qsetMethod("setColor",ColoredRect,function(color) {
+        ## Radio button with a colored background.
+        # Used to identify the current cluster.
+        suppressWarnings(qsetClass("ColoredRadioButton",Qt$QRadioButton,function(parent=NULL,color=color,...) {
+            super(parent,...)
             this$color<-color
-        })
-        qsetMethod("paintEvent",ColoredRect,function(event) {
+        }))
+        qsetMethod("paintEvent",ColoredRadioButton,function(event) {
             painter<-Qt$QPainter(this)
-            redrawRect<-event$rect()  
-            painter$fillRect(redrawRect,qbrush(this$color)) # clear area
-            #painter$drawText(10,10,'asd')
+            # draw background
+            rect<-event$rect()
+            painter$fillRect(rect,qbrush(this$color))
+            # draw the radio button
+            super('paintEvent',event)
+            # draw border
+            painter$setPen(Qt$QColor(200,200,200))
+            painter$drawLine(rect$left(),rect$bottom(),rect$left(),rect$top())
+            painter$drawLine(rect$left(),rect$top(),rect$right(),rect$top())
+            painter$setPen(Qt$QColor(148,148,148))
+            painter$drawLine(rect$left(),rect$bottom(),rect$right(),rect$bottom())
+            painter$drawLine(rect$right(),rect$bottom(),rect$right(),rect$top())
+            # must finish the painter
+            painter$end()
+        })
+
+        # Label with a partially filled background.
+        # Used to represent the ratio of members in a cluster.
+        suppressWarnings(qsetClass("ColoredRectWithLabel",Qt$QLabel,function(parent=NULL,color='black',relWidth=0,...) {
+            super(parent,...)
+            setAlignment(0x84) # Justifies the text in the available space.
+            this$color<-color
+            this$relWidth<-relWidth
+        }))
+        qsetMethod("setRelWidth",ColoredRectWithLabel,function(relWidth) {
+            this$relWidth<-relWidth
+        })
+        qsetMethod("paintEvent",ColoredRectWithLabel,function(event) {
+            painter<-Qt$QPainter(this)
+            rect<-Qt$QRect(event$rect())
+            if (graphicalClusterInfos) {
+                # fill part of the rectangle, excluding border
+                rect$setWidth(rect$width()*relWidth)
+                painter$fillRect(rect,qbrush(this$color))
+            }
+            # draw border
+            rect<-Qt$QRect(event$rect())
+            painter$setPen(Qt$QColor(200,200,200))
+            painter$drawLine(rect$left(),rect$bottom(),rect$left(),rect$top())
+            painter$drawLine(rect$left(),rect$top(),rect$right(),rect$top())
+            painter$setPen(Qt$QColor(148,148,148))
+            painter$drawLine(rect$left(),rect$bottom(),rect$right(),rect$bottom())
+            painter$drawLine(rect$right(),rect$bottom(),rect$right(),rect$top())
+            if (textualClusterInfos) {
+                # draw the label
+                super('paintEvent',event)
+            }
+            # must finish the painter
             painter$end()
         })
 
         this$clusterSelectorButtons<-vector('list',params$maxClusterCount)
         this$clusterInfosTotal<-vector('list',params$maxClusterCount)
         this$clusterInfosBrushed<-vector('list',params$maxClusterCount)
+
+        # width of the "cluster" label, used to make cluster selectors wide at least of this size
+        maxClusterSelectorWidth<-clusterLabelWidth
+        # a wide label used to measure the maximal width of a cluster info label ("XXX (100%)")
+        wideLabel<-ColoredRectWithLabel(paste(df$n,'(100%)'))
+        # minimal width of a cluster info label
+        maxClusterInfoWidth<-wideLabel$sizeHint$width()+2*3 # add some space at the borders to make it visually more appealing
         for (i in 1:params$maxClusterCount) {
-            this$clusterSelectorButtons[[i]]<-Qt$QRadioButton(sprintf('%2d',i))
+            this$clusterSelectorButtons[[i]]<-ColoredRadioButton(sprintf('%2d',i),params$clusterColors[i])
             qconnect(clusterSelectorButtons[[i]],"pressed",function(i) {
                 if (attr(scene,'.sharedEnv')$df$currentCluster!=i) {
                     attr(scene,'.sharedEnv')$df$currentCluster<-i
                     setCurrentClusterInQx(qx,attr(scene,'.sharedEnv')$df)
                 }
             },i)
-            # TODO: create label with given background color instead of widget with explicit paintEvent handler
-            this$clusterColoredRect[[i]]<-ColoredRect()
-            this$clusterColoredRect[[i]]$setColor(params$clusterColors[i])
-            this$clusterInfosTotal[[i]]<-Qt$QLabel('0 (0%)')
-            this$clusterInfosBrushed[[i]]<-Qt$QLabel('0 (0%)')
+            this$clusterInfosTotal[[i]]<-ColoredRectWithLabel('0 (0%)',params$clusterColors[i])
+            # the width of cluster info label is known - set it!
+            this$clusterInfosTotal[[i]]$setMinimumWidth(maxClusterInfoWidth)
+            if (brushedmapEnabled) {
+                this$clusterInfosBrushed[[i]]<-ColoredRectWithLabel('--',params$clusterColors[i])
+                # the width of cluster info label is known - set it!
+                this$clusterInfosBrushed[[i]]$setMinimumWidth(maxClusterInfoWidth)
+            }
+            # the width of current cluster selector is not know yet - keep accumulating the maximal value encountered so far
+            maxClusterSelectorWidth<-max(maxClusterSelectorWidth,this$clusterSelectorButtons[[i]]$sizeHint$width())
+        }
+        for (i in 1:params$maxClusterCount) {
+            # finally, set the minimal width to the maximum of widths of current cluster selectors
+            this$clusterSelectorButtons[[i]]$setMaximumWidth(maxClusterSelectorWidth)
         }
 
         this$fullViewButton<-Qt$QPushButton('&Full view')
@@ -1399,6 +1521,17 @@ idendro<-structure(function# Interactive Dendrogram
             close()
         })
     })
+
+    # Compute the width of a label constructed as "paste(txt1,<several digits>,txt2).
+    # As we do not know which digit is the widest one, we try all of them and take the maximum width.
+    computeMaxLabelWidth<-function(txt1,txt2) {
+        maxWidth<-0
+        for (i in 0:9) {
+            maxWidthLabel<-Qt$QLabel(paste(txt1,paste(rep(i,ceiling(log10(df$n+1))),collapse=''),txt2,sep=''))
+            maxWidth<-max(maxWidth,maxWidthLabel$sizeHint$width())
+        }
+        maxWidth
+    }
 
     guiWindow<-Window()
     guiWindow$show()
