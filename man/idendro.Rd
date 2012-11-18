@@ -18,7 +18,9 @@ of thousands of observations, at least).
     unselectedClusterColor = "black", maxClusterCount = length(clusterColors), 
     heatmapEnabled = TRUE, doSmoothHeatmap = TRUE, heatmapColors = colorRampPalette(c("#00007F", 
         "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", 
-        "red", "#7F0000")), heatmapColorCount = 10, brushedmapEnabled = !is.null(qx))}
+        "red", "#7F0000")), heatmapColorCount = 10, heatmapRelSize = 0.2, 
+    brushedmapEnabled = !is.null(qx), separateGui = FALSE, graphicalClusterInfos = TRUE, 
+    textualClusterInfos = TRUE)}
 \arguments{
   \item{h}{an object of class 'stats::hclust' describing a clustering}
   \item{qx}{a mutaframe holding observations tha were clustered
@@ -65,7 +67,17 @@ picked (interpolated) from 'heatmapColors'.
 WARNING: the number of colors used by heatmap can influence
 the time spent drawing the heatmap significantly (for large
 data sets).}
+  \item{heatmapRelSize}{relative size of the heatmap - the ratio
+of the heatmap width to the width of both the dendrogram and
+heatmap. The default is 20\%.}
   \item{brushedmapEnabled}{shall brushed map be drawn?}
+  \item{separateGui}{shall GUI be integrated into the dendrogram
+window, or shall it be separated in a standalone window?
+(The default is integrated GUI.)}
+  \item{graphicalClusterInfos}{depict cluster-specific statistics
+graphically? (The default is TRUE.)}
+  \item{textualClusterInfos}{depict cluster-specific statistics
+textually? (The default is TRUE.)}
 }
 \details{'idendro' displays an interactive dendrogram enriched, optionally,
 with a heatmap and/or a brushedmap.
