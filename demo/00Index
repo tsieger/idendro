@@ -5,3 +5,4 @@ idendroBigDemo              large dendrogram demo
 idendroCranvasDemo          dendrogram integrated with cranvas
 idendroDemoWithUserCallback an application responding to interactive dendrogram
 idendroHeatmapCranvasDemo   dendrogram+heatmap integrated with cranvas
+idendroBigCranvasDemo       large dendrogram + heatmap + cranvas demo

@@ -27,5 +27,5 @@ idendro(hx,qx,maxClusterCount=6)
 # visualize data on a scatter plot
 qx$.size<-jitter(qx$.size,.1) # hack: without this, points get not
                               # shown (cranvas 0.8 on linux)
-print(qscatter(x1,x2,data=qx))
+print(qscatter(x1,x2,data=qx,unibrushcolor=FALSE))
 
