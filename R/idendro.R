@@ -1116,9 +1116,9 @@ idendro<-structure(function# Interactive Dendrogram
     figLayer[0,2]<-brushedmapAnnotationLayer
     figLayer[0,3]<-backgroundClearingLayer5
 
-    # let's make dendroWidth+heatmapWidth =~ 1000
-    # dendroWidth =~ 1000-heatmapWidth = 1000*(1-heatmapRelSize)
-    dendroPreferredWidth<-1000*(1-heatmapRelSize)
+    # let's make dendroWidth+heatmapWidth =~ 600
+    # dendroWidth =~ 600-heatmapWidth = 600*(1-heatmapRelSize)
+    dendroPreferredWidth<-600*(1-heatmapRelSize)
     dendroPreferredHeight<-300
 
     layout<-figLayer$gridLayout()
