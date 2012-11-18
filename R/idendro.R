@@ -143,6 +143,10 @@ idendro<-structure(function# Interactive Dendrogram
     ## the time spent drawing the heatmap significantly (for large
     ## data sets).
 
+    heatmapRelSize=.2, ##<< relative size of the heatmap - the ratio
+    ## of the heatmap width to the width of both the dendrogram and
+    ## heatmap. The default is 20%.
+
     brushedmapEnabled=!is.null(qx), ##<< shall brushed map be drawn?
 
     separateGui=FALSE, ##<< shall GUI be integrated into the dendrogram
@@ -157,9 +161,6 @@ idendro<-structure(function# Interactive Dendrogram
 
 ) {
 # TODO:
-#  heatMapRelSize: relative size of heatmap (in respect to dendrogram
-#                  size)
-
 
 ##seealso<<hclust, plclust, identify.hclust, rect.hclust,
 ## cutree, dendrogram, cranvas::qdata
@@ -1113,6 +1114,11 @@ idendro<-structure(function# Interactive Dendrogram
     figLayer[0,2]<-brushedmapAnnotationLayer
     figLayer[0,3]<-backgroundClearingLayer5
 
+    # let's make dendroWidth+heatmapWidth =~ 1000
+    # dendroWidth =~ 1000-heatmapWidth = 1000*(1-heatmapRelSize)
+    dendroPreferredWidth<-1000*(1-heatmapRelSize)
+    dendroPreferredHeight<-300
+
     layout<-figLayer$gridLayout()
     # heatmap dimensions annotation
     if (heatmapEnabled) {
@@ -1121,7 +1127,7 @@ idendro<-structure(function# Interactive Dendrogram
         layout$setRowMaximumHeight(0,0)
     }
     # dendro+heatmap+brushedmap+observations annotation
-    layout$setRowPreferredHeight(1,200)
+    layout$setRowPreferredHeight(1,dendroPreferredHeight)
     # axis
     layout$setRowPreferredHeight(2,50)
     # heatmap dimensions annotation: fixed
@@ -1133,13 +1139,13 @@ idendro<-structure(function# Interactive Dendrogram
 
     # dendro
     if (heatmapEnabled) {
-        layout$setColumnPreferredWidth(0,400)
+        layout$setColumnPreferredWidth(0,dendroPreferredWidth)
     } else {
-        layout$setColumnPreferredWidth(0,500)
+        layout$setColumnPreferredWidth(0,dendroPreferredWidth)
     }
     # heatmap
     if (heatmapEnabled) {
-        layout$setColumnPreferredWidth(1,100)
+        layout$setColumnPreferredWidth(1,dendroPreferredWidth/(1-heatmapRelSize)*heatmapRelSize)
     } else {
         layout$setColumnMaximumWidth(1,0)
     }
@@ -1157,9 +1163,17 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     # dendro stretchable
-    layout$setColumnStretchFactor(0,4)
-    # heatmap stretchable
-    layout$setColumnStretchFactor(1,1)
+    if (heatmapEnabled) {
+        layout$setColumnStretchFactor(0,10*(1-heatmapRelSize))
+    } else {
+        layout$setColumnStretchFactor(0,1)
+    }
+    if (heatmapEnabled) {
+        # heatmap stretchable
+        layout$setColumnStretchFactor(1,10*heatmapRelSize)
+    } else {
+        layout$setColumnStretchFactor(1,0)
+    }
     # brushedmap: fixed size
     layout$setColumnStretchFactor(2,0)
     # observations annotations: fixed size
