@@ -7,7 +7,8 @@ features
 - configurable layout of windows (dendro and GUI)
 - configurable dendro orientation (left-to-right, right-to-left,
   top-to-bottom, bottom-to-top)
-
+- make axis ticks nicer: make the number of ticks proportional to the
+  width of the axis on the screen 
 
 =======================================================================
 technical TODOs

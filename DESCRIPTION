@@ -1,14 +1,14 @@
 Package: idendro
 Type: Package
 Title: Interactive dendrogram
-Version: 1.0
-Date: 2012-08-20
+Version: 1.1
+Date: 2012-11-18
 Author: Tomas Sieger
-Depends: qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc
+Depends: qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc, scales
 URL: http://github.com/tsieger/idendro
 Maintainer: Tomas Sieger <tomas.sieger@seznam.cz>
 Description: Interactive dendrogram (with optional heatmap) enabling
     cluster selection, zooming, panning and bidirectional integration
     with other plots and tools by using mutable data frames.
-License: GPL-3
+License: GPL
 LazyLoad: yes
