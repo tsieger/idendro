@@ -145,13 +145,15 @@ idendro<-structure(function# Interactive Dendrogram
 
     brushedmapEnabled=!is.null(qx), ##<< shall brushed map be drawn?
 
-    separateGui=FALSE, ##<< shall GUI be integrated into the dendrogram window,
-    ## or shall it be separated in a standalone window?
-    ## (defaults to integrated GUI)
+    separateGui=FALSE, ##<< shall GUI be integrated into the dendrogram
+    ## window, or shall it be separated in a standalone window?
+    ## (The default is integrated GUI.)
 
-    graphicalClusterInfos=TRUE, ##<< depict cluster-specific statistics graphically? (defaults to TRUE)
+    graphicalClusterInfos=TRUE, ##<< depict cluster-specific statistics
+    ## graphically? (The default is TRUE.)
 
-    textualClusterInfos=TRUE ##<< depict cluster-specific statistics textually? (defaults to TRUE)
+    textualClusterInfos=TRUE ##<< depict cluster-specific statistics
+    ## textually? (The default is TRUE.)
 
 ) {
 # TODO:
