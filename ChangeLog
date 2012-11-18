@@ -1,0 +1,9 @@
+
+Version 1.1
+- GUI integrated with the dendrogram
+- brushedmap size made configurable
+- gprahical cluster-specific statistics implemented
+- several bugs fixed
+
+Version 1.0
+- initial version
