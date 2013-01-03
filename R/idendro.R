@@ -374,7 +374,7 @@ idendro<-structure(function# Interactive Dendrogram
             layer$limits()$left()+eps,
             layer$limits()$bottom()+eps,
             layer$limits()$right()-eps,
-            layer$limits()$top()-eps,stroke=fillColor,fill=alpha(fillColor,.3))
+            layer$limits()$top()-eps,stroke=fillColor,fill=scales::alpha(fillColor,.3))
 
         cat(paste(layerName,':\n',sep=''))
         #printVar(layer$limits())
@@ -406,14 +406,14 @@ idendro<-structure(function# Interactive Dendrogram
 
             # zooming region being defined by mouse
             xy<-gw2xy(dendroZoomMouseSelection)
-            qdrawRect(painter, xy$x[1], xy$y[1], xy$x[2], xy$y[2], stroke='yellow', fill=alpha('black',.3))
+            qdrawRect(painter, xy$x[1], xy$y[1], xy$x[2], xy$y[2], stroke='yellow', fill=scales::alpha('black',.3))
 
             # dendrogram cutting limit defined by axis position
             tmp<-dendroZoom
             tmp$w<-seq(dendroZoom$w[1],dendroZoom$w[2],len=50)
             tmp$g<-rep(.sharedEnv$axisCut,length(tmp$w))
             xy<-gw2xy(tmp)
-            clrs<-rep(c(alpha('gray20',.7),alpha('yellow',.7)),len=length(xy$x)-1)
+            clrs<-rep(c(scales::alpha('gray20',.7),scales::alpha('yellow',.7)),len=length(xy$x)-1)
             qdrawRect(painter, xy$x[-length(xy$x)], xy$y[-length(xy$y)], xy$x[-1], xy$y[-1], stroke=clrs)
 
             if (dbg.dendro.limits) {
