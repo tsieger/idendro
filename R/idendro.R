@@ -530,6 +530,38 @@ idendro<-structure(function# Interactive Dendrogram
         .sharedEnv$df<-df
     }
 
+    heatmapLegendPainter<-function(layer,painter) {
+        .sharedEnv<-attr(layer$scene(),'.sharedEnv')
+        for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
+
+        if (dbg.heatmap) cat('heatmapLegendPainter called\n')
+
+        if (dbg.heatmap) printVar(heatmapEnabled)
+        if (!heatmapEnabled) return()
+
+        heatmapLegendPainterImpl<-function(layer,painter) {
+            if (dbg.heatmap) cat('heatmapLegendPainterImpl called\n')
+
+            g1<-seq((ncol(df$x))*.25,(ncol(df$x))*.75,length=heatmapColorCount+1)
+            g2<-g1[-1]
+            g1<-g1[-length(g1)]
+            w1<-.25
+            w2<-.75
+            if (dbg.heatmap>1) printVar(g1)
+            if (dbg.heatmap>1) printVar(g2)
+            if (dbg.heatmap>1) printVar(w1)
+            if (dbg.heatmap>1) printVar(w2)
+            coords1<-gw2xy(heatmap2fig(list(g1,w1)))
+            coords2<-gw2xy(heatmap2fig(list(g2,w2)))
+            colPalette<-params$heatmapColors(params$heatmapColorCount)
+            if (dbg.heatmap>1) printVar(colPalette)
+            qdrawRect(painter,coords1[[1]],coords1[[2]],coords2[[1]],coords2[[2]],stroke='black',fill=colPalette)
+            df
+        }
+        df<-heatmapLegendPainterImpl(layer,painter)
+        .sharedEnv$df<-df
+    }
+
     heatmapDimAnnotationPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
         for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
@@ -1072,6 +1104,14 @@ idendro<-structure(function# Interactive Dendrogram
     heatmapLayer<-suppressWarnings(qlayer(scene,paintFun=heatmapPainter,clip=FALSE,cache=TRUE,
             limits=qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4])))
 
+    heatmapLegendLimits<-unlist(gw2xy(heatmap2fig(list(
+        g=c(0,max(1,df$k)), # the positive difference in 'g' makes
+        # layers size manageable easily
+        w=c(0,1)))))
+    if (dbg.heatmap) printVar(heatmapLegendLimits)
+    heatmapLegendLayer<-suppressWarnings(qlayer(scene,paintFun=heatmapLegendPainter,clip=FALSE,cache=TRUE,
+            limits=qrect(heatmapLegendLimits[1],heatmapLegendLimits[3],heatmapLegendLimits[2],heatmapLegendLimits[4])))
+
     ## heatmap dim annotations
     heatmapDimAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(
         g=c(0,max(1,df$k)), # the positive difference in 'g' makes
@@ -1097,7 +1137,6 @@ idendro<-structure(function# Interactive Dendrogram
     backgroundClearingLayer2<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
     backgroundClearingLayer3<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
     backgroundClearingLayer4<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
-    backgroundClearingLayer5<-qlayer(scene,paintFun=backgroundClearingPainter,limits=qrect(0,0,1,1))
 
     #############
     ## layout#FOLD01
@@ -1108,13 +1147,13 @@ idendro<-structure(function# Interactive Dendrogram
     figLayer[1,2]<-brushedmapLayer
     figLayer[1,3]<-observationAnnotationLayer
     figLayer[2,0]<-axisLayer
-    figLayer[2,1]<-backgroundClearingLayer1
-    figLayer[2,2]<-backgroundClearingLayer2
-    figLayer[2,3]<-backgroundClearingLayer3
-    figLayer[0,0]<-backgroundClearingLayer4
+    figLayer[2,1]<-heatmapLegendLayer
+    figLayer[2,2]<-backgroundClearingLayer1
+    figLayer[2,3]<-backgroundClearingLayer2
+    figLayer[0,0]<-backgroundClearingLayer3
     if (!is.null(heatmapDimAnnotationLayer)) figLayer[0,1]<-heatmapDimAnnotationLayer
     figLayer[0,2]<-brushedmapAnnotationLayer
-    figLayer[0,3]<-backgroundClearingLayer5
+    figLayer[0,3]<-backgroundClearingLayer4
 
     # let's make dendroWidth+heatmapWidth =~ 600
     # dendroWidth =~ 600-heatmapWidth = 600*(1-heatmapRelSize)
