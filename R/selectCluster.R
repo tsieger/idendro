@@ -10,7 +10,7 @@ selectCluster<-function
 
     df<-.gfc(df)
 
-    # remember current selection
+    # remember the current selection
     df<-pushSelectionHistory(df)
     df$lastSelectionSaver<-'selectCluster'
 
