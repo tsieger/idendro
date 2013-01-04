@@ -15,7 +15,9 @@ unselectCurrentCluster<-function
 
 
     if (!is.null(df$clusters[[df$currentCluster]])) {
-        df$leafColorIdxs[df$clusters[[df$currentCluster]]$indices]<-0
+        currentClusterIdxInH<-max(df$clusters[[df$currentCluster]]$indices)
+        currentClusterLeafs<-computeMemberIndices(df$h,currentClusterIdxInH)
+        df$leafColorIdxs[currentClusterLeafs]<-0
         df$unselectedBranches$indices<-
             c(df$unselectedBranches$indices,df$clusters[[df$currentCluster]]$indices)
         df$unselectedBranches$branches<-
