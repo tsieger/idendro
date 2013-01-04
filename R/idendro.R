@@ -1531,6 +1531,7 @@ idendro<-structure(function# Interactive Dendrogram
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
                 qupdate(.sharedEnv$dendroLayer)
+                colorizeLeafs(qx,.sharedEnv$df,params)
                 guiWindow$updateClusterInfos()
                 guiWindow$update()
             }
@@ -1547,6 +1548,7 @@ idendro<-structure(function# Interactive Dendrogram
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
                 qupdate(.sharedEnv$dendroLayer)
+                colorizeLeafs(qx,.sharedEnv$df,params)
                 guiWindow$updateClusterInfos()
                 guiWindow$update()
             }
@@ -1563,6 +1565,7 @@ idendro<-structure(function# Interactive Dendrogram
             if (!is.null(rv)) {
                 .sharedEnv$df<-rv
                 qupdate(.sharedEnv$dendroLayer)
+                colorizeLeafs(qx,.sharedEnv$df,params)
                 guiWindow$updateClusterInfos()
                 guiWindow$update()
             } else {
