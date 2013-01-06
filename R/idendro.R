@@ -127,12 +127,17 @@ idendro<-structure(function# Interactive Dendrogram
 
     heatmapEnabled=TRUE, ##<< shall the heatmap be drawn?
 
-    doSmoothHeatmap=TRUE,##<< shall the heatmap depict the mean data
-    ## values associated with the clusters currently shown in the
-    ## dendrogram (TRUE, the defult), or shall it depict all the
-    ## individual observations forming the clusters, even if the
-    ## individual observations are not currently visible in the
-    ## dendrogram (FALSE)?
+    doSmoothHeatmap=NULL,##<< (deprecated, use `heatmapSmoothing'
+    ## instead)
+
+    heatmapSmoothing=c('cluster','zoom','none'),##<< heatmap smoothing mode,
+    ## one of
+    ## 'none' - i.e. heatmap gets never smoothed,
+    ## 'cluster' - heatmap depicts the mean data values
+    ## for the currently selected clusters,
+    ## 'zoom' - heatmap depicts the mean data values
+    ## for the clusters currently shown in the dendrogram,
+    ## disregarding the current cluster selection.
 
     heatmapColors=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000")), ##<< heatmap
     ## color map scheme
@@ -179,6 +184,9 @@ idendro<-structure(function# Interactive Dendrogram
     ####
     # general debug
     dbg<-0
+    # debugs controlling individual features,
+    # the hugher the value, the finer the debugs
+    dbg.qupdate<-0*dbg
     dbg.args<-01*dbg
     dbg.mouse<-0*dbg
     dbg.gui<-0*dbg
@@ -194,6 +202,7 @@ idendro<-structure(function# Interactive Dendrogram
     dbg.heatmap<-1*dbg
     dbg.heatmap.text<-0*dbg
     dbg.heatmap.limits<-0*dbg
+    dbg.heatmap.smooth<-0*dbg
     dbg.brushedmap<-0*dbg
     dbg.brushedmap.limits<-0*dbg
 
@@ -205,6 +214,10 @@ idendro<-structure(function# Interactive Dendrogram
     if (dbg.args) printVar(heatmapEnabled)
     if (dbg.args) printVar(brushedmapEnabled)
     if (dbg.args) printVar(observationAnnotationEnabled)
+
+    if (!is.null(doSmoothHeatmap)) {
+        warning('argument `doSmoothHeatmap\' is deprecated (and ignored)')
+    }
 
     if (heatmapEnabled && is.null(x) && is.null(qx)) {
         # can't draw heatmap if we have no data
@@ -257,6 +270,13 @@ idendro<-structure(function# Interactive Dendrogram
     }
     if (dbg.dendro>1) printVar(df)
 
+    # initialize heatmap cutting points, so they stay constant
+    # regardless of smoothing/zoom
+    if (heatmapEnabled) {
+        # border points: [X0,X1), [X1,X2), ... [Xn-1, Xn]
+        df$heatmapBorderPoints<-quantile(as.matrix(df$x),na.rm=TRUE,prob=seq(0,1,length=heatmapColorCount+1))
+    }
+
     # observation annotations
     if (!is.null(x) && !is.null(rownames(x))) {
         df$observationLabels<-rownames(x)
@@ -298,13 +318,18 @@ idendro<-structure(function# Interactive Dendrogram
     params$allColors<-c(unselectedClusterColor,clusterColors)
     params$maxClusterCount<-maxClusterCount
     params$heatmapEnabled<-heatmapEnabled
-    params$doSmoothHeatmap<-doSmoothHeatmap
+    params$heatmapSmoothing<-match.arg(heatmapSmoothing)
     params$heatmapColors<-heatmapColors
     params$heatmapColorCount<-heatmapColorCount
     params$brushedmapEnabled<-brushedmapEnabled
 
     #### internal functions
     ####
+
+    qupdate<-function(x) {
+        if (dbg.qupdate) cat(paste('qupdate(',deparse(substitute(x)),') called\n'))
+        qtpaint::qupdate(x)
+    }
 
     # Color observations according to clusters they belong to.
     colorizeLeafs<-function(qx,df,params) {
@@ -328,11 +353,43 @@ idendro<-structure(function# Interactive Dendrogram
         params$clusterColors[((id-1)%%length(params$clusterColors))+1]
     }
 
-    #extendRange<-function(x,amount) {
-    #    tmp<-diff(x)*amount/2
-    #    x<-x+tmp*c(-1,1)
-    #    x
-    #}
+    # Callback invoked when clusters change.
+    updateClustersOnChange<-function(.sharedEnv,qx,guiWindow) {
+        df<-.sharedEnv$df
+        qupdate(.sharedEnv$dendroLayer)
+        colorizeLeafs(qx,df,params)
+        guiWindow$updateClusterInfos()
+        guiWindow$update()
+        if (.sharedEnv$params$heatmapSmoothing=='cluster') {
+            df<-smoothHeatmapAccordingToClusters(df)
+            qupdate(.sharedEnv$heatmapLayer)
+        }
+        df
+    }
+
+    # Callback invoked when heatmap smoothing mode gets changed (via
+    # GUI buttons).
+    heatmapSmoothingChanged<-function(.sharedEnv) {
+        df<-.sharedEnv$df
+        switch(.sharedEnv$params$heatmapSmoothing,
+            'none'={
+                # restore the original heatmap
+                df$xOrderedSmoothed<-df$xOrdered
+                df$elemClusterCount<-df$n
+                },
+            'cluster'={
+                df<-smoothHeatmapAccordingToClusters(df)
+                df$elemClusterCount<-df$n
+                },
+            'zoom'={
+                # restore the original heatmap
+                df$xOrderedSmoothed<-df$xOrdered
+                # and let heatmapPainter do the rest of work
+                }
+        )
+        .sharedEnv$df<-df
+        qupdate(.sharedEnv$heatmapLayer)
+    }
 
     # Painter clearing the whole layer with white color (considered
     # being backfround).
@@ -458,8 +515,8 @@ idendro<-structure(function# Interactive Dendrogram
 
             # draw leafs not brushed (it is needed since zoomed
             # dendrogram can collide with span brushedmap, so we need
-            # to restore the background color by overdrawinf the
-            # dendrogram)
+            # to restore the background color by overdrawing
+            # the dendrogram)
             i<-!qx$.brushed[df$leafOrder]
             qdrawRect(painter,
                 coords1[[1]][i],coords1[[2]][i],coords2[[1]][i],coords2[[2]][i],
@@ -484,6 +541,10 @@ idendro<-structure(function# Interactive Dendrogram
         if (dbg.heatmap) printVar(heatmapEnabled)
         if (!heatmapEnabled) return()
 
+        # clear the background to cover the branches of a zoomed
+        # dendrogram
+        clearLayerBackground(layer,painter)
+
         heatmapPainterImpl<-function(layer,painter) {
             if (dbg.heatmap) cat('heatmapPainterImpl called\n')
 
@@ -497,7 +558,8 @@ idendro<-structure(function# Interactive Dendrogram
             if (dbg.heatmap>1) printVar(w2)
             coords1<-gw2xy(heatmap2fig(list(g1,w1)))
             coords2<-gw2xy(heatmap2fig(list(g2,w2)))
-            if (params$doSmoothHeatmap) {
+            if (dbg.heatmap.smooth) cat(paste('heatmapSmoothing mode:',.sharedEnv$params$heatmapSmoothing,'\n',sep=''))
+            if (.sharedEnv$params$heatmapSmoothing=='zoom') {
                 # not all observations visible in the dendrogram,
                 # smooth heatmap to carry info about the currently
                 # elementary clusters in the zoomed dendro
@@ -508,7 +570,20 @@ idendro<-structure(function# Interactive Dendrogram
                     df$elemClusterCount<-max(ch)
                 }
             }
-            colIdx<-as.numeric(cut2(as.matrix(df$xOrderedSmoothed),g=params$heatmapColorCount))
+            # We need to ensure that cutting the current
+            # (perhaps smoothed) heatmap results in the same intervals
+            # as if the cut operated over the original heatmap.
+            # We use a hack here: we add some data from the whole range
+            # of the original heatmap ("border points") to the data
+            # being cut and remove them after cutting.
+            if (dbg.heatmap.smooth>1) printWithName(df$heatmapBorderPoints)
+            if (dbg.heatmap.smooth>1) printWithName(as.matrix(df$xOrderedSmoothed))
+            if (dbg.heatmap.smooth>1) printWithName(c(as.matrix(df$xOrderedSmoothed),df$heatmapBorderPoints))
+            colIdx<-cut(c(as.matrix(df$xOrderedSmoothed),df$heatmapBorderPoints),breaks=df$heatmapBorderPoints,include.lowest=TRUE,right=TRUE,labels=FALSE)
+            # get rid of the artificially added data
+            colIdx<-colIdx[1:(length(colIdx)-length(df$heatmapBorderPoints))]
+            if (dbg.heatmap.smooth>1) printWithName(colIdx)
+            if (dbg.heatmap.smooth>1) printWithName(df$x)
             if (dbg.heatmap>1) printVar(colIdx)
             colPalette<-params$heatmapColors(params$heatmapColorCount)
             if (dbg.heatmap>1) printVar(colPalette)
@@ -535,6 +610,10 @@ idendro<-structure(function# Interactive Dendrogram
         for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
         if (dbg.heatmap) cat('heatmapLegendPainter called\n')
+
+        # clear the background to cover the branches of a zoomed
+        # dendrogram
+        clearLayerBackground(layer,painter)
 
         if (dbg.heatmap) printVar(heatmapEnabled)
         if (!heatmapEnabled) return()
@@ -795,13 +874,10 @@ idendro<-structure(function# Interactive Dendrogram
 
             df<-selectCluster(event$pos())
         }
-        df<-clusterSelectorImpl(layer, event)
-        .sharedEnv$df<-df
-        qupdate(.sharedEnv$dendroLayer)
-        guiWindow$updateClusterInfos()
-        guiWindow$update()
-        colorizeLeafs(qx,df,params)
+        .sharedEnv$df<-clusterSelectorImpl(layer, event)
+        df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
         setCurrentClusterInQx(qx,df)
+        .sharedEnv$df<-df
     }
 
     # Make GW to lie within given GW rectangle.
@@ -948,21 +1024,9 @@ idendro<-structure(function# Interactive Dendrogram
         brushedmapLayer$setLimits(tmp)
 
         # zoom heatmap
-        redrawRequested<-FALSE
-        heatmapLayer<-.sharedEnv$heatmapLayer
         if (!is.null(heatmapLayer)) {
             # zoom heatmap
-            if (params$doSmoothHeatmap) {
-                # not all observations visible in the dendrogram,
-                # smooth heatmap to carry info about the currently
-                # elementary clusters in the zoomed dendro
-                ch<-cutree(df$h,h=dendroZoom$g[2])
-                if (max(ch)!=df$elemClusterCount) {
-                    # the number of elementary clusters changed
-                    if (dbg.heatmap) cat('requesting heatmap redraw, smoothing needed\n')
-                    redrawRequested<-TRUE
-                }
-            }
+            if (dbg.heatmap) cat('setting heatmap limits\n')
             tmp<-heatmapLayer$limits()
             tmp$setTop(xy[[2]][1])
             tmp$setBottom(xy[[2]][2])
@@ -976,9 +1040,7 @@ idendro<-structure(function# Interactive Dendrogram
             observationAnnotationLayer$setLimits(tmp)
         }
 
-        if (redrawRequested) {
-            qupdate(scene)
-        }
+        qupdate(scene)
     }
 
     axisCutterUpdate<-function(layer, event) {
@@ -1022,15 +1084,8 @@ idendro<-structure(function# Interactive Dendrogram
                     ' clusters, but the maximal configured number of clusters (maxClusterCount) is ',
                     params$maxClusterCount,'.',sep=''))
         } else {
-            .sharedEnv$df<-df<-rv$df
-             qupdate(.sharedEnv$dendroLayer)
-            #if (rv$clustersChanged) {
-            # colorize leafs
-            colorizeLeafs(qx,df,params)
-            setCurrentClusterInQx(qx,df)
-            #}
-            guiWindow$updateClusterInfos()
-            guiWindow$update()
+            .sharedEnv$df<-rv$df
+            .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
         }
     }
 
@@ -1200,7 +1255,7 @@ idendro<-structure(function# Interactive Dendrogram
     if (observationAnnotationEnabled) {
         layout$setColumnPreferredWidth(3,50)
     } else {
-        layout$setColumnPreferredWidth(3,0)
+        layout$setColumnMaximumWidth(3,0)
     }
 
     # dendro stretchable
@@ -1295,32 +1350,33 @@ idendro<-structure(function# Interactive Dendrogram
         guiLayout$addLayout(clustersLayout,0)
 
         # GUI buttons
-        zoomLayout1<-Qt$QHBoxLayout()
-        zoomLayout1$addStretch(1)
-        zoomLayout1$addWidget(fullViewButton)
-        zoomLayout1$addStretch(1)
-        zoomLayout2<-Qt$QHBoxLayout()
-        zoomLayout2$addStretch(1)
-        zoomLayout2$addWidget(zoomBackButton)
-        zoomLayout2$addStretch(1)
-        guiLayout$addLayout(zoomLayout1)
-        guiLayout$addLayout(zoomLayout2)
+        zoomLayout<-Qt$QHBoxLayout()
+        zoomLayout$addStretch(1)
+        zoomLayout$addWidget(zoomBackButton)
+        zoomLayout$addWidget(fullViewButton)
+        zoomLayout$addStretch(1)
+        guiLayout$addLayout(zoomLayout)
 
-        selectionLayout1<-Qt$QHBoxLayout()
-        selectionLayout1$addStretch(1)
-        selectionLayout1$addWidget(unselectButton)
-        selectionLayout1$addStretch(1)
-        selectionLayout2<-Qt$QHBoxLayout()
-        selectionLayout2$addStretch(1)
-        selectionLayout2$addWidget(unselectAllButton)
-        selectionLayout2$addStretch(1)
-        guiLayout$addLayout(selectionLayout1,0)
-        guiLayout$addLayout(selectionLayout2,0)
         selectBackLayout<-Qt$QHBoxLayout()
         selectBackLayout$addStretch(1)
         selectBackLayout$addWidget(selectBackButton)
         selectBackLayout$addStretch(1)
         guiLayout$addLayout(selectBackLayout,0)
+        selectionLayout<-Qt$QHBoxLayout()
+        selectionLayout$addStretch(1)
+        selectionLayout$addWidget(unselectButton)
+        selectionLayout$addWidget(unselectAllButton)
+        selectionLayout$addStretch(1)
+        guiLayout$addLayout(selectionLayout,0)
+
+        heatmapSmoothingLabelLayout<-Qt$QHBoxLayout()
+        heatmapSmoothingLabelLayout$addWidget(heatmapSmoothingLabel)
+        heatmapSmoothingLayout<-Qt$QHBoxLayout()
+        heatmapSmoothingLayout$addWidget(heatmapSmoothingRadioButton_none)
+        heatmapSmoothingLayout$addWidget(heatmapSmoothingRadioButton_cluster)
+        heatmapSmoothingLayout$addWidget(heatmapSmoothingRadioButton_zoom)
+        guiLayout$addLayout(heatmapSmoothingLabelLayout,0)
+        guiLayout$addLayout(heatmapSmoothingLayout,0)
 
         quitLayout<-Qt$QHBoxLayout()
         quitLayout$addStretch(1)
@@ -1505,7 +1561,7 @@ idendro<-structure(function# Interactive Dendrogram
             }
         })
 
-        this$zoomBackButton<-Qt$QPushButton('&Zoom back')
+        this$zoomBackButton<-Qt$QPushButton('Undo &zoom')
         qconnect(zoomBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
@@ -1530,10 +1586,7 @@ idendro<-structure(function# Interactive Dendrogram
             rv<-unselectCurrentCluster(.sharedEnv$df)
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
-                qupdate(.sharedEnv$dendroLayer)
-                colorizeLeafs(qx,.sharedEnv$df,params)
-                guiWindow$updateClusterInfos()
-                guiWindow$update()
+                .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
             }
         })
 
@@ -1547,14 +1600,11 @@ idendro<-structure(function# Interactive Dendrogram
             rv<-unselectAllClusters(.sharedEnv$df)
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
-                qupdate(.sharedEnv$dendroLayer)
-                colorizeLeafs(qx,.sharedEnv$df,params)
-                guiWindow$updateClusterInfos()
-                guiWindow$update()
+                .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
             }
         })
 
-        this$selectBackButton<-Qt$QPushButton('Select &back')
+        this$selectBackButton<-Qt$QPushButton('Undo &selection')
         qconnect(selectBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
@@ -1564,14 +1614,46 @@ idendro<-structure(function# Interactive Dendrogram
             rv<-popSelectionHistory(.sharedEnv$df)
             if (!is.null(rv)) {
                 .sharedEnv$df<-rv
-                qupdate(.sharedEnv$dendroLayer)
-                colorizeLeafs(qx,.sharedEnv$df,params)
-                guiWindow$updateClusterInfos()
-                guiWindow$update()
+                .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
             } else {
                 # no history to recall
             }
         })
+
+        this$heatmapSmoothingLabel<-Qt$QLabel('heatmap smoothing:')
+        this$heatmapSmoothingRadioButton_none<-Qt$QRadioButton('none')
+        qconnect(heatmapSmoothingRadioButton_none,"pressed",function() {
+            .sharedEnv<-attr(scene,'.sharedEnv')
+            if (.sharedEnv$params$heatmapSmoothing!='none') {
+                .sharedEnv$params$heatmapSmoothing<-'none'
+                heatmapSmoothingChanged(.sharedEnv)
+            }
+        })
+        this$heatmapSmoothingRadioButton_cluster<-Qt$QRadioButton('cluster')
+        qconnect(heatmapSmoothingRadioButton_cluster,"pressed",function() {
+            .sharedEnv<-attr(scene,'.sharedEnv')
+            if (.sharedEnv$params$heatmapSmoothing!='cluster') {
+                .sharedEnv$params$heatmapSmoothing<-'cluster'
+                heatmapSmoothingChanged(.sharedEnv)
+            }
+        })
+        this$heatmapSmoothingRadioButton_zoom<-Qt$QRadioButton('zoom')
+        qconnect(heatmapSmoothingRadioButton_zoom,"pressed",function() {
+            .sharedEnv<-attr(scene,'.sharedEnv')
+            if (.sharedEnv$params$heatmapSmoothing!='zoom') {
+                .sharedEnv$params$heatmapSmoothing<-'zoom'
+                heatmapSmoothingChanged(.sharedEnv)
+            }
+        })
+        heatmapSmoothingRadioButtonGroup<-Qt$QButtonGroup()
+        heatmapSmoothingRadioButtonGroup$addButton(heatmapSmoothingRadioButton_none)
+        heatmapSmoothingRadioButtonGroup$addButton(heatmapSmoothingRadioButton_cluster)
+        heatmapSmoothingRadioButtonGroup$addButton(heatmapSmoothingRadioButton_zoom)
+        switch(attr(scene,'.sharedEnv')$params$heatmapSmoothing,
+            'none'=heatmapSmoothingRadioButton_none$setChecked(TRUE),
+            'cluster'=heatmapSmoothingRadioButton_cluster$setChecked(TRUE),
+            'zoom'=heatmapSmoothingRadioButton_zoom$setChecked(TRUE)
+        )
 
         this$quitButton<-Qt$QPushButton('&Quit')
         qconnect(quitButton,"pressed",function() {
