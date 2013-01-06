@@ -161,8 +161,20 @@ idendro<-structure(function# Interactive Dendrogram
     graphicalClusterInfos=TRUE, ##<< depict cluster-specific statistics
     ## graphically? (The default is TRUE.)
 
-    textualClusterInfos=TRUE ##<< depict cluster-specific statistics
+    textualClusterInfos=TRUE, ##<< depict cluster-specific statistics
     ## textually? (The default is TRUE.)
+
+    clipDendro=TRUE, ##<< clip dendrogram to the dendrogram layer?
+    ## The default is TRUE, meaning the  dendrogram does not interfere
+    ## with other layers. On some systems, however, clipping might
+    ## not work properly (border branches might not get rendered),
+    ## so disabling dendrogram clipping might be desired.
+
+    opengl=NULL ##<< use OpenGL for qtpaint scene rendering?
+    ## If non-NULL, the value supplied is passed as the `opengl'
+    ## argument to qtpaint::qplotView. Useful when OpenGL does
+    ## not work properly on your system. Note, however, that
+    ## for large data sets it slows drawing down considerably.
 
 ) {
 # TODO:
@@ -1114,7 +1126,7 @@ idendro<-structure(function# Interactive Dendrogram
             mousePressFun=mousePressFun,
             mouseMoveFun=mouseMoveFun,
             mouseReleaseFun=mouseReleaseFun,
-            wheelFun=dendroZoomer,clip=FALSE,cache=FALSE,
+            wheelFun=dendroZoomer,clip=clipDendro,cache=FALSE,
             limits=qrect(dendroLimits[1],dendroLimits[3],dendroLimits[2],dendroLimits[4])))
 
     axisLimits<-dendroZoomMin
@@ -1290,7 +1302,11 @@ idendro<-structure(function# Interactive Dendrogram
         })
     }
 
-    view<-qplotView(scene=scene)
+    if (!is.null(opengl)) {
+        view<-qplotView(scene=scene,opengl=opengl)
+    } else {
+        view<-qplotView(scene=scene)
+    }
     if (separateGui) print(view)
 
     #######################################################
