@@ -261,11 +261,9 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     if (is.unsorted(h$height)) {
-        print(sort(diff(h$height)))
         warning('Non-monotone distance detected, applying a simple workaround. Consider using clustering with monotone distance.')
         tmp<-diff(h$height)
         h$height<-h$height+c(0,-cumsum(tmp*I(tmp<0)))
-        print(sort(diff(h$height)))
     }
 
     if (brushedmapEnabled && is.null(qx)) {
