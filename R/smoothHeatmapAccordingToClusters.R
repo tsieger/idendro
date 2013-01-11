@@ -6,7 +6,7 @@ smoothHeatmapAccordingToClusters<-function
 (
     df, ##<< shared data frame
 
-    dbg.heatmap.smooth ##<< debug verbosity level
+    dbg.heatmap.smooth = 0 ##<< debug verbosity level
 ) {
     if (dbg.heatmap.smooth) cat('recomputing smoothed heatmap\n')
     x<-df$x

@@ -373,7 +373,7 @@ idendro<-structure(function# Interactive Dendrogram
         guiWindow$updateClusterInfos()
         guiWindow$update()
         if (.sharedEnv$params$heatmapSmoothing=='cluster') {
-            df<-smoothHeatmapAccordingToClusters(df)
+            df<-smoothHeatmapAccordingToClusters(df,dbg.heatmap.smooth)
             qupdate(.sharedEnv$heatmapLayer)
         }
         df
@@ -390,7 +390,7 @@ idendro<-structure(function# Interactive Dendrogram
                 df$elemClusterCount<-df$n
                 },
             'cluster'={
-                df<-smoothHeatmapAccordingToClusters(df)
+                df<-smoothHeatmapAccordingToClusters(df,dbg.heatmap.smooth)
                 df$elemClusterCount<-df$n
                 },
             'zoom'={
@@ -578,7 +578,7 @@ idendro<-structure(function# Interactive Dendrogram
                 ch<-cutree(df$h,h=df$h$height[df$clusterCount]-dendroZoom$g[2])
                 if (max(ch)!=df$elemClusterCount) {
                     if (dbg.heatmap) cat('smoothing heatmap\n')
-                    df$xOrderedSmoothed<-smoothHeatmap(df$xOrdered,ch[df$leafOrder],dbg.heatmap)
+                    df$xOrderedSmoothed<-smoothHeatmap(df$xOrdered,ch[df$leafOrder],dbg.heatmap.smooth)
                     df$elemClusterCount<-max(ch)
                 }
             }

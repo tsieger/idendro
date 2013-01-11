@@ -9,7 +9,7 @@ smoothHeatmap<-function
     ## of 'n' specifies no smoothing while the value of 1 would lead
     ## to maximal smoothing
 
-    dbg.heatmap ##<< debug verbosity level
+    dbg.heatmap = 0 ##<< debug verbosity level
 ) {
     
     i0<-0
