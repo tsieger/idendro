@@ -705,7 +705,7 @@ idendro<-structure(function# Interactive Dendrogram
                     # resize heatmapDimAnnotationLayer such that dim annotations fit in nicely
                     x0<-layer$mapToScene(0,0)$x()
                     labels<-df$dimLabels
-                    if (brushedmapEnabled) labels<-c(labels,'brushed')
+                    if (brushedmapEnabled) labels<-c(labels,'(brushed)')
                     xs<-apply(as.array(labels),1,function(x)layer$mapToScene(qstrWidth(painter,x),qstrHeight(painter,x))$x())
                     layout$setRowMinimumHeight(0,max(xs)-x0)
                     .sharedEnv$heatmapDimAnnotationLayerSized<-TRUE
@@ -733,7 +733,7 @@ idendro<-structure(function# Interactive Dendrogram
             gLabelDim<-.5
             wLabelDim<-0
             coordsLabelDim<-gw2xy(heatmap2fig(list(gLabelDim,wLabelDim)))
-            qdrawText(painter,'brushed',coordsLabelDim[[1]],coordsLabelDim[[2]],color='black',halign='left',rot=90)
+            qdrawText(painter,'(brushed)',coordsLabelDim[[1]],coordsLabelDim[[2]],color='black',halign='left',rot=90)
         }
         if (brushedmapEnabled) {
             # annotate the brushedmap
