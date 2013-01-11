@@ -86,7 +86,12 @@ idendro<-structure(function# Interactive Dendrogram
 ##
 ##
 (
-    h, ##<< an object of class 'stats::hclust' describing a clustering
+    h, ##<< an object of class 'stats::hclust' describing a clustering.
+    ## If _inversions_ in heights (see 'hclust') is detected,
+    ## the heights get fixed in a simple naive way by preserving
+    ## non-negative relative differences in the heights, but changing
+    ## negative differences to zero. Using clustering with monotone
+    ## distance measure should be considered.
 
     qx=NULL,##<< a mutaframe holding observations tha were clustered
     ## giving rise to 'h', with hidden columns for interaction, as created
@@ -253,6 +258,14 @@ idendro<-structure(function# Interactive Dendrogram
             # heuristics: try to get rid of columns added to the original data
             x<-as.data.frame(x[,-grep('^\\.',colnames(x))])
         }
+    }
+
+    if (is.unsorted(h$height)) {
+        print(sort(diff(h$height)))
+        warning('Non-monotone distance detected, applying a simple workaround. Consider using clustering with monotone distance.')
+        tmp<-diff(h$height)
+        h$height<-h$height+c(0,-cumsum(tmp*I(tmp<0)))
+        print(sort(diff(h$height)))
     }
 
     if (brushedmapEnabled && is.null(qx)) {
