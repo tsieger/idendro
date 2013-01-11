@@ -266,6 +266,20 @@ idendro<-structure(function# Interactive Dendrogram
         h$height<-h$height+c(0,-cumsum(tmp*I(tmp<0)))
     }
 
+    # convert non-numeric data to numeric, if necessary
+    if (heatmapEnabled) {
+        nonNumericColumnFound<-FALSE
+        for (i in 1:ncol(x)) {
+            if (!is.numeric(x[,i])) {
+                x[,i]<-as.numeric(x[,i])
+                nonNumericColumnFound<-TRUE
+            }
+        }
+        if (nonNumericColumnFound) {
+            warning('Non-numeric data found, converting to numeric (in order to enable heatmap drawing).')
+        }
+    }
+
     if (brushedmapEnabled && is.null(qx)) {
         qx<-qdata(1:(length(h$height)+1))
     }
