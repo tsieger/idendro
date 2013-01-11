@@ -135,7 +135,7 @@ idendro<-structure(function# Interactive Dendrogram
     doSmoothHeatmap=NULL,##<< (deprecated, use `heatmapSmoothing'
     ## instead)
 
-    heatmapSmoothing=c('cluster','zoom','none'),##<< heatmap smoothing mode,
+    heatmapSmoothing=c('none','cluster','zoom'),##<< heatmap smoothing mode,
     ## one of
     ## 'none' - i.e. heatmap gets never smoothed,
     ## 'cluster' - heatmap depicts the mean data values
