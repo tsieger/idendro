@@ -372,19 +372,21 @@ idendro<-structure(function# Interactive Dendrogram
     # Color observations according to clusters they belong to.
     colorizeLeafs<-function(qx,df,params) {
         if (!is.null(qx)) {
-            qx$.border<<-qx$.color<<-params$allColors[df$leafColorIdxs+1]
-            qx$.cluster<<-df$leafColorIdxs
+            qx$.border<-qx$.color<-params$allColors[df$leafColorIdxs+1]
+            qx$.cluster<-df$leafColorIdxs
         }
+        qx
     }
-    colorizeLeafs(qx,df,params)
+    qx<-colorizeLeafs(qx,df,params)
 
     # Mark observations belonging to the current cluster in the `qx' mutable data frame.
     setCurrentClusterInQx<-function(qx,df) {
         if (!is.null(qx)) {
-            qx$.inCurrentCluster<<-df$leafColorIdxs==df$currentCluster
+            qx$.inCurrentCluster<-df$leafColorIdxs==df$currentCluster
         }
+        qx
     }
-    setCurrentClusterInQx(qx,df)
+    qx<-setCurrentClusterInQx(qx,df)
 
     # Determine color for cluster of given ID (starting at 1).
     clusterColor<-function(id) {
@@ -395,7 +397,7 @@ idendro<-structure(function# Interactive Dendrogram
     updateClustersOnChange<-function(.sharedEnv,qx,guiWindow) {
         df<-.sharedEnv$df
         qupdate(.sharedEnv$dendroLayer)
-        colorizeLeafs(qx,df,params)
+        df$qx<-colorizeLeafs(qx,df,params)
         guiWindow$updateClusterInfos()
         guiWindow$update()
         if (.sharedEnv$params$heatmapSmoothing=='cluster') {
@@ -914,7 +916,7 @@ idendro<-structure(function# Interactive Dendrogram
         }
         .sharedEnv$df<-clusterSelectorImpl(layer, event)
         df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
-        setCurrentClusterInQx(qx,df)
+        df$qx<-setCurrentClusterInQx(qx,df)
         .sharedEnv$df<-df
     }
 
@@ -1568,9 +1570,11 @@ idendro<-structure(function# Interactive Dendrogram
         for (i in 1:params$maxClusterCount) {
             this$clusterSelectorButtons[[i]]<-ColoredRadioButton(sprintf('%2d',i),params$clusterColors[i])
             qconnect(clusterSelectorButtons[[i]],"pressed",function(i) {
-                if (attr(scene,'.sharedEnv')$df$currentCluster!=i) {
-                    attr(scene,'.sharedEnv')$df$currentCluster<-i
-                    setCurrentClusterInQx(qx,attr(scene,'.sharedEnv')$df)
+                df<-attr(scene,'.sharedEnv')$df
+                if (df$currentCluster!=i) {
+                    df$currentCluster<-i
+                    df$qx<-setCurrentClusterInQx(qx,df)
+                    attr(scene,'.sharedEnv')$df<-df
                 }
             },i)
             this$clusterInfosTotal[[i]]<-ColoredRectWithLabel('0 (0%)',params$clusterColors[i])
