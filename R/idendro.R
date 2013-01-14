@@ -20,7 +20,7 @@ idendro<-structure(function# Interactive Dendrogram
 ##
 ## The heatmap visualizes the observations living in k-dimensional
 ## space by mapping their values onto a color scale and displaying
-## as a row of 'k' colored rectangles.
+## them as a row of 'k' colored rectangles.
 ##
 ## The brushedmap indicates which observations are currently
 ## being selected by some external plot/tool 'idendro' is integrated
@@ -67,20 +67,20 @@ idendro<-structure(function# Interactive Dendrogram
 ## At the bottom of the GUI window, there are buttons controling
 ## zooming and cluster selection:
 ##
+## "Undo zoom" - retrieves the previous zoom region from history
+##
 ## "Full view" - zooms dendrogram out maximally
 ##
-## "Zoom back" - retrieves the previous zoom region from history
+## "Undo selection" - retrieves the previous cluster selection from
+##     history
 ##
 ## "Unselect" - unselects the current cluster (makes the current
 ##     cluster to point to no cluster in the dendrogram, so it
 ##     decolorizes dendrogram branches associated with
 ##     the current cluster)
 ##
-## "unselect All" - unselects all clusters (decolorizes all the
+## "Unselect all" - unselects all clusters (decolorizes all the
 ##     clusters in the dendrogram)
-##
-## "select Back" - retrieves the previous cluster selection from
-##     history
 ##
 ##  "Quit"
 ##
@@ -107,6 +107,7 @@ idendro<-structure(function# Interactive Dendrogram
     x=qx, ##<< a data frame holding observations tha were clustered
     ## giving rise to 'h'.
     ## Heatmap will depict this data.
+    ## Non-numeric types will get converted to numeric using 'as.numeric'.
     ## This parameter is optional. If missing, it will be guessed
     ## from 'qx' by omitting any columns starting in '.'.
 
