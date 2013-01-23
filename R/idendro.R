@@ -1509,9 +1509,13 @@ idendro<-structure(function# Interactive Dendrogram
             # draw background
             rect<-event$rect()
             painter$fillRect(rect,qbrush(this$color))
+            # after calling 'super('paintEvent',event)' the painter becomes
+            # unusable (!?!), so let's end it here and create a new one later
+            painter$end() 
             # draw the radio button
             super('paintEvent',event)
             # draw border
+            painter<-Qt$QPainter(this)
             painter$setPen(Qt$QColor(200,200,200))
             painter$drawLine(rect$left(),rect$bottom(),rect$left(),rect$top())
             painter$drawLine(rect$left(),rect$top(),rect$right(),rect$top())
