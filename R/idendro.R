@@ -196,7 +196,6 @@ idendro<-structure(function# Interactive Dendrogram
     require(cranvas) # qdata
     require(plumbr) # add_listener
     require(grDevices) # needed to generate jet palette by `colorRampPalette'
-    require(Hmisc) # cut2
 
     #### debugs
     ####
