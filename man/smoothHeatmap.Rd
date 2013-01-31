@@ -2,7 +2,7 @@
 \alias{smoothHeatmap}
 \title{smoothHeatmap}
 \description{Smooth heatmap by averaging data over observations in clusters.}
-\usage{smoothHeatmap(x, ch, dbg.heatmap)}
+\usage{smoothHeatmap(x, ch, dbg.heatmap = 0)}
 \arguments{
   \item{x}{a data frame holding observations tha were clustered}
   \item{ch}{number of clusters specifying the amount of smoothing:

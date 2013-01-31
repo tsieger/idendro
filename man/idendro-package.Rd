@@ -9,13 +9,13 @@ with other plots and tools by using mutable data frames.}
 \tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
 Title: \tab Interactive dendrogram\cr
-Version: \tab 1.0\cr
-Date: \tab 2012-08-20\cr
+Version: \tab 1.2.0\cr
+Date: \tab 2012-11-18\cr
 Author: \tab Tomas Sieger\cr
-Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, Hmisc\cr
+Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, scales\cr
 URL: \tab http://github.com/tsieger/idendro\cr
 Maintainer: \tab Tomas Sieger <tomas.sieger@seznam.cz>\cr
-License: \tab GPL-3\cr
+License: \tab GPL\cr
 LazyLoad: \tab yes\cr}
 }
 \author{Tomas Sieger}

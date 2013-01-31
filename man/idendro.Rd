@@ -16,13 +16,19 @@ of thousands of observations, at least).
     clusterColors = c("red", "green", "blue", "yellow", "magenta", 
         "cyan", "darkred", "darkgreen", "purple", "darkcyan"), 
     unselectedClusterColor = "black", maxClusterCount = length(clusterColors), 
-    heatmapEnabled = TRUE, doSmoothHeatmap = TRUE, heatmapColors = colorRampPalette(c("#00007F", 
+    heatmapEnabled = TRUE, doSmoothHeatmap = NULL, heatmapSmoothing = c("none", 
+        "cluster", "zoom"), heatmapColors = colorRampPalette(c("#00007F", 
         "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", 
         "red", "#7F0000")), heatmapColorCount = 10, heatmapRelSize = 0.2, 
     brushedmapEnabled = !is.null(qx), separateGui = FALSE, graphicalClusterInfos = TRUE, 
-    textualClusterInfos = TRUE)}
+    textualClusterInfos = TRUE, clipDendro = TRUE, opengl = NULL)}
 \arguments{
-  \item{h}{an object of class 'stats::hclust' describing a clustering}
+  \item{h}{an object of class 'stats::hclust' describing a clustering.
+If _inversions_ in heights (see 'hclust') is detected,
+the heights get fixed in a simple naive way by preserving
+non-negative relative differences in the heights, but changing
+negative differences to zero. Using clustering with monotone
+distance measure should be considered.}
   \item{qx}{a mutaframe holding observations tha were clustered
 giving rise to 'h', with hidden columns for interaction, as created
 by 'cranvas::qdata'. If 'qx' is enriched with 'idendro'-specific
@@ -36,6 +42,7 @@ This parameter is optional.}
   \item{x}{a data frame holding observations tha were clustered
 giving rise to 'h'.
 Heatmap will depict this data.
+Non-numeric types will get converted to numeric using 'as.numeric'.
 This parameter is optional. If missing, it will be guessed
 from 'qx' by omitting any columns starting in '.'.}
   \item{zoomFactor}{the amount of zoom in/out as controlled by the
@@ -54,12 +61,16 @@ This parameter affects the size of GUI and the number of
 clusters which can be selected automatically by "cutting" the
 dendrogram.}
   \item{heatmapEnabled}{shall the heatmap be drawn?}
-  \item{doSmoothHeatmap}{shall the heatmap depict the mean data
-values associated with the clusters currently shown in the
-dendrogram (TRUE, the defult), or shall it depict all the
-individual observations forming the clusters, even if the
-individual observations are not currently visible in the
-dendrogram (FALSE)?}
+  \item{doSmoothHeatmap}{(deprecated, use `heatmapSmoothing'
+instead)}
+  \item{heatmapSmoothing}{heatmap smoothing mode,
+one of
+'none' - i.e. heatmap gets never smoothed,
+'cluster' - heatmap depicts the mean data values
+for the currently selected clusters,
+'zoom' - heatmap depicts the mean data values
+for the clusters currently shown in the dendrogram,
+disregarding the current cluster selection.}
   \item{heatmapColors}{heatmap
 color map scheme}
   \item{heatmapColorCount}{the number of colors used by the heatmap,
@@ -78,6 +89,16 @@ window, or shall it be separated in a standalone window?
 graphically? (The default is TRUE.)}
   \item{textualClusterInfos}{depict cluster-specific statistics
 textually? (The default is TRUE.)}
+  \item{clipDendro}{clip dendrogram to the dendrogram layer?
+The default is TRUE, meaning the  dendrogram does not interfere
+with other layers. On some systems, however, clipping might
+not work properly (border branches might not get rendered),
+so disabling dendrogram clipping might be desired.}
+  \item{opengl}{use OpenGL for qtpaint scene rendering?
+If non-NULL, the value supplied is passed as the `opengl'
+argument to qtpaint::qplotView. Useful when OpenGL does
+not work properly on your system. Note, however, that
+for large data sets it slows drawing down considerably.}
 }
 \details{'idendro' displays an interactive dendrogram enriched, optionally,
 with a heatmap and/or a brushedmap.
@@ -88,7 +109,7 @@ side of the dendrogram displaying the "height" of clusters.
 
 The heatmap visualizes the observations living in k-dimensional
 space by mapping their values onto a color scale and displaying
-as a row of 'k' colored rectangles.
+them as a row of 'k' colored rectangles.
 
 The brushedmap indicates which observations are currently
 being selected by some external plot/tool 'idendro' is integrated
@@ -135,20 +156,20 @@ cluster-specific information (see 'idendroDemoWithUserCallback').
 At the bottom of the GUI window, there are buttons controling
 zooming and cluster selection:
 
+"Undo zoom" - retrieves the previous zoom region from history
+
 "Full view" - zooms dendrogram out maximally
 
-"Zoom back" - retrieves the previous zoom region from history
+"Undo selection" - retrieves the previous cluster selection from
+history
 
 "Unselect" - unselects the current cluster (makes the current
 cluster to point to no cluster in the dendrogram, so it
 decolorizes dendrogram branches associated with
 the current cluster)
 
-"unselect All" - unselects all clusters (decolorizes all the
+"Unselect all" - unselects all clusters (decolorizes all the
 clusters in the dendrogram)
-
-"select Back" - retrieves the previous cluster selection from
-history
 
 "Quit"
 
