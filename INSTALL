@@ -2,9 +2,7 @@ Prerequisites:
 =============
 R packages required:
 
-- qtbase
-- qtpaint
-- cranvas
+- cranvas (which, in turn, depend (not only) on qtbase and qtpaint)
 
 Please, read https://github.com/ggobi/cranvas/wiki to learn how to
 install these packages. 
