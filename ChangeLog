@@ -1,4 +1,11 @@
 
+Version 1.2
+- heatmap smoothing modes implemented, `heatmapSmoothing' argument
+  introduced, `doSmoothHeatmap' argument deprecated
+- `clipDendro' argument introduced
+- `opengl' argument introduced
+- several bugs fixed
+
 Version 1.1
 - GUI integrated with the dendrogram
 - brushedmap size made configurable
