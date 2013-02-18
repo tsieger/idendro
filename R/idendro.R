@@ -311,7 +311,8 @@ idendro<-structure(function# Interactive Dendrogram
     # regardless of smoothing/zoom
     if (heatmapEnabled) {
         # border points: [X0,X1), [X1,X2), ... [Xn-1, Xn]
-        df$heatmapBorderPoints<-quantile(as.matrix(df$x),na.rm=TRUE,prob=seq(0,1,length=heatmapColorCount+1))
+        tmp<-as.matrix(df$x)
+        df$heatmapBorderPoints<-seq(min(tmp,na.rm=TRUE),max(tmp,na.rm=TRUE),len=heatmapColorCount+1)
     }
 
     # observation annotations
