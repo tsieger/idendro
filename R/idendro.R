@@ -1553,12 +1553,12 @@ idendro<-structure(function# Interactive Dendrogram
             painter$setPen(Qt$QColor(148,148,148))
             painter$drawLine(rect$left(),rect$bottom(),rect$right(),rect$bottom())
             painter$drawLine(rect$right(),rect$bottom(),rect$right(),rect$top())
+            # must finish the painter
+            painter$end()
             if (textualClusterInfos) {
                 # draw the label
                 super('paintEvent',event)
             }
-            # must finish the painter
-            painter$end()
         })
 
         this$clusterSelectorButtons<-vector('list',params$maxClusterCount)
