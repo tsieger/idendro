@@ -266,6 +266,11 @@ idendro<-structure(function# Interactive Dendrogram
         h$height<-h$height+c(0,-cumsum(tmp*I(tmp<0)))
     }
 
+    n<-length(h$height)+1
+    if (nrow(x)!=n) {
+        stop(paste('Clustering (of ',n,' objects) does not fit data (',nrow(x),' rows).',sep=''))
+    }
+
     # convert non-numeric data to numeric, if necessary
     if (heatmapEnabled) {
         nonNumericColumnFound<-FALSE
@@ -283,7 +288,6 @@ idendro<-structure(function# Interactive Dendrogram
     if (brushedmapEnabled && is.null(qx)) {
         qx<-qdata(1:(length(h$height)+1))
     }
-    n<-length(h$height)+1
 
     dendroZoom<-dendroZoomMin<-list(g=last(h$height)*c(-.05,1),w=.5+n*c(0,1))
     dendroZoomMouseSelection<-list(g=c(NA,NA),w=c(NA,NA))
