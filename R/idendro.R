@@ -592,9 +592,9 @@ idendro<-structure(function# Interactive Dendrogram
         heatmapPainterImpl<-function(layer,painter) {
             if (dbg.heatmap) cat('heatmapPainterImpl called\n')
 
-            g1<-rep(seq(0,ncol(df$x)-1),each=nrow(df$x))
+            g1<-rep(seq(0,df$k-1),each=df$n)
             g2<-g1+1
-            w1<-rep(1:nrow(df$x),ncol(df$x))-.5
+            w1<-rep(1:df$n,df$k)-.5
             w2<-w1+1
             if (dbg.heatmap>1) printVar(g1)
             if (dbg.heatmap>1) printVar(g2)
@@ -665,7 +665,7 @@ idendro<-structure(function# Interactive Dendrogram
         heatmapLegendPainterImpl<-function(layer,painter) {
             if (dbg.heatmap) cat('heatmapLegendPainterImpl called\n')
 
-            g1<-seq((ncol(df$x))*.25,(ncol(df$x))*.75,length=heatmapColorCount+1)
+            g1<-seq(df$k*.25,df$k*.75,length=heatmapColorCount+1)
             g2<-g1[-1]
             g1<-g1[-length(g1)]
             w1<-.25
