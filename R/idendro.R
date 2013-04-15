@@ -154,6 +154,9 @@ idendro<-structure(function# Interactive Dendrogram
     ## the time spent drawing the heatmap significantly (for large
     ## data sets).
 
+    doScaleHeatmap=TRUE, ##<< scale each heatmap column to the <0,1> range?
+    ## (The default is TRUE.)
+
     heatmapRelSize=.2, ##<< relative size of the heatmap - the ratio
     ## of the heatmap width to the width of both the dendrogram and
     ## heatmap. The default is 20%.
@@ -229,6 +232,7 @@ idendro<-structure(function# Interactive Dendrogram
     if (dbg.args) printVar(!is.null(qx))
     if (dbg.args) printVar(!is.null(x))
     if (dbg.args) printVar(heatmapEnabled)
+    if (dbg.args) printVar(doScaleHeatmap)
     if (dbg.args) printVar(brushedmapEnabled)
     if (dbg.args) printVar(observationAnnotationEnabled)
 
@@ -285,6 +289,21 @@ idendro<-structure(function# Interactive Dendrogram
         }
     }
 
+    # scale heatmap
+    if (doScaleHeatmap) {
+        for (i in 1:ncol(x)) {
+            tmp<-x[,i]
+            tmp.mn<-min(tmp,na.rm=TRUE)
+            tmp.mx<-max(tmp,na.rm=TRUE)
+            if (tmp.mn!=tmp.mx) {
+                tmp<-(tmp-tmp.mn)/(max(tmp,na.rm=TRUE)-tmp.mn)
+            } else {
+                tmp<-tmp-tmp.mn+.5
+            }
+            x[,i]<-tmp
+        }
+    }
+
     if (brushedmapEnabled && is.null(qx)) {
         qx<-qdata(1:(length(h$height)+1))
     }
@@ -315,7 +334,7 @@ idendro<-structure(function# Interactive Dendrogram
     # regardless of smoothing/zoom
     if (heatmapEnabled) {
         # border points: [X0,X1), [X1,X2), ... [Xn-1, Xn]
-        tmp<-as.matrix(df$x)
+        tmp<-as.matrix(df$xOrdered)
         df$heatmapBorderPoints<-seq(min(tmp,na.rm=TRUE),max(tmp,na.rm=TRUE),len=heatmapColorCount+1)
     }
 
@@ -627,7 +646,7 @@ idendro<-structure(function# Interactive Dendrogram
             # get rid of the artificially added data
             colIdx<-colIdx[1:(length(colIdx)-length(df$heatmapBorderPoints))]
             if (dbg.heatmap.smooth>1) printWithName(colIdx)
-            if (dbg.heatmap.smooth>1) printWithName(df$x)
+            if (dbg.heatmap.smooth>1) printWithName(df$xOrderedSmoothed)
             if (dbg.heatmap>1) printVar(colIdx)
             colPalette<-params$heatmapColors(params$heatmapColorCount)
             if (dbg.heatmap>1) printVar(colPalette)
@@ -639,6 +658,7 @@ idendro<-structure(function# Interactive Dendrogram
                 i<-clusterColors==c
                 qdrawRect(painter,coords1[[1]][i],coords1[[2]][i],coords2[[1]][i],coords2[[2]][i],stroke=rgb(0,0,0,0),fill=c)
             }
+            # TODO: add NA colors here
 
             if (dbg.heatmap.limits) {
                 drawLayerLimits(painter,layer,'heatmap','green')
