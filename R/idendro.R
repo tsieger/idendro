@@ -146,7 +146,11 @@ idendro<-structure(function# Interactive Dendrogram
     ## disregarding the current cluster selection.
 
     heatmapColors=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000")), ##<< heatmap
-    ## color map scheme
+    ## color map scheme. It is represented by a function taking a
+    ## single argument, the number of colors in heatmap (see the
+    ## `heatmapColorCount' argument), and returning colors to be
+    ## used in heatmap.  For example, to enable gray heatmap color
+    ## scheme, use `heatmapColors = gray.colors'.
 
     heatmapColorCount=10, ##<< the number of colors used by the heatmap,
     ## picked (interpolated) from 'heatmapColors'.
