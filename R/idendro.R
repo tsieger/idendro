@@ -275,7 +275,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     n<-length(h$height)+1
-    if (nrow(x)!=n) {
+    if (!is.null(x) && nrow(x)!=n) {
         stop(paste('Clustering (of ',n,' objects) does not fit data (',nrow(x),' rows).',sep=''))
     }
 
