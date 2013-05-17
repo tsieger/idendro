@@ -294,7 +294,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     # scale heatmap
-    if (doScaleHeatmap) {
+    if (heatmapEnabled && doScaleHeatmap) {
         for (i in 1:ncol(x)) {
             tmp<-x[,i]
             tmp.mn<-min(tmp,na.rm=TRUE)
