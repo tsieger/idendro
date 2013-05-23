@@ -425,8 +425,13 @@ idendro<-structure(function# Interactive Dendrogram
     updateClustersOnChange<-function(.sharedEnv,qx,guiWindow) {
         df<-.sharedEnv$df
         qupdate(.sharedEnv$dendroLayer)
+        # update both .color and .inCurrentCluster before notifying listeners,
+        # thus pause notifications ...
+        pause(qx) 
         qx<-colorizeLeafs(qx,df,params)
         setCurrentClusterInQx(qx,df)
+        # and unpause once both the changes have been made
+        unpause(qx)
         guiWindow$updateClusterInfos()
         guiWindow$update()
         if (.sharedEnv$params$heatmapSmoothing=='cluster') {
