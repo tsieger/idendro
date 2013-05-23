@@ -209,7 +209,7 @@ idendro<-structure(function# Interactive Dendrogram
     # general debug
     dbg<-0
     # debugs controlling individual features,
-    # the hugher the value, the finer the debugs
+    # the higher the value, the finer the debugs
     dbg.qupdate<-0*dbg
     dbg.args<-01*dbg
     dbg.mouse<-0*dbg
