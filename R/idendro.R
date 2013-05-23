@@ -406,14 +406,15 @@ idendro<-structure(function# Interactive Dendrogram
     }
     qx<-colorizeLeafs(qx,df,params)
 
-    # Mark observations belonging to the current cluster in the `qx' mutable data frame.
+    # Mark observations belonging to the current cluster in the `qx'
+    # mutable data frame and set `qx' into `df'.
     setCurrentClusterInQx<-function(qx,df) {
         if (!is.null(qx)) {
             qx$.inCurrentCluster<-df$leafColorIdxs==df$currentCluster
+            df$qx<-qx
         }
-        qx
     }
-    qx<-setCurrentClusterInQx(qx,df)
+    setCurrentClusterInQx(qx,df)
 
     # Determine color for cluster of given ID (starting at 1).
     clusterColor<-function(id) {
@@ -424,7 +425,8 @@ idendro<-structure(function# Interactive Dendrogram
     updateClustersOnChange<-function(.sharedEnv,qx,guiWindow) {
         df<-.sharedEnv$df
         qupdate(.sharedEnv$dendroLayer)
-        df$qx<-colorizeLeafs(qx,df,params)
+        qx<-colorizeLeafs(qx,df,params)
+        setCurrentClusterInQx(qx,df)
         guiWindow$updateClusterInfos()
         guiWindow$update()
         if (.sharedEnv$params$heatmapSmoothing=='cluster') {
@@ -943,9 +945,7 @@ idendro<-structure(function# Interactive Dendrogram
             df<-selectCluster(event$pos())
         }
         .sharedEnv$df<-clusterSelectorImpl(layer, event)
-        df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
-        df$qx<-setCurrentClusterInQx(qx,df)
-        .sharedEnv$df<-df
+        .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
     }
 
     # Make GW to lie within given GW rectangle.
@@ -1605,7 +1605,7 @@ idendro<-structure(function# Interactive Dendrogram
                 df<-attr(scene,'.sharedEnv')$df
                 if (df$currentCluster!=i) {
                     df$currentCluster<-i
-                    df$qx<-setCurrentClusterInQx(qx,df)
+                    setCurrentClusterInQx(qx,df)
                     attr(scene,'.sharedEnv')$df<-df
                 }
             },i)
