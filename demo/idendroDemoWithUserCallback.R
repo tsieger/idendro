@@ -23,8 +23,7 @@ qx<-idendro(hx,qx)
 
 # bind a listener to changes to cluster assignment and current cluster setting
 qx.listener <- add_listener(qx, function(i, j) {
-    idx = which(j == c('.cluster','.inCurrentCluster'))
-    if (length(idx) > 0) {
+    if ('.inCurrentCluster' %in% j) {
         cat('qx listener: current cluster changed\n')
         print(qx)
         userCallbackWindow$updateClusterInfo(qx)
