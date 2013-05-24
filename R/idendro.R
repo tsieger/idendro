@@ -86,12 +86,14 @@ idendro<-structure(function# Interactive Dendrogram
 ##
 ##
 (
-    h, ##<< an object of class 'stats::hclust' describing a clustering.
+    h, ##<< an object of class 'stats::hclust' (or other class
+    ## convertable to class 'hclust' by the 'as.hclust' function)
+    ## describing a hierarchical clustering.
     ## If _inversions_ in heights (see 'hclust') is detected,
     ## the heights get fixed in a simple naive way by preserving
     ## non-negative relative differences in the heights, but changing
     ## negative differences to zero. Using clustering with monotone
-    ## distance measure should be considered.
+    ## distance measure should be considered in that case.
 
     qx=NULL,##<< a mutaframe holding observations tha were clustered
     ## giving rise to 'h', with hidden columns for interaction, as created
@@ -239,6 +241,10 @@ idendro<-structure(function# Interactive Dendrogram
     if (dbg.args) printVar(doScaleHeatmap)
     if (dbg.args) printVar(brushedmapEnabled)
     if (dbg.args) printVar(observationAnnotationEnabled)
+
+    if (!inherits(h,'hclust')) {
+        h<-as.hclust(h)
+    }
 
     if (!is.null(doSmoothHeatmap)) {
         warning('argument `doSmoothHeatmap\' is deprecated (and ignored)')
