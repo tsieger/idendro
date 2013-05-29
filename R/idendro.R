@@ -246,6 +246,13 @@ idendro<-structure(function# Interactive Dendrogram
         h<-as.hclust(h)
     }
 
+    if (inherits(qx,'dist')) {
+        stop('\'qx\' argument of invalid type of class \'dist\'')
+    }
+    if (inherits(x,'dist')) {
+        stop('\'x\' argument of invalid type of class \'dist\'')
+    }
+
     if (!is.null(doSmoothHeatmap)) {
         warning('argument `doSmoothHeatmap\' is deprecated (and ignored)')
     }
@@ -325,7 +332,6 @@ idendro<-structure(function# Interactive Dendrogram
     mouseMiddleButtonPressed<-FALSE
     mouseMiddleButtonPressPos<-NULL
     axisCut<-NA
-
 
     df<-prepareDendro(h,x,dbg.dendro)
     # initialize clusters from leaf colors, if supplied
