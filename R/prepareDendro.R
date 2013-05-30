@@ -37,11 +37,18 @@ prepareDendro<-function
 
     if (dbg) cat('Computing parents...\n')
     parents<-rep(NA,clusterCount)
-    for (i in clusterCount:1) {
-        #printWithName(i)
-        #printWithName(pmax(0,h$merge[i,]))
-        parents[pmax(0,h$merge[i,])]<-i
-    }
+    # indices of non-trivial subclusters (having more than one meber):
+    idx<-h$merge>0
+    # h$merge consists of two columns representing merged subclusters.
+    # The id's of such subclusters are 1..clusterCount in each column,
+    # thus the id's are in the form of
+    #   cbind(1..clusterCount,1..clusterCount)
+    # which is equal to
+    #   rep(1:clusterCount,2)
+    # Parents of subcluster h$merge[i,j] is 'i', thus parents of
+    # h$merge are rep(1:clusterCount,2) and parents of non-trivial
+    # subclusters are rep(1:clusterCount,2)[idx]:
+    parents[h$merge[idx]]<-rep(1:clusterCount,2)[idx]
     if (dbg>1) printVar(parents)
 
     if (dbg) cat('Computing offsets...\n')
