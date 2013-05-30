@@ -27,29 +27,22 @@ prepareDendro<-function
     if (dbg) printVar(n)
     if (dbg) printVar(clusterCount)
 
-    if (dbg) cat('Computing memberCounts...\n')
-    memberCounts<-matrix(NA,clusterCount,2)
+    if (dbg) cat('Computing memberCount...\n')
+    # memberCount holds the number of elements in clusters, it
+    # spans the range of elements in h$merge ranging from -n to n-1,
+    # thus:
+    # - memberCount [1..n] (corresponding to -n..-1)
+    #       - holds 1 (trivial clusters of size 1)
+    # - memberCount [n+1] (corresponding to 0)
+    #       - holds NA (undefined, there is no cluster of ID 0)
+    # - memberCount [n+1+(1..clusterCount)] (corresponding to
+    #       1..clusterCount 0)
+    #       - holds the number of observations in non-trivial clusters
+    memberCount<-c(rep(1,n),NA,rep(NA,clusterCount))
     for (i in 1:clusterCount) {
-        memberCounts[i,1]<-ifelse(h$merge[i,1]<0,1,sum(memberCounts[h$merge[i,1],]))
-        memberCounts[i,2]<-ifelse(h$merge[i,2]<0,1,sum(memberCounts[h$merge[i,2],]))
+        memberCount[n+1+i]<-memberCount[n+1+h$merge[i,1]]+memberCount[n+1+h$merge[i,2]]
     }
-    if (dbg>1) printVar(memberCounts)
-
-    if (dbg) cat('Computing parents...\n')
-    parents<-rep(NA,clusterCount)
-    # indices of non-trivial subclusters (having more than one meber):
-    idx<-h$merge>0
-    # h$merge consists of two columns representing merged subclusters.
-    # The id's of such subclusters are 1..clusterCount in each column,
-    # thus the id's are in the form of
-    #   cbind(1..clusterCount,1..clusterCount)
-    # which is equal to
-    #   rep(1:clusterCount,2)
-    # Parents of subcluster h$merge[i,j] is 'i', thus parents of
-    # h$merge are rep(1:clusterCount,2) and parents of non-trivial
-    # subclusters are rep(1:clusterCount,2)[idx]:
-    parents[h$merge[idx]]<-rep(1:clusterCount,2)[idx]
-    if (dbg>1) printVar(parents)
+    if (dbg>1) printVar(memberCount)
 
     if (dbg) cat('Computing offsets...\n')
     clusterOffsets<-rep(NA,clusterCount)
@@ -67,18 +60,19 @@ prepareDendro<-function
         # upper branch offset is dictated by the sum of parent branch
         # offset and the width of the lower branch
         if (c2>0) {
-            clusterOffsets[c2]<-clusterOffsets[i]+ifelse(c1>0,sum(memberCounts[c1,]),1)
+            clusterOffsets[c2]<-clusterOffsets[i]+memberCount[n+1+c1]
         } else {
-            leafOffsets[n+1+c2]<-clusterOffsets[i]+ifelse(c1>0,sum(memberCounts[c1,]),1)
+            leafOffsets[n+1+c2]<-clusterOffsets[i]+memberCount[n+1+c1]
         }
     }
-    offsets<-c(leafOffsets,NA,clusterOffsets)
+    rm(memberCount)
     if (dbg>1) printVar(clusterOffsets)
+    rm(clusterOffsets)
     if (dbg>1) printVar(leafOffsets)
-    if (dbg>1) printVar(offsets)
 
     if (dbg) cat('Computing yPos...\n')
     yPos<-c(1+leafOffsets,NA,rep(NA,clusterCount))
+    rm(leafOffsets)
     for (i in 1:clusterCount) {
         yPos[n+1+i]<-mean(yPos[n+1+h$merge[i,]])
     }
