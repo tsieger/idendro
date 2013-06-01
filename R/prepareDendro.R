@@ -44,19 +44,38 @@ prepareDendro<-function
     }
     if (dbg>1) printVar(memberCount)
 
+    if (dbg) cat('Computing prototypes...\n')
+    # prototypes are single elementary observations selected from each
+    # cluster; the purpose of protoypes is to ease determinating the
+    # order of clusters in `h$order'
+    prototypes<-c(n:1,NA,rep(NA,clusterCount))
+    for (i in 1:clusterCount) {
+        prototypes[n+1+i]<-prototypes[n+1+h$merge[i,1]]
+    }
+    if (dbg>1) printVar(prototypes)
+
     if (dbg) cat('Computing offsets...\n')
     clusterOffsets<-rep(NA,clusterCount)
     clusterOffsets[clusterCount]<-0
     leafOffsets<-rep(NA,n)
     for (i in clusterCount:1) {
-        c1<-h$merge[i,1]
+        # determine whether members of h$merge[i,1] or h$merge[i,2]
+        # come first in h$order
+        if (h$order[prototypes[n+1+h$merge[i,1]]] < h$order[prototypes[n+1+h$merge[i,2]]]) {
+            # stack h$merge[i,1] first
+            c1<-h$merge[i,1]
+            c2<-h$merge[i,2]
+        } else {
+            # stack h$merge[i,2] first
+            c1<-h$merge[i,2]
+            c2<-h$merge[i,1]
+        }
         # lower branch offset is dictated by the parent branch
         if (c1>0) {
             clusterOffsets[c1]<-clusterOffsets[i]
         } else {
             leafOffsets[n+1+c1]<-clusterOffsets[i]
         }
-        c2<-h$merge[i,2]
         # upper branch offset is dictated by the sum of parent branch
         # offset and the width of the lower branch
         if (c2>0) {
@@ -78,7 +97,8 @@ prepareDendro<-function
     }
     if (dbg>1) printVar(yPos)
 
-    leafOrder<-order(computeLeafOrder(h$merge))
+    #leafOrder<-order(computeLeafOrder(h$merge))
+    leafOrder<-h$order
 
     if (dbg) cat('Computing segments...\n')
     x1s<-x2s<-y1s<-y2s<-rep(NA,3*clusterCount)
