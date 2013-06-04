@@ -822,8 +822,29 @@ idendro<-structure(function# Interactive Dendrogram
             if (!.sharedEnv$observationAnnotationLayerSized) {
                 # resize observationAnnotationLayer such that dim annotations fit in nicely
                 x0<-layer$mapToScene(0,0)$x()
-                xs<-apply(as.array(df$observationLabels),1,function(x)layer$mapToScene(qstrWidth(painter,x),qstrHeight(painter,x))$x())
-                layout$setColumnMinimumWidth(3,max(xs)-x0)
+                # determine width of observatrion annotations; the
+                # problem is that the width depends on the font used
+                # and cen be determined by calling qstrWidth() only;
+                # however, this call is quite slow, so we will not call
+                # qstrWidth() for all annotations if the number of
+                # annotations is high, but only for few of them -
+                # those potentially long - i.e. for long character
+                # strings
+                if (n>200) {
+                    # select a few long observation labels
+                    lens<-sapply(df$observationLabels,nchar)
+                    if (sum(lens==max(lens))>10) {
+                        len.threshold<-max(lens)
+                    } else {
+                        len.threshold<-floor(quantile(lens,.9))
+                    }
+                    tmp<-df$observationLabels[sample(which(lens>=len.threshold),100)]
+                } else {
+                    # use all observation labels
+                    tmp<-df$observationLabels
+                }
+                xs<-sapply(tmp,function(x)layer$mapToScene(qstrWidth(painter,x),NA)$x())
+                layout$setColumnMinimumWidth(3,max(xs)-x0+2)
                 .sharedEnv$observationAnnotationLayerSized<-TRUE
                 if (dbg.heatmap) cat('observationAnnotationLayer sized\n')
             }
