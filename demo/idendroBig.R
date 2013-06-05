@@ -1,5 +1,5 @@
-## Demo showing `idendro' bidirectional integration with
-## `cranvas::qscatter' plot using "big data" (5000 observations).
+## Demo of dendrogram + heat map integrated with cranvas scatter plot
+## using "big data" (5000 observations).
 ##
 
 require(cranvas)

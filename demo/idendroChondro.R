@@ -1,5 +1,5 @@
-## Demo showing `idendro' using spectroscopy data, with cranvas scatter
-## plot and parallel coordinate plots integrated.
+## Visualization of spectroscopy data in dendrogram and heat map with
+## cranvas scatter plot and parallel coordinate plot integrated.
 ##
 
 require (hyperSpec) # chondro data

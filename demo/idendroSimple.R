@@ -1,4 +1,4 @@
-## Simple demo showing how `idendro' visualizes a dendrogram.
+## Simple dendrogram demo.
 ##
 
 # generate data in feature space

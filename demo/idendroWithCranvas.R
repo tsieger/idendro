@@ -1,5 +1,5 @@
-## Demo showing `idendro' dendrogram + heat map plots with
-## `cranvas::qscatter' plot integrated.
+## Demo of dendrogram + heat map plots with cranvas scatter plot
+## integrated.
 ##
 
 require(cranvas)

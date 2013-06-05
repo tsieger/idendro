@@ -1,4 +1,4 @@
-## Simple demo showing how `idendro' visualizes a dendrogram.
+## Simple dendrogram demo.
 ##
 
 warning('`idendroDemo\' deprecated. Use `idendro\' demo instead.')

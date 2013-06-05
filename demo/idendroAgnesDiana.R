@@ -1,5 +1,5 @@
-## Simple demo showing how `idendro' can be used to visualize the
-## result of `cluster::agnes' or `cluster::diana'.
+## Simple visualization of the result of `cluster::agnes' and
+## `cluster::diana'.
 ##
 
 require(cluster)

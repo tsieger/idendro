@@ -1,4 +1,4 @@
-## Demo showing `idendro' dendrogram + heat map plots.
+## Dendrogram + heat map demo.
 ##
 
 # generate data in feature space
