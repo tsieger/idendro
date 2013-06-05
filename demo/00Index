@@ -8,3 +8,6 @@ idendroAnnotation       dendrogram + heat map with long annotations
 idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
 idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot on spectroscopy data
 idendroTour             dendrogram projecting to a tour plot 
+
+idendroDemo             deprecated, see idendroSimple
+idendroTourDemo         deprecated, see idendroTour
