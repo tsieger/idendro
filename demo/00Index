@@ -1,8 +1,10 @@
-idendroDemo                 dendrogram demo
-idendroHeatmapDemo          dendrogram+heatmap demo
-idendroAnnotationDemo       dendrogram with long annotations
-idendroBigDemo              large dendrogram demo
-idendroCranvasDemo          dendrogram integrated with cranvas
-idendroDemoWithUserCallback an application responding to interactive dendrogram
-idendroHeatmapCranvasDemo   dendrogram+heatmap integrated with cranvas
-idendroBigCranvasDemo       large dendrogram + heatmap + cranvas demo
+idendro                 dendrogram + heat map demo
+idendroSimple           dendrogram demo
+idendroWithCranvas      dendrogram + heat map + scatter plot demo
+idendroBig              dendrogram + heat map + scatter plot demo using big data
+idendroWithUserCallback user code responding to interactive dendrogram changes demo
+idendroDendSer          dendrogram optimization using `DendSer::dser'
+idendroAnnotation       dendrogram + heat map with long annotations
+idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
+idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot on spectroscopy data
+idendroTour             dendrogram projecting to a tour plot 

@@ -1,5 +1,5 @@
-## Demo showing `idendro' bidirectional communication between idendro
-## and cranvas qscatter plot.
+## Demo showing `idendro' dendrogram + heat map plots with
+## `cranvas::qscatter' plot integrated.
 ##
 
 require(cranvas)
