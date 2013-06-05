@@ -4,17 +4,17 @@
 
 require(cluster)
 
-# generate data in feature space
-n<-10
-x<-data.frame(x1=c(rnorm(n,-2),rnorm(n,2)),x2=c(rnorm(n,-2),rnorm(n,2)))
-rownames(x)<-1:(2*n)
+
+data(iris)
+
+dx<-dist(iris[, 1:4])
 
 # perform hierarchical clustering using `agnes'
-hx.agnes<-agnes(x)
+hx.agnes<-agnes(dx)
 # visualize clusters
-idendro(hx.agnes,x)
+idendro(hx.agnes,iris)
 
 # perform hierarchical clustering using `diana'
-hx.diana<-diana(x)
+hx.diana<-diana(dx)
 # visualize clusters
-idendro(hx.diana,x)
+idendro(hx.diana,iris)

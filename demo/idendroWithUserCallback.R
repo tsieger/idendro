@@ -2,20 +2,17 @@
 ## interactively to changes made to `idendro' dendrogram and GUI.
 ##
 
-# generate data in feature space
-n<-10
-x<-data.frame(x1=c(rnorm(n,-1),rnorm(n,1)),x2=c(rnorm(n,-1),rnorm(n,1)))
-rownames(x)<-1:(2*n)
+data(iris)
 
 # compute pairwise distances
-dx<-dist(x)
+dx<-dist(iris[, 1:4])
 
 # perform hierarchical clustering
 hx<-hclust(dx)
 
 # prepare mutable data frame enabling to communicate between
 # idendro and user callback
-qx<-qdata(x)
+qx<-qdata(iris)
 
 # visualize clusters, qx mutaframe enriched with `.cluster'
 # and `.inCurrentCluster' returned
@@ -53,10 +50,10 @@ qsetClass("UserCallbackWindow", Qt$QWidget, function(parent = NULL) {
 
     qsetMethod("updateClusterInfo", UserCallbackWindow, function(qx) {
         this$label$setText(sprintf(
-            'The current cluster consists of %d observation(s).\nThe mean x1 is %.3f, the mean x2 is %.3f.',
+            'The current cluster consists of %d observation(s).\nThe mean sepal length is %.3f, the mean sepal width is %.3f.',
             sum(qx$.inCurrentCluster),
-            mean(qx$x1[qx$.inCurrentCluster]),
-            mean(qx$x2[qx$.inCurrentCluster])))
+            mean(qx$Sepal.Length[qx$.inCurrentCluster]),
+            mean(qx$Sepal.Width[qx$.inCurrentCluster])))
     })
 })
 
