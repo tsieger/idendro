@@ -1,5 +1,5 @@
-## Demo showing `idendro' bidirectional communication between idendro
-## and cranvas qscatter plot. Based on big data.
+## Demo showing `idendro' bidirectional integration with
+## `cranvas::qscatter' plot using "big data" (5000 observations).
 ##
 
 require(cranvas)
