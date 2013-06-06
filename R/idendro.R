@@ -1825,12 +1825,10 @@ idendro<-structure(function# Interactive Dendrogram
     ### be restored. This feature can be regarded as a simple means of
     ### cluster selection persistency.
 },ex=function() {
-    # data to be clustered
-    x<-data.frame(x1=1:10,x2=seq(10,1,-1))
-    # clustered data (dendrogram)
-    h<-hclust(dist(x))
-    idendro(h,x)
+    data(iris)
+    hx <- hclust(dist(iris[, 1:4]))
+    idendro(hx, iris)
 
-    # for more examples please see demos
+    # see demos for more examples
 })
 
