@@ -10,5 +10,5 @@ idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
 idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot of spectroscopy data
 idendroTour             dendrogram projecting to a tour plot 
 
-idendroDemo             deprecated, see idendroSimple
-idendroTourDemo         deprecated, see idendroTour
+idendroDemo             deprecated, see the `idendro' demo
+idendroTourDemo         deprecated, see the `idendroTour' demo
