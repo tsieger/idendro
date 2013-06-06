@@ -12,12 +12,11 @@ prepareDendro<-function
 
     dbg = 0 ##<< debug verbosity level
 ) {
-    attach(h)
 
     df<-NULL
     df$h<-h
     df$x<-x
-    df$clusterCount<-clusterCount<-length(height)
+    df$clusterCount<-clusterCount<-length(h$height)
     df$n<-n<-df$clusterCount+1
     if (is.null(x)) {
         df$k<-0
@@ -41,7 +40,7 @@ prepareDendro<-function
     #       - holds the number of observations in non-trivial clusters
     memberCount<-c(rep(1,n),NA,rep(NA,clusterCount))
     for (i in 1:clusterCount) {
-        memberCount[n+1+i]<-memberCount[n+1+merge[i,1]]+memberCount[n+1+merge[i,2]]
+        memberCount[n+1+i]<-memberCount[n+1+h$merge[i,1]]+memberCount[n+1+h$merge[i,2]]
     }
     if (dbg>1) printVar(memberCount)
 
@@ -51,7 +50,7 @@ prepareDendro<-function
     # order of clusters in `h$order'
     prototypes<-c(n:1,NA,rep(NA,clusterCount))
     for (i in 1:clusterCount) {
-        prototypes[n+1+i]<-prototypes[n+1+merge[i,1]]
+        prototypes[n+1+i]<-prototypes[n+1+h$merge[i,1]]
     }
     if (dbg>1) printVar(prototypes)
 
@@ -62,14 +61,14 @@ prepareDendro<-function
     for (i in clusterCount:1) {
         # determine whether members of h$merge[i,1] or h$merge[i,2]
         # come first in h$order
-        if (order[prototypes[n+1+merge[i,1]]] < order[prototypes[n+1+merge[i,2]]]) {
+        if (h$order[prototypes[n+1+h$merge[i,1]]] < h$order[prototypes[n+1+h$merge[i,2]]]) {
             # stack h$merge[i,1] first
-            c1<-merge[i,1]
-            c2<-merge[i,2]
+            c1<-h$merge[i,1]
+            c2<-h$merge[i,2]
         } else {
             # stack h$merge[i,2] first
-            c1<-merge[i,2]
-            c2<-merge[i,1]
+            c1<-h$merge[i,2]
+            c2<-h$merge[i,1]
         }
         # lower branch offset is dictated by the parent branch
         if (c1>0) {
@@ -94,31 +93,30 @@ prepareDendro<-function
     yPos<-c(1+leafOffsets,NA,rep(NA,clusterCount))
     rm(leafOffsets)
     for (i in 1:clusterCount) {
-        yPos[n+1+i]<-mean(yPos[n+1+merge[i,]])
+        yPos[n+1+i]<-mean(yPos[n+1+h$merge[i,]])
     }
     if (dbg>1) printVar(yPos)
 
-    #leafOrder<-order(computeLeafOrder(merge))
-    leafOrder<-order
+    #leafOrder<-order(computeLeafOrder(h$merge))
+    leafOrder<-h$order
 
     if (dbg) cat('Computing segments...\n')
     x1s<-x2s<-y1s<-y2s<-rep(NA,3*clusterCount)
     ii<-0
     branchCenterOffsets<-rep(NA,clusterCount)
     # heights of both trivial clusters of size 1 and non-trivial clusters
-    heights<-c(rep(0,n),NA,height)
-    topClusterHeight<-height[clusterCount]
+    heights<-c(rep(0,n),NA,h$height)
     for (i in 1:clusterCount) {
-        x0<-height[i]
-        x1<-heights[n+1+merge[i,1]]
-        x2<-heights[n+1+merge[i,2]]
+        x0<-h$height[i]
+        x1<-heights[n+1+h$merge[i,1]]
+        x2<-heights[n+1+h$merge[i,2]]
         # mirror Xs: x=0 corresponding to the top-most cluster, x>0 to leafs
-        x0<-topClusterHeight-x0
-        x1<-topClusterHeight-x1
-        x2<-topClusterHeight-x2
+        x0<-h$height[clusterCount]-x0
+        x1<-h$height[clusterCount]-x1
+        x2<-h$height[clusterCount]-x2
 
-        y1<-yPos[n+1+merge[i,1]]
-        y2<-yPos[n+1+merge[i,2]]
+        y1<-yPos[n+1+h$merge[i,1]]
+        y2<-yPos[n+1+h$merge[i,2]]
         branchCenterOffsets[i]<-mean(c(y1,y2))
         # x1,y1 -> x0,y1
         # x0,y1 -> x0,y2
@@ -160,7 +158,6 @@ prepareDendro<-function
     df$xOrderedSmoothed<-df$xOrdered
     df$elemClusterCount<-df$n
 
-    detach(h)
     return(df)
     ### shared data frame
 }
