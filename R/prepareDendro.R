@@ -106,14 +106,15 @@ prepareDendro<-function
     branchCenterOffsets<-rep(NA,clusterCount)
     # heights of both trivial clusters of size 1 and non-trivial clusters
     heights<-c(rep(0,n),NA,h$height)
+    topClusterHeight<-h$height[clusterCount]
     for (i in 1:clusterCount) {
         x0<-h$height[i]
         x1<-heights[n+1+h$merge[i,1]]
         x2<-heights[n+1+h$merge[i,2]]
         # mirror Xs: x=0 corresponding to the top-most cluster, x>0 to leafs
-        x0<-h$height[clusterCount]-x0
-        x1<-h$height[clusterCount]-x1
-        x2<-h$height[clusterCount]-x2
+        x0<-topClusterHeight-x0
+        x1<-topClusterHeight-x1
+        x2<-topClusterHeight-x2
 
         y1<-yPos[n+1+h$merge[i,1]]
         y2<-yPos[n+1+h$merge[i,2]]
