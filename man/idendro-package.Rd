@@ -9,7 +9,7 @@ with other interactive plots.}
 \tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
 Title: \tab Interactive dendrogram\cr
-Version: \tab 1.2.1\cr
+Version: \tab 1.3\cr
 Date: \tab 2012-11-18\cr
 Author: \tab Tomas Sieger\cr
 Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, scales\cr
