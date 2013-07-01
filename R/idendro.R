@@ -1,39 +1,42 @@
 idendro<-structure(function# Interactive Dendrogram
 ###
-### 'idendro' is a plot enabling visualization and interactive
-### inspection of a dendrogram, with a heatmap attached to it,
-### optionally.
-### Clusters anywhere in the dendrogram hierarchy can be selected.
-### The dendrogram can be zoomed and panned.
-### 'idendro' can be integrated with other plots and tools
-### by communicating over a shared mutable data frames (mutaframes).
-### 'idendro' can be used to display quite large dendrograms (tens
+### 'idendro' is a plot enabling users to visualize a dendrogram and
+### inspect it interactively: to select and color clusters anywhere in
+### the dendrogram, to zoom and pan the dendrogram, and to visualize
+### the clustered data not only in a built-in heat map, but also in any
+### interactive plot implemented in the 'cranvas' package.
+### The integration with 'cranvas' (but also with the user's code) is
+### made possible by communicating over mutable data frames
+### (mutaframes) from the 'plumbr' package.
+### 'idendro' can be used to inspect quite large dendrograms (tens
 ### of thousands of observations, at least).
 ###
 ##details<<
 ## 'idendro' displays an interactive dendrogram enriched, optionally,
-## with a heatmap and/or a brushedmap.
+## with a heat map and/or a brushed map.
 ##
-## The dendrogram depicts the result of a hierarchical cluster
-## analysis on a set of observations. There is an axis drawn by the
-## side of the dendrogram displaying the "height" of clusters. 
+## The dendrogram represents the result of a hierarchical cluster
+## analysis performed on a set of observations (see e.g. 'hclust').
+## There is an axis drawn below the dendrogram displaying the "height"
+## of the clusters in the dendrogram.
 ##
-## The heatmap visualizes the observations living in k-dimensional
-## space by mapping their values onto a color scale and displaying
-## them as a row of 'k' colored rectangles.
+## The heat map visualizes the observations living in k-dimensional
+## feature space by mapping their features onto a color scale and
+## displaying them as rows of 'k' colored rectangles.
 ##
-## The brushedmap indicates which observations are currently
-## being selected by some external plot/tool 'idendro' is integrated
-## with. Technically speaking, the current selection is determined by
-## a hidden column in the 'qx' mutable data frame being changed by
-## the external plot/tool. 'idendro' listens to changes to this column.
+## The brushed map indicates which observations are currently
+## selected by some external plot/tool 'idendro' is integrated
+## with (e.g. a cranvas plot). Technically speaking, the current
+## selection is determined by the value of the '.brushed' metadata
+## column in the 'qx' mutable data frame. 'idendro' listens to changes
+## made to the '.brushed' column by the external plot/tool.
 ##
-## The dendrogram can be zoomed and panned. To zoom in to a
+## The dendrogram can be zoomed and panned. To zoom in a
 ## specific region, right click and drag in the dendrogram.
 ## Mouse wheel can also be used to zoom in and out (the amount of zoom
-## can be controlled by 'zoomFactor'). To pan a zoomed dendrogram,
-## middle click and drag the mouse. Zooming and panning history is
-## available (see 'GUI').
+## can be controlled by the 'zoomFactor' argument). To pan a zoomed
+## dendrogram, middle click and drag the mouse. Zooming and panning
+## history is available (see 'GUI').
 ##
 ## User can select clusters manually one by one (by clicking
 ## at individual clusters in the dendrogram), or automatically by
@@ -41,53 +44,68 @@ idendro<-structure(function# Interactive Dendrogram
 ## dendrogram, navigate the mouse close to the dendrogram axis
 ## (a dashed line will appear across the dendrogram at a specified
 ## height), and left click. Clusters just beneath the cutting
-## height will get selected, replacing the clusters being currently
+## height will get selected, replacing the clusters currently
 ## selected. Selection history is available (see 'GUI').
 ##
-##   \emph{Graphical User interface (GUI):}
+##   \emph{Graphic User interface (GUI):}
 ##
-## Besides the dendrogram window, there is a window offering a few
-## GUI controls. In the top part of the GUI window come
-## cluster-specific controls and info panels arranged in rows.
-## (The number of rows is determined by 'maxClusterCount')
-## In each row, from left to right,
-## there is the current cluster indicator, the cluster number and
-## color code (determined by 'clusterColors'), and
-## cluster-specific statistics: the total number (and ratio) of
-## observations in the specific cluster out of the total number
-## of observations in the data set, and the number (and ratio) of
-## observations in the cluster out of the observations brushed
-## externally. At any time, exactly one cluster is being the current
-## cluster. Manual cluster selection (re)defines which cluster (as
-## appearing in the dendrogram) is pointed to by the current cluster.
+## In the left part of the dendrogram window, there is a simple GUI.
+## In the top part of the GUI come cluster-specific controls and info
+## panels arranged in rows. (The number of rows is determined by the
+## 'maxClusterCount' argument.)
+## In each row, there is the current cluster selector (a radio button
+## decorated with a cluster ID and a color code (determined by the
+## 'clusterColors' argument)), and cluster-specific statistics: the
+## total number (and the ratio) of the observations in that specific
+## cluster out of the total number of observations, and the number
+## (and the ratio) of the observations in that cluster out of the
+## observations brushed.
+## The current cluster determines which color and ID will be
+## associated with a cluster selected in the dendrogram,
+## At any time, exactly one cluster is selected as the current
+## cluster. 
 ## The observations forming the current cluster are indicated by
 ## the '.inCurrentCluster' column in the 'qx' mutaframe, which can be
 ## used by external applications to display the current
 ## cluster-specific information (see 'idendroDemoWithUserCallback').
+##
 ## At the bottom of the GUI window, there are buttons controling
-## zooming and cluster selection:
+## zooming, cluster selection, and heat map smoothing:
 ##
 ## "Undo zoom" - retrieves the previous zoom region from history
 ##
-## "Full view" - zooms dendrogram out maximally
+## "Full view" - zooms the dendrogram out maximally
 ##
 ## "Undo selection" - retrieves the previous cluster selection from
 ##     history
 ##
-## "Unselect" - unselects the current cluster (makes the current
-##     cluster to point to no cluster in the dendrogram, so it
-##     decolorizes dendrogram branches associated with
-##     the current cluster)
+## "Unselect" - unselects the current cluster in the dendrogram
 ##
-## "Unselect all" - unselects all clusters (decolorizes all the
-##     clusters in the dendrogram)
+## "Unselect all" - unselects all clusters
+##
+## The "heat map smoothing" mode can be set to one of:
+##
+##   "none" - the heat map gets never smoothed, it displays the
+##      features of all the individual observations
+##
+##   "cluster" - the heat map displays the average features for the 
+##       currently selected clusters
+##
+##   "zoom" - the heat map displays the average feature for each
+##      elementary (i.e. the finest) cluster seen in the dendrogram
+##      currently. When the dendrogram is zoomed out maximally,
+##      the features of all the elementary clusters (i.e. the
+##      individual observations) are displayed. When the user zooms in
+##      the dendrogram, such that some clusters get hidden, the
+##      features of the observations forming the hidden clusters get
+##      averaged.
 ##
 ##  "Quit"
 ##
 ##
 (
     h, ##<< an object of class 'stats::hclust' (or other class
-    ## convertable to class 'hclust' by the 'as.hclust' function)
+    ## convertible to class 'hclust' by the 'as.hclust' function)
     ## describing a hierarchical clustering.
     ## If _inversions_ in heights (see 'hclust') is detected,
     ## the heights get fixed in a simple naive way by preserving
@@ -95,10 +113,11 @@ idendro<-structure(function# Interactive Dendrogram
     ## negative differences to zero. Using clustering with monotone
     ## distance measure should be considered in that case.
 
-    qx=NULL,##<< a mutaframe holding observations tha were clustered
-    ## giving rise to 'h', with hidden columns for interaction, as created
-    ## by 'cranvas::qdata'. If 'qx' is enriched with 'idendro'-specific
-    ## hidden columns (i.e. '.cluster', '.inCurrentCluster'), the
+    qx=NULL,##<< a mutaframe holding observations that were clustered
+    ## giving rise to 'h', with metadata (special columns) for
+    ## interaction, as created by 'cranvas::qdata'.
+    ## If 'qx' is enriched with 'idendro'-specific
+    ## metadata columns (i.e. '.cluster', '.inCurrentCluster'), the
     ## initial cluster selection is based on them; otherwise there are
     ## no clusters selected initially.
     ## A regular data frame can be passed instead of a mutaframe, in
@@ -108,7 +127,7 @@ idendro<-structure(function# Interactive Dendrogram
 
     x=qx, ##<< a data frame holding observations tha were clustered
     ## giving rise to 'h'.
-    ## Heatmap will depict this data.
+    ## The heat map will depict this data.
     ## Non-numeric types will get converted to numeric using 'as.numeric'.
     ## This parameter is optional. If missing, it will be guessed
     ## from 'qx' by omitting any columns starting in '.'.
@@ -118,63 +137,64 @@ idendro<-structure(function# Interactive Dendrogram
 
     observationAnnotationEnabled=TRUE, ##<< shall the names of individual
     ## observations (rownames of 'x') be shown next to the
-    ## dendrogram/heatmap?
+    ## dendrogram/heat map?
 
     clusterColors=c('red','green','blue','yellow','magenta','cyan','darkred','darkgreen','purple','darkcyan'),##<< colors
-    ## of individual clusters selected in the dendrogram
+    ## of individual clusters
 
     unselectedClusterColor='black',##<< the color of unselected dendrogram
     ## branches
 
-    maxClusterCount=length(clusterColors), ##<< maximum number of
+    maxClusterCount=length(clusterColors), ##<< the maximum number of
     ## clusters user can select. If greater than the number of
     ## 'clusterColors', cluster colors will get recycled.
-    ## This parameter affects the size of GUI and the number of
-    ## clusters which can be selected automatically by "cutting" the
+    ## This parameter affects the size of the GUI and the number of
+    ## clusters that can be selected automatically by "cutting" the
     ## dendrogram.
 
-    heatmapEnabled=TRUE, ##<< shall the heatmap be drawn?
+    heatmapEnabled=TRUE, ##<< shall the heat map be drawn?
 
     doSmoothHeatmap=NULL,##<< (deprecated, use `heatmapSmoothing'
     ## instead)
 
-    heatmapSmoothing=c('none','cluster','zoom'),##<< heatmap smoothing mode,
+    heatmapSmoothing=c('none','cluster','zoom'),##<< heat map smoothing mode,
     ## one of
-    ## 'none' - i.e. heatmap gets never smoothed,
-    ## 'cluster' - heatmap depicts the mean data values
-    ## for the currently selected clusters,
-    ## 'zoom' - heatmap depicts the mean data values
-    ## for the clusters currently shown in the dendrogram,
-    ## disregarding the current cluster selection.
+    ## 'none' - the heat map gets never smoothed, it displays the
+    ##      features of all the individual observations
+    ## 'cluster' - the heat map depicts the average features
+    ##      for the currently selected clusters,
+    ## 'zoom' - the heat map displays the average feature for each
+    ##      elementary (i.e. the finest) cluster seen in the
+    ##      dendrogram currently.
 
-    heatmapColors=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(10), ##<< heatmap
+    heatmapColors=colorRampPalette(c("#00007F","blue","#007FFF","cyan","#7FFF7F","yellow","#FF7F00","red","#7F0000"))(10), ##<< heat map
     ## color palette represented by a list of colors, e.g.
     ## a sequential palette generated by `brewer.pal', or
     ## `colorRampPalette(.)(.)', `gray.colors(.)', or `hsv(.)'.
     ## [DEPRECATED:] Alternatively, a function that takes a single
-    ## numeric argument, the number of colors in heatmap (see
-    ## the `heatmapColorCount' argument), and returns colors to be
-    ## used in heatmap can be supplied.
-    ## WARNING: the number of colors used by heatmap can influence
-    ## the time spent drawing the heatmap significantly (for large
+    ## numeric argument, the number of heat map colors (see
+    ## the `heatmapColorCount' argument) and returns colors to be
+    ## used in heat map can be supplied.
+    ## WARNING: the number of colors used by heat map can influence
+    ## the time spent drawing the heat map significantly (for large
     ## data sets).
 
     heatmapColorCount=10, ##<< [DEPRECATED] the number of colors used
-    ## by the heatmap. This argument gets used only if the
+    ## in the heat map. This argument gets used only if the
     ## `heatmapColors' argument refers to a function that takes a
     ## single numeric argument, `n', and generates a list of `n'
-    ## colors. If `heatmapColors' refer to a function,
-    ## `heatmapColorCount' is passed to that function.
-    ## WARNING: the number of colors used by heatmap can influence
-    ## the time spent drawing the heatmap significantly (for large
+    ## colors. If `heatmapColors' refers to a function,
+    ## `heatmapColorCount' is passed as the argument to that function.
+    ## WARNING: the number of colors used by heat map can influence
+    ## the time spent drawing the heat map significantly (for large
     ## data sets).
 
-    doScaleHeatmap=TRUE, ##<< scale each heatmap column to the <0,1> range?
+    doScaleHeatmap=TRUE, ##<< scale each heat map column to the <0,1> range?
     ## (The default is TRUE.)
 
-    heatmapRelSize=.2, ##<< relative size of the heatmap - the ratio
-    ## of the heatmap width to the width of both the dendrogram and
-    ## heatmap. The default is 20%.
+    heatmapRelSize=.2, ##<< relative size of the heat map - the ratio
+    ## of the heat map width to the width of both the dendrogram and
+    ## the heat map. The default is 20%.
 
     brushedmapEnabled=!is.null(qx), ##<< shall brushed map be drawn?
 
@@ -201,7 +221,7 @@ idendro<-structure(function# Interactive Dendrogram
     ## for large data sets it slows drawing down considerably.
 
 ) {
-# TODO:
+# TODO: debugs
 
 ##seealso<<hclust, plclust, identify.hclust, rect.hclust,
 ## cutree, dendrogram, cranvas::qdata
@@ -267,7 +287,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     if (heatmapEnabled && is.null(x) && is.null(qx)) {
-        # can't draw heatmap if we have no data
+        # can't draw heat map if we have no data
         heatmapEnabled<-FALSE
     }
 
@@ -321,7 +341,7 @@ idendro<-structure(function# Interactive Dendrogram
         }
     }
 
-    # scale heatmap
+    # scale heat map
     if (heatmapEnabled && doScaleHeatmap) {
         for (i in 1:ncol(x)) {
             tmp<-x[,i]
@@ -361,7 +381,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
     if (dbg.dendro>1) printVar(df)
 
-    # initialize heatmap cutting points, so they stay constant
+    # initialize heat map cutting points, so they stay constant
     # regardless of smoothing/zoom
     if (heatmapEnabled) {
         # border points: [X0,X1), [X1,X2), ... [Xn-1, Xn]
@@ -463,13 +483,13 @@ idendro<-structure(function# Interactive Dendrogram
         df
     }
 
-    # Callback invoked when heatmap smoothing mode gets changed (via
+    # Callback invoked when heat map smoothing mode gets changed (via
     # GUI buttons).
     heatmapSmoothingChanged<-function(.sharedEnv) {
         df<-.sharedEnv$df
         switch(.sharedEnv$params$heatmapSmoothing,
             'none'={
-                # restore the original heatmap
+                # restore the original heat map
                 df$xOrderedSmoothed<-df$xOrdered
                 df$elemClusterCount<-df$n
                 },
@@ -478,7 +498,7 @@ idendro<-structure(function# Interactive Dendrogram
                 df$elemClusterCount<-df$n
                 },
             'zoom'={
-                # restore the original heatmap
+                # restore the original heat map
                 df$xOrderedSmoothed<-df$xOrdered
                 # and let heatmapPainter do the rest of work
                 }
@@ -577,7 +597,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     ##
-    ## brushedmap
+    ## brushed map
     ##
     brushedmapPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
@@ -610,7 +630,7 @@ idendro<-structure(function# Interactive Dendrogram
                 stroke=rgb(0,0,0,0),fill=qcolor('black'))
 
             # draw leafs not brushed (it is needed since zoomed
-            # dendrogram can collide with span brushedmap, so we need
+            # dendrogram can collide with span brushed map, so we need
             # to restore the background color by overdrawing
             # the dendrogram)
             i<-!qx$.brushed[df$leafOrder]
@@ -626,7 +646,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     ##
-    ## heatmap
+    ## heat map
     ##
     heatmapPainter<-function(layer,painter) {
         .sharedEnv<-attr(layer$scene(),'.sharedEnv')
@@ -657,20 +677,20 @@ idendro<-structure(function# Interactive Dendrogram
             if (dbg.heatmap.smooth) cat(paste('heatmapSmoothing mode:',.sharedEnv$params$heatmapSmoothing,'\n',sep=''))
             if (.sharedEnv$params$heatmapSmoothing=='zoom') {
                 # not all observations visible in the dendrogram,
-                # smooth heatmap to carry info about the currently
+                # smooth heat map to carry info about the currently
                 # elementary clusters in the zoomed dendro
                 ch<-cutree(df$h,h=df$h$height[df$clusterCount]-dendroZoom$g[2])
                 if (max(ch)!=df$elemClusterCount) {
-                    if (dbg.heatmap) cat('smoothing heatmap\n')
+                    if (dbg.heatmap) cat('smoothing heat map\n')
                     df$xOrderedSmoothed<-smoothHeatmap(df$xOrdered,ch[df$leafOrder],dbg.heatmap.smooth)
                     df$elemClusterCount<-max(ch)
                 }
             }
             # We need to ensure that cutting the current
-            # (perhaps smoothed) heatmap results in the same intervals
-            # as if the cut operated over the original heatmap.
+            # (perhaps smoothed) heat map results in the same intervals
+            # as if the cut operated over the original heat map.
             # We use a hack here: we add some data from the whole range
-            # of the original heatmap ("border points") to the data
+            # of the original heat map ("border points") to the data
             # being cut and remove them after cutting.
             if (dbg.heatmap.smooth>1) printWithName(df$heatmapBorderPoints)
             if (dbg.heatmap.smooth>1) printWithName(as.matrix(df$xOrderedSmoothed))
@@ -685,7 +705,7 @@ idendro<-structure(function# Interactive Dendrogram
             if (dbg.heatmap>1) printVar(colPalette)
             clusterColors<-colPalette[colIdx]
             if (dbg.heatmap>1) printVar(clusterColors)
-            # draw heatmap by colors, it is much faster compared to drawing in all colors in one single call
+            # draw heat map by colors, it is much faster compared to drawing in all colors in one single call
             #qdrawRect(painter,coords1[[1]],coords1[[2]],coords2[[1]],coords2[[2]],stroke=rgb(0,0,0,0),fill=clusterColors)
             for (c in colPalette) {
                 i<-clusterColors==c
@@ -796,7 +816,7 @@ idendro<-structure(function# Interactive Dendrogram
             qdrawText(painter,'(brushed)',coordsLabelDim[[1]],coordsLabelDim[[2]],color='black',halign='left',rot=90)
         }
         if (brushedmapEnabled) {
-            # annotate the brushedmap
+            # annotate the brushed map
             brushedmapAnnotationPainterImpl(layer,painter)
         }
     }
@@ -1133,15 +1153,15 @@ idendro<-structure(function# Interactive Dendrogram
         if (dbg.dendro.zoom) printVar(axisLayerLimits$bottom())
         axisLayer$setLimits(axisLayerLimits)
 
-        # zoom brushedmap
+        # zoom brushed map
         tmp<-brushedmapLayer$limits()
         tmp$setTop(xy[[2]][1])
         tmp$setBottom(xy[[2]][2])
         brushedmapLayer$setLimits(tmp)
 
-        # zoom heatmap
+        # zoom heat map
         if (!is.null(heatmapLayer)) {
-            # zoom heatmap
+            # zoom heat map
             if (dbg.heatmap) cat('setting heatmap limits\n')
             tmp<-heatmapLayer$limits()
             tmp$setTop(xy[[2]][1])
@@ -1248,7 +1268,7 @@ idendro<-structure(function# Interactive Dendrogram
             limits=qrect(axisLimits[1],axisLimits[3],axisLimits[2],axisLimits[4]),
             clip=FALSE)
 
-    ## brushedmap#FOLD01
+    ## brushed map#FOLD01
     ################
     #TODO: scale
     brushedmapLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=.5+df$n*c(0,1)))))
@@ -1256,7 +1276,7 @@ idendro<-structure(function# Interactive Dendrogram
     brushedmapLayer<-suppressWarnings(qlayer(scene,paintFun=brushedmapPainter,clip=FALSE,cache=TRUE,
         limits=qrect(brushedmapLimits[1],brushedmapLimits[3],brushedmapLimits[2],brushedmapLimits[4])))
 
-    ## brushedmap annotation
+    ## brushed map annotation
     brushedmapAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(g=c(0,1),w=c(0,1)))))
     brushedmapAnnotationLayer<-suppressWarnings(qlayer(scene,
         paintFun=brushedmapAnnotationPainter,
@@ -1264,7 +1284,7 @@ idendro<-structure(function# Interactive Dendrogram
                 brushedmapAnnotationLimits[2],brushedmapAnnotationLimits[4]),
         clip=FALSE,cache=TRUE))
 
-    ## heatmap#FOLD01
+    ## heat map#FOLD01
     ################
     #TODO: scale
     heatmapLimits<-unlist(gw2xy(heatmap2fig(list(
@@ -1283,7 +1303,7 @@ idendro<-structure(function# Interactive Dendrogram
     heatmapLegendLayer<-suppressWarnings(qlayer(scene,paintFun=heatmapLegendPainter,clip=FALSE,cache=TRUE,
             limits=qrect(heatmapLegendLimits[1],heatmapLegendLimits[3],heatmapLegendLimits[2],heatmapLegendLimits[4])))
 
-    ## heatmap dim annotations
+    ## heat map dim annotations
     heatmapDimAnnotationLimits<-unlist(gw2xy(heatmap2fig(list(
         g=c(0,max(1,df$k)), # the positive difference in 'g' makes
         # layers size manageable easily
@@ -1332,19 +1352,19 @@ idendro<-structure(function# Interactive Dendrogram
     dendroPreferredHeight<-300
 
     layout<-figLayer$gridLayout()
-    # heatmap dimensions annotation
+    # heat map dimensions annotation
     if (heatmapEnabled) {
         layout$setRowPreferredHeight(0,75)
     } else {
         layout$setRowMaximumHeight(0,0)
     }
-    # dendro+heatmap+brushedmap+observations annotation
+    # dendro + heat map + brushed map + observations annotation
     layout$setRowPreferredHeight(1,dendroPreferredHeight)
     # axis
     layout$setRowPreferredHeight(2,50)
-    # heatmap dimensions annotation: fixed
+    # heat map dimensions annotation: fixed
     layout$setRowStretchFactor(0,0)
-    # dendro+heatmap+brushedmap+observations annotation: stretchable
+    # dendro + heat map + brushed map + observations annotation: stretchable
     layout$setRowStretchFactor(1,1)
     # axis: fixed
     layout$setRowStretchFactor(2,0)
@@ -1355,13 +1375,13 @@ idendro<-structure(function# Interactive Dendrogram
     } else {
         layout$setColumnPreferredWidth(0,dendroPreferredWidth)
     }
-    # heatmap
+    # heat map
     if (heatmapEnabled) {
         layout$setColumnPreferredWidth(1,dendroPreferredWidth/(1-heatmapRelSize)*heatmapRelSize)
     } else {
         layout$setColumnMaximumWidth(1,0)
     }
-    # brushedmap
+    # brushed map
     if (brushedmapEnabled) {
         layout$setColumnPreferredWidth(2,25)
     } else {
@@ -1381,12 +1401,12 @@ idendro<-structure(function# Interactive Dendrogram
         layout$setColumnStretchFactor(0,1)
     }
     if (heatmapEnabled) {
-        # heatmap stretchable
+        # heat map stretchable
         layout$setColumnStretchFactor(1,10*heatmapRelSize)
     } else {
         layout$setColumnStretchFactor(1,0)
     }
-    # brushedmap: fixed size
+    # brushed map: fixed size
     layout$setColumnStretchFactor(2,0)
     # observations annotations: fixed size
     layout$setColumnStretchFactor(3,0)
@@ -1746,7 +1766,7 @@ idendro<-structure(function# Interactive Dendrogram
             }
         })
 
-        this$heatmapSmoothingLabel<-Qt$QLabel('heatmap smoothing:')
+        this$heatmapSmoothingLabel<-Qt$QLabel('heat map smoothing:')
         this$heatmapSmoothingRadioButton_none<-Qt$QRadioButton('none')
         qconnect(heatmapSmoothingRadioButton_none,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
@@ -1806,24 +1826,24 @@ idendro<-structure(function# Interactive Dendrogram
 
     return(invisible(qx))
     ### a mutaframe 'qx' (or a mutaframe created from regular data
-    ### frame 'x') enriched with dynamic (interactive) clusters
-    ### selection ('.cluster' column), and a flag determining which
-    ### observations form the current cluster ('.inCurrentCluster'
-    ###column). Observations not appearing in any cluster have 0 in the
-    ### '.cluster' column, while observations forming the 'i'-th
-    ### cluster have the value 'i' there.
-    ### The '.inCurrentCluster' column holds logical flags determining
-    ### whether given observation is a member of the current cluster.
+    ### frame 'x') enriched with dynamic metadata describing the
+    ### current cluster selection in terms of the '.cluster' and
+    ### '.inCurrentCluster' columns.
+    ### For each observation, the '.cluster' holds the ID of the cluster
+    ### that the observation is a member of (or 0, if the observation
+    ### does not belong to any cluster). Similarly, the
+    ### '.inCurrentCluster' metadata determines whether the given
+    ### observation is a member of the current cluster.
     ### The returned mutaframe can be used for bidirectional
-    ### interaction with 'idendro': external plot(s)/tool(s) can brush
-    ### some observations ('idendro' will notice it and update the
-    ### brushedmap), and also respond to any changes made to cluster
-    ### assignment and/or the current cluster selection.
+    ### live interaction with 'idendro'.
+    ## 'idendro' alters the '.color' and '.border' metadata to color
+    ### observations according to the color of the clusters they appear
+    ### in, and listens to changes being made to the '.brushed'
+    ### metadata to learn what observations are currently being brushed.
     ###
     ### Note that if the value returned is passed to a subsequent call
     ### to 'idendro', the cluster selection saved in the mutaframe will
-    ### be restored. This feature can be regarded as a simple means of
-    ### cluster selection persistency.
+    ### get restored. 
 },ex=function() {
     data(iris)
     hx <- hclust(dist(iris[, 1:4]))
