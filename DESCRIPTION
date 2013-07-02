@@ -2,14 +2,15 @@ Package: idendro
 Type: Package
 Title: Interactive dendrogram
 Version: 1.3
-Date: 2012-11-18
+Date: 2013-07-02
 Author: Tomas Sieger
 Depends: qtbase, qtpaint, cranvas, plumbr, grDevices, scales
 Suggests: DendSer
 URL: http://github.com/tsieger/idendro
 Maintainer: Tomas Sieger <tomas.sieger@seznam.cz>
-Description: Interactive dendrogram + heat map plot enabling
-    cluster selection, zooming, panning and integration
-    with other interactive plots.
-License: GPL
+Description: Interactive dendrogram that enables the user to select and
+    color clusters, to zoom and pan the dendrogram, and to visualize
+    the clustered data not only in a built-in heat map, but also in any
+    interactive plot implemented in the cranvas package.
+License: GPL-2
 LazyLoad: yes
