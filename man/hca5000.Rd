@@ -17,6 +17,7 @@ hierarchical cluster analysis performed on 'x'.
 }
 \usage{data(hca5000)}
 \examples{
+library(idendro)
 data(hca5000)
 idendro(hca5000$hx,hca5000$x,observationAnnotationEnabled=FALSE)
 }
