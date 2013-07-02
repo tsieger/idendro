@@ -54,6 +54,12 @@ prepareDendro<-function
     }
     if (dbg>1) printVar(prototypes)
 
+    # compute the order of observations in h$order
+    # (used to determine which of two observations comes first in
+    # h$order)
+    orderOfOrder<-rep(NA,n)
+    orderOfOrder[h$order]<-1:n
+
     if (dbg) cat('Computing offsets...\n')
     clusterOffsets<-rep(NA,clusterCount)
     clusterOffsets[clusterCount]<-0
@@ -61,7 +67,7 @@ prepareDendro<-function
     for (i in clusterCount:1) {
         # determine whether members of h$merge[i,1] or h$merge[i,2]
         # come first in h$order
-        if (h$order[prototypes[n+1+h$merge[i,1]]] < h$order[prototypes[n+1+h$merge[i,2]]]) {
+        if (orderOfOrder[prototypes[n+1+h$merge[i,1]]] < orderOfOrder[prototypes[n+1+h$merge[i,2]]]) {
             # stack h$merge[i,1] first
             c1<-h$merge[i,1]
             c2<-h$merge[i,2]
