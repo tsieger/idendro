@@ -1,2 +1,10 @@
 .git
+git.init
+data/generate_hca5000.R
+data/hca10k.rda
 demo/idendroChondroDemo.R
+doc/
+doc-private/
+demoCranvasIdendro.png
+TODO
+wishlist.txt
