@@ -19,7 +19,7 @@ idendro(h, iris.with.pc1)
 # note the order of the observations (rows in heat map) does not
 # reflect the Species well (and PC1 either)
 
-# Let's reorde the observations by the PC1 using 'DendSer::dser'
+# Let's reorder the observations by the PC1 using 'DendSer::dser'
 h$order <- dser(h, PC1, cost = costLS)
 idendro(h, iris.with.pc1)
 # note the order of observations is much more natural when sorted
