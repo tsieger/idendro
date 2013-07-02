@@ -5,6 +5,11 @@
 idendro demo data
 }
 \description{
+Hierarchical cluster analysis demonstration data consisting of raw
+data (5000 observations having 3 features measured) and clustered data
+(as computed by `hclust').
+}
+\format{
 A list of 'x' and 'hx' elements.
 'x' is a matrix of 5000 rows (observations) by 3 columns (dimensions).
 'hx' is an object of class 'hclust' containing the result of
