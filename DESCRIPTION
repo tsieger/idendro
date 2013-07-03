@@ -12,5 +12,5 @@ Description: Interactive dendrogram that enables the user to select and
     color clusters, to zoom and pan the dendrogram, and to visualize
     the clustered data not only in a built-in heat map, but also in any
     interactive plot implemented in the cranvas package.
-License: GPL-2
+License: GPL (>= 2)
 LazyLoad: yes
