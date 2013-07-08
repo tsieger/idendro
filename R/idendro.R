@@ -327,8 +327,8 @@ idendro<-structure(function# Interactive Dendrogram
     if (is.function(heatmapColors)) {
         warning('[DEPRECATED:]\'heatmapColors\' argument of type \'function\', supply a color list instead')
         heatmapColors<-heatmapColors(heatmapColorCount)
-        heatmapColorCount<-length(heatmapColors)
     }
+    heatmapColorCount<-length(heatmapColors)
 
     # convert non-numeric data to numeric, if necessary
     if (heatmapEnabled) {
