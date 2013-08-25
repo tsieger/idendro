@@ -309,7 +309,7 @@ idendro<-structure(function# Interactive Dendrogram
             x<-as.data.frame(x[,-grep('^\\.',colnames(x))])
         }
     }
-    if (!is.data.frame(x) && !is.matrix(x)) {
+    if (!is.null(x) && !is.data.frame(x) && !is.matrix(x)) {
         x<-as.data.frame(x)
     }
 
