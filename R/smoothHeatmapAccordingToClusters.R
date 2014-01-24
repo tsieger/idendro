@@ -16,7 +16,7 @@ smoothHeatmapAccordingToClusters<-function
             clusterIdxInH<-max(df$clusters[[i]]$indices)
             if (dbg.heatmap.smooth) cat(sprintf('  -> cluster %d\n',clusterIdxInH))
             clusterMembers<-computeMemberIndices(df$h,clusterIdxInH)
-            x[clusterMembers,]<-rep(colMeans(x[clusterMembers,,drop=FALSE]),each=length(clusterMembers))
+            x[clusterMembers,]<-rep(colMeans(x[clusterMembers,,drop=FALSE],na.rm=T),each=length(clusterMembers))
         }
     }
     df$xOrderedSmoothed<-x[df$leafOrder,,drop=F]
