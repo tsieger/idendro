@@ -800,7 +800,11 @@ idendro<-structure(function# Interactive Dendrogram
                     x0<-layer$mapToScene(0,0)$x()
                     labels<-df$dimLabels
                     if (brushedmapEnabled) labels<-c(labels,'(brushed)')
-                    xs<-apply(as.array(labels),1,function(x)layer$mapToScene(qstrWidth(painter,x),qstrHeight(painter,x))$x())
+                    xs<-apply(as.array(labels),1,function(x) {
+                         # reserve more space for the labels
+                        x<-paste(x,')',sep='')
+                        layer$mapToScene(qstrWidth(painter,x),qstrHeight(painter,x))$x()
+                    })
                     layout$setRowMinimumHeight(0,max(xs)-x0)
                     .sharedEnv$heatmapDimAnnotationLayerSized<-TRUE
                     if (dbg.heatmap) cat('heatmapDimAnnotationLayer sized\n')
