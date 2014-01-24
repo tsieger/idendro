@@ -192,6 +192,9 @@ idendro<-structure(function# Interactive Dendrogram
     doScaleHeatmap=TRUE, ##<< scale each heat map column to the <0,1> range?
     ## (The default is TRUE.)
 
+    doScaleHeatmapByRows=FALSE, ##<< scale heat map rows, not columns
+    ## (The default is FALSE.)
+
     heatmapRelSize=.2, ##<< relative size of the heat map - the ratio
     ## of the heat map width to the width of both the dendrogram and
     ## the heat map. The default is 20%.
@@ -346,16 +349,24 @@ idendro<-structure(function# Interactive Dendrogram
 
     # scale heat map
     if (heatmapEnabled && doScaleHeatmap) {
-        for (i in 1:ncol(x)) {
-            tmp<-x[,i]
-            tmp.mn<-min(tmp,na.rm=TRUE)
-            tmp.mx<-max(tmp,na.rm=TRUE)
-            if (tmp.mn!=tmp.mx) {
-                tmp<-(tmp-tmp.mn)/(max(tmp,na.rm=TRUE)-tmp.mn)
+        scaleVector<-function(x) {
+            mn<-min(x,na.rm=TRUE)
+            mx<-max(x,na.rm=TRUE)
+            if (mn!=mx) {
+                x<-(x-mn)/(mx-mn)
             } else {
-                tmp<-tmp-tmp.mn+.5
+                x<-x-mn+.5
             }
-            x[,i]<-tmp
+            x
+        }
+        if (doScaleHeatmapByRows) {
+            for (i in 1:nrow(x)) {
+                x[i,]<-scaleVector(x[i,])
+            }
+        } else {
+            for (i in 1:ncol(x)) {
+                x[,i]<-scaleVector(x[,i])
+            }
         }
     }
 
