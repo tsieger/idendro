@@ -26,6 +26,8 @@ idendro<-structure(function# Interactive Dendrogram
 ## normalization (scaling) of individual features to a common visual
 ## scale is enabled. Scaling of observations is also supported (see the
 ## 'doScaleHeatmapByRows' argument).
+## Individual features of individual observations can be studied by
+## flying over the heatmap having the left mouse button pressed.
 ##
 ## The brushed map indicates which observations are currently
 ## selected by some external plot/tool 'idendro' is integrated
@@ -202,6 +204,10 @@ idendro<-structure(function# Interactive Dendrogram
     ## of the heat map width to the width of both the dendrogram and
     ## the heat map. The default is 20%.
 
+    heatmapInspectFormatFun = format, ##<< function used to format
+    ## features of observations when flying over the heatmap. By
+    ## default, the 'format' function gets used.
+
     brushedmapEnabled=!is.null(qx), ##<< shall brushed map be drawn?
 
     separateGui=FALSE, ##<< shall GUI be integrated into the dendrogram
@@ -338,6 +344,7 @@ idendro<-structure(function# Interactive Dendrogram
 
     # convert non-numeric data to numeric, if necessary
     if (heatmapEnabled) {
+        xOrig<-x
         nonNumericColumnFound<-FALSE
         for (i in 1:ncol(x)) {
             if (!is.numeric(x[,i])) {
@@ -348,6 +355,8 @@ idendro<-structure(function# Interactive Dendrogram
         if (nonNumericColumnFound) {
             warning('Non-numeric data found, converting to numeric (in order to enable heatmap drawing).')
         }
+    } else {
+        xOrig<-NULL
     }
 
     # scale heat map
@@ -384,8 +393,11 @@ idendro<-structure(function# Interactive Dendrogram
     mouseMiddleButtonPressed<-FALSE
     mouseMiddleButtonPressPos<-NULL
     axisCut<-NA
+    heatmapTipTextSet<-FALSE
+    heatmapTipText<-NA
+    heatmapTipPos<-c(NA,NA)
 
-    df<-prepareDendro(h,x,dbg.dendro)
+    df<-prepareDendro(h,x,xOrig,dbg.dendro)
     # initialize clusters from leaf colors, if supplied
     if (!is.null(qx) && !is.null(colnames(qx)) && '.cluster'%in%colnames(qx)) {
         if (dbg.dendro) cat('.cluster found in qx\n')
@@ -732,6 +744,61 @@ idendro<-structure(function# Interactive Dendrogram
 
             if (dbg.heatmap.limits) {
                 drawLayerLimits(painter,layer,'heatmap','green')
+            }
+
+            if (heatmapTipTextSet) {
+                # txtXXX - text to display
+                # txtToMeasureXXX - text used to determine how much space
+                #   is needed to display txtXXX
+                if (.sharedEnv$heatmapTipHalign>0 && .sharedEnv$heatmapTipValign<0) {
+                    # text to the lower right of the mouse pointer
+                    # prepend some space such that the mouse pointer does not obscure the text
+                    txtPrefix<-'   '
+                    txtPostfix<-' '
+                    txtToMeasurePrefix<-'((('
+                    txtToMeasurePostfix<-')'
+                } else if (.sharedEnv$heatmapTipHalign<0 && .sharedEnv$heatmapTipValign<0) {
+                    # text to the lower left of the mouse pointer
+                    # append some space such that the mouse pointer does not obscure the text
+                    txtPrefix<-' '
+                    txtPostfix<-' '
+                    txtToMeasurePrefix<-'('
+                    txtToMeasurePostfix<-')'
+                } else {
+                    # text to the upper left/right of the mouse pointer
+                    # just reserve some space for the text
+                    txtPrefix<-' '
+                    txtPostfix<-' '
+                    txtToMeasurePrefix<-'('
+                    txtToMeasurePostfix<-')'
+                }
+
+                # split multi-line text
+                ## TODO: does this work on Windows? Or shall we use \r\f instead?
+                txtSplit<-strsplit(heatmapTipText,'\n|\r')[[1]]
+                # prepend/append space
+                txt<-paste(sapply(txtSplit,function(x)
+                    paste(txtPrefix,x,txtPostfix,sep='')),collapse='\n')
+                # determine text width
+                txtWidth<-max(sapply(txtSplit,function(x)
+                    qstrWidth(painter,paste(txtToMeasurePrefix,x,txtToMeasurePostfix,sep=''))))
+                # determine text height
+                #   qstrHeight does not seem to work well, e.g. with 'versicolor',
+                #   so take the maximum height over all reasonable characters
+                elementaryHeight<-qstrHeight(painter,'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890,!@#$%&(){}[]|/?')
+                # reserve some more vertical space
+                elementaryHeight<-1.1*elementaryHeight
+                txtHeight<-length(txtSplit)*elementaryHeight
+                qdrawRect(painter,
+                    heatmapTipPos$x,
+                    heatmapTipPos$y,
+                    heatmapTipPos$x+.sharedEnv$heatmapTipHalign*txtWidth,
+                    heatmapTipPos$y+.sharedEnv$heatmapTipValign*txtHeight,
+                    stroke=rgb(0,0,0,0),fill=qcolor('white',alpha=255*17/20))
+                qdrawText(painter,txt,heatmapTipPos$x,heatmapTipPos$y,
+                    halign=ifelse(.sharedEnv$heatmapTipHalign>0,'left','right'),
+                    valign=ifelse(.sharedEnv$heatmapTipValign>0,'bottom','top'),
+                    color='black')
             }
             df
         }
@@ -1246,6 +1313,56 @@ idendro<-structure(function# Interactive Dendrogram
         }
     }
 
+    heatmapMousePressFun<-function(layer, event) {
+        heatmapInspector(layer,event)
+    }
+
+    heatmapMouseMoveFun<-function(layer, event) {
+        heatmapInspector(layer,event)
+    }
+
+    heatmapMouseReleaseFun<-function(layer, event) {
+        .sharedEnv<-attr(layer$scene(),'.sharedEnv')
+        for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
+
+        .sharedEnv$heatmapTipTextSet<-FALSE
+        qupdate(.sharedEnv$heatmapLayer)
+    }
+
+    heatmapInspector<-function(layer, event) {
+        .sharedEnv<-attr(layer$scene(),'.sharedEnv')
+        for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
+
+        if (dbg.mouse) cat('heatmapAnnotator called\n')
+        if (dbg.mouse>1) print(event$pos())
+
+        xy<-list(x=event$pos()$x(),y=event$pos()$y())
+        gw<-fig2heatmap(xy2gw(xy))
+        if (dbg.mouse) printVar(gw)
+        # g: 0 .. df$k -> col: 1 .. df$k
+        col<-round(gw$g+.5)
+        # w: .5 .. (df$n+.5) -> row: 1 .. df$n
+        row<-round(gw$w)
+        if (dbg.mouse>1) printVar(col)
+        if (dbg.mouse>1) printVar(row)
+
+        annotationChanged<-FALSE
+        if (col>0 && col<=df$k && row>0 && row<=df$n) {
+            .sharedEnv$heatmapTipText<-heatmapInspectFormatFun(df$xOrigOrdered[row,col])
+            .sharedEnv$heatmapTipTextSet<-TRUE
+            annotationChanged<-TRUE
+            .sharedEnv$heatmapTipPos<-xy
+            .sharedEnv$heatmapTipHalign<-ifelse(col>df$k/2,-1,1)
+            .sharedEnv$heatmapTipValign<-ifelse(row>df$n/2,-1,1)
+        } else {
+            if (.sharedEnv$heatmapTipTextSet) {
+                annotationChanged<-TRUE
+                .sharedEnv$heatmapTipTextSet<-FALSE
+            }
+        }
+        if (annotationChanged) qupdate(.sharedEnv$heatmapLayer)
+    }
+
     backgroundClearingPainter<-function(layer,painter) {
         # clear the background
         clearLayerBackground(layer,painter)
@@ -1314,7 +1431,10 @@ idendro<-structure(function# Interactive Dendrogram
         w=.5+df$n*c(0,1)))))
     if (dbg.heatmap) printVar(heatmapLimits)
     heatmapLayer<-suppressWarnings(qlayer(scene,paintFun=heatmapPainter,clip=FALSE,cache=TRUE,
-            limits=qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4])))
+        mousePressFun=heatmapMousePressFun,
+        mouseReleaseFun=heatmapMouseReleaseFun,
+        mouseMoveFun=heatmapMouseMoveFun,
+        limits=qrect(heatmapLimits[1],heatmapLimits[3],heatmapLimits[2],heatmapLimits[4])))
 
     heatmapLegendLimits<-unlist(gw2xy(heatmap2fig(list(
         g=c(0,max(1,df$k)), # the positive difference in 'g' makes

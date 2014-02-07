@@ -21,9 +21,9 @@ of thousands of observations, at least).
         "cluster", "zoom"), heatmapColors = colorRampPalette(c("#00007F", 
         "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", 
         "red", "#7F0000"))(10), heatmapColorCount = 10, doScaleHeatmap = TRUE, 
-    heatmapRelSize = 0.2, brushedmapEnabled = !is.null(qx), separateGui = FALSE, 
-    graphicalClusterInfos = TRUE, textualClusterInfos = TRUE, 
-    clipDendro = TRUE, opengl = NULL)}
+    doScaleHeatmapByRows = FALSE, heatmapRelSize = 0.2, heatmapInspectFormatFun = format, 
+    brushedmapEnabled = !is.null(qx), separateGui = FALSE, graphicalClusterInfos = TRUE, 
+    textualClusterInfos = TRUE, clipDendro = TRUE, opengl = NULL)}
 \arguments{
   \item{h}{an object of class 'stats::hclust' (or other class
 convertible to class 'hclust' by the 'as.hclust' function)
@@ -99,9 +99,14 @@ the time spent drawing the heat map significantly (for large
 data sets).}
   \item{doScaleHeatmap}{scale each heat map column to the <0,1> range?
 (The default is TRUE.)}
+  \item{doScaleHeatmapByRows}{scale heat map rows, not columns
+(The default is FALSE.)}
   \item{heatmapRelSize}{relative size of the heat map - the ratio
 of the heat map width to the width of both the dendrogram and
 the heat map. The default is 20\%.}
+  \item{heatmapInspectFormatFun}{function used to format
+features of observations when flying over the heatmap. By
+default, the 'format' function gets used.}
   \item{brushedmapEnabled}{shall brushed map be drawn?}
   \item{separateGui}{shall GUI be integrated into the dendrogram
 window, or shall it be separated in a standalone window?
@@ -131,7 +136,12 @@ of the clusters in the dendrogram.
 
 The heat map visualizes the observations living in k-dimensional
 feature space by mapping their features onto a color scale and
-displaying them as rows of 'k' colored rectangles.
+displaying them as rows of 'k' colored rectangles. By default,
+normalization (scaling) of individual features to a common visual
+scale is enabled. Scaling of observations is also supported (see the
+'doScaleHeatmapByRows' argument).
+Individual features of individual observations can be studied by
+flying over the heatmap having the left mouse button pressed.
 
 The brushed map indicates which observations are currently
 selected by some external plot/tool 'idendro' is integrated

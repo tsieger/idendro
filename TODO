@@ -1,7 +1,20 @@
-=======================================================================
-features
-=======================================================================
 
+=======================================================================
+Features
+=======================================================================
+- specify how to render missing values in the heatmap
+- control smoothing mode by shortcuts
+- disable smoothing of specific heatmap columns
+- heatmap fly-over inspection 
+    - cope with smoothed heatmap: show smoothed values for numeric data, 
+      mixture of categories for categorical
+    - show scaled values optionally?
+- highlight the currently selected cluster in the heatmap to ease
+  visual inspection (e.g. using a rectangle, shading the complement of
+  the current cluster, etc.)
+- when inspecting the dendrogram, optionally draw a horizontal line
+  from the cursor across the heatmap to ease locating which
+  observations belong to specific clusters
 - configurable layout of dendro window components (relative/absolute
   size)
 - configurable layout of windows (dendro and GUI)
@@ -9,9 +22,11 @@ features
   top-to-bottom, bottom-to-top)
 - make axis ticks nicer: make the number of ticks proportional to the
   width of the axis on the screen 
+- listen to changes to `.cluster' metadata?
+- support other types of HCA inputs (return values of other function than just hclust)
 
 =======================================================================
-technical TODOs
+Technical TODOs
 =======================================================================
 - align dendrogram with heatmap perfectly, clean any "noise" at the
   edges

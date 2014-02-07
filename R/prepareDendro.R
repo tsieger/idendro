@@ -8,6 +8,9 @@ prepareDendro<-function
     h, ##<< an object of class 'stats::hclust' describing a clustering
 
     x = NULL, ##<< a data frame holding observations tha were clustered
+    ## giving rise to 'h', converted to numeric, and scaled
+
+    xOrig = NULL, ##<< a data frame holding observations tha were clustered
     ## giving rise to 'h'
 
     dbg = 0 ##<< debug verbosity level
@@ -161,8 +164,13 @@ prepareDendro<-function
     df$branchCenterOffsets<-branchCenterOffsets
     df$leafOrder<-leafOrder
     df$leafColorIdxs<-rep(0,n)
-    df$xOrdered<-x[leafOrder,,drop=F]
+    df$xOrdered<-x[leafOrder,,drop=FALSE]
     df$xOrderedSmoothed<-df$xOrdered
+    if (is.null(xOrig)) {
+        df$xOrigOrdered<-NULL
+    } else {
+        df$xOrigOrdered<-xOrig[leafOrder,,drop=FALSE]
+    }
     df$elemClusterCount<-df$n
 
     return(df)
