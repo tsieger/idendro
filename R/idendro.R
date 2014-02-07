@@ -22,7 +22,10 @@ idendro<-structure(function# Interactive Dendrogram
 ##
 ## The heat map visualizes the observations living in k-dimensional
 ## feature space by mapping their features onto a color scale and
-## displaying them as rows of 'k' colored rectangles.
+## displaying them as rows of 'k' colored rectangles. By default,
+## normalization (scaling) of individual features to a common visual
+## scale is enabled. Scaling of observations is also supported (see the
+## 'doScaleHeatmapByRows' argument).
 ##
 ## The brushed map indicates which observations are currently
 ## selected by some external plot/tool 'idendro' is integrated
