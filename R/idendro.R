@@ -220,6 +220,9 @@ idendro<-structure(function# Interactive Dendrogram
     textualClusterInfos=TRUE, ##<< depict cluster-specific statistics
     ## textually? (The default is TRUE.)
 
+    geometry=c(0,0,600,400), ##<< window geometry (The default
+    ## is 600x400.)
+
     clipDendro=TRUE, ##<< clip dendrogram to the dendrogram layer?
     ## The default is TRUE, meaning the  dendrogram does not interfere
     ## with other layers. On some systems, however, clipping might
@@ -442,6 +445,18 @@ idendro<-structure(function# Interactive Dendrogram
     df$selectionHistory<-list()
     df$lastSelectionSaver<-'none'
 
+    if (!is.null(geometry)) {
+        if (is.numeric(geometry)) {
+            if (length(geometry)!=4) {
+                stop('Invalid geometry')
+            }
+            geometry<-Qt$QRect(geometry[1],geometry[2],geometry[3],geometry[4])
+        } else {
+            # unify instances of qrect/QRect/... into Qt$QRect
+            geometry<-Qt$QRect(geometry$topLeft()$x(),geometry$topLeft()$y(),geometry$width(),geometry$height())
+        }
+    }
+
     if (dbg.args) cat('--- consolidated arguments: ---\n')
     if (dbg.args) printVar(!is.null(qx))
     if (dbg.args) printVar(!is.null(x))
@@ -463,6 +478,7 @@ idendro<-structure(function# Interactive Dendrogram
     params$heatmapColors<-heatmapColors
     params$heatmapColorCount<-heatmapColorCount
     params$brushedmapEnabled<-brushedmapEnabled
+    params$geometry<-geometry
 
     #### internal functions
     ####
@@ -1671,7 +1687,7 @@ idendro<-structure(function# Interactive Dendrogram
         setLayout(windowLayout)
 
         setWindowTitle("idendro")
-        #resize(480, 320)
+        if (!is.null(params$geometry)) setGeometry(params$geometry)
         if (dbg.gui) cat('Window created\n')
 
     },where=environment()))
