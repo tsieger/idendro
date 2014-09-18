@@ -23,7 +23,8 @@ of thousands of observations, at least).
         "red", "#7F0000"))(10), heatmapColorCount = 10, doScaleHeatmap = TRUE, 
     doScaleHeatmapByRows = FALSE, heatmapRelSize = 0.2, heatmapInspectFormatFun = format, 
     brushedmapEnabled = !is.null(qx), separateGui = FALSE, graphicalClusterInfos = TRUE, 
-    textualClusterInfos = TRUE, clipDendro = TRUE, opengl = NULL)}
+    textualClusterInfos = TRUE, geometry = Qt$QRect(0, 0, 600, 
+        400), clipDendro = TRUE, opengl = NULL)}
 \arguments{
   \item{h}{an object of class 'stats::hclust' (or other class
 convertible to class 'hclust' by the 'as.hclust' function)
@@ -115,6 +116,8 @@ window, or shall it be separated in a standalone window?
 graphically? (The default is TRUE.)}
   \item{textualClusterInfos}{depict cluster-specific statistics
 textually? (The default is TRUE.)}
+  \item{geometry}{window geometry (The default
+is 600x400.)}
   \item{clipDendro}{clip dendrogram to the dendrogram layer?
 The default is TRUE, meaning the  dendrogram does not interfere
 with other layers. On some systems, however, clipping might
