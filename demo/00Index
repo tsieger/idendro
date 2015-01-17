@@ -9,6 +9,7 @@ idendroAnnotation       dendrogram + heat map with long annotations
 idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
 idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot of spectroscopy data
 idendroTour             dendrogram projecting to a tour plot 
+idenroRowCol            clustering both rows and columns of a data set
 
 idendroDemo             deprecated, see the `idendro' demo
 idendroTourDemo         deprecated, see the `idendroTour' demo
