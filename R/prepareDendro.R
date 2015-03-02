@@ -49,7 +49,7 @@ prepareDendro<-function
 
     if (dbg) cat('Computing prototypes...\n')
     # prototypes are single elementary observations selected from each
-    # cluster; the purpose of protoypes is to ease determinating the
+    # cluster; the purpose of prototypes is to ease determinating the
     # order of clusters in `h$order'
     prototypes<-c(n:1,NA,rep(NA,clusterCount))
     for (i in 1:clusterCount) {
