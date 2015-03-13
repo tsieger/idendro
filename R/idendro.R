@@ -1050,7 +1050,7 @@ idendro<-structure(function# Interactive Dendrogram
 
         if (.sharedEnv$mouseMiddleButtonPressed) {
             if (lastDendroZoomHistorySaver!='mouseMoveFun') {
-                pushDendroZoomHistory(.sharedEnv)
+                pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
                 lastDendroZoomHistorySaver<<-'mouseMoveFun'
             }
 
@@ -1108,15 +1108,15 @@ idendro<-structure(function# Interactive Dendrogram
 
         if (dbg.dendro.select) cat('clusterSelector called\n')
 
-        clusterSelectorImpl<-function(layer, event) {
+        clusterSelectorImpl<-function(layer,event,df) {
             if (dbg.dendro.select) cat('clusterSelectorImpl called\n')
             if (dbg.dendro.select) print(as.numeric(event$pos()))
 
             if (dbg.dendro.select) printVar(df$currentCluster)
 
-            df<-selectCluster(event$pos())
+            df<-selectCluster(event$pos(),df,dendroZoom,dbg.dendro.select)
         }
-        .sharedEnv$df<-clusterSelectorImpl(layer, event)
+        .sharedEnv$df<-clusterSelectorImpl(layer,event,.sharedEnv$df)
         .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
     }
 
@@ -1159,7 +1159,7 @@ idendro<-structure(function# Interactive Dendrogram
         if (event$button()==2) {
             # right mouse button
 
-            pushDendroZoomHistory(.sharedEnv)
+            pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
             lastDendroZoomHistorySaver<<-'dendroZoomSelectionFinisher'
 
             # update the selection region
@@ -1187,7 +1187,7 @@ idendro<-structure(function# Interactive Dendrogram
 
         if (dbg.dendro.zoom) cat('dendroZoomer called\n')
 
-        pushDendroZoomHistory(.sharedEnv)
+        pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
         lastDendroZoomHistorySaver<<-'dendroZoomer'
 
         dendroZoomerImpl<-function(layer, event) {
@@ -1310,12 +1310,11 @@ idendro<-structure(function# Interactive Dendrogram
         if (dbg.dendro.axis) cat('axisCutter called\n')
         cutG<-xy2gw(list(x=event$pos()$x(),y=event$pos()$y()))$g
 
-        impl<-function() {
-            df<-.gfc(df)
+        impl<-function(df) {
             #printVar(df)
-            cutDendro(df,cutG,.sharedEnv$dendroZoom)
+            cutDendro(df,cutG,.sharedEnv$dendroZoom,dbg.dendro.cut)
         }
-        rv<-impl()
+        rv<-impl(.sharedEnv$df)
         if (dbg.dendro.cut) printVar(length(rv$clusters))
         if (dbg.dendro.cut>1) printVar(rv)
         if (rv$selectedClusterCount>params$maxClusterCount) {
@@ -1857,7 +1856,7 @@ idendro<-structure(function# Interactive Dendrogram
 
             # do not attempt to change zoom if zoomed fully already
             if (!(dendroZoom$g==dendroZoomMin$g && dendroZoom$w==dendroZoomMin$w)) {
-                pushDendroZoomHistory(.sharedEnv)
+                pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
                 lastDendroZoomHistorySaver<<-'fullView'
                 .sharedEnv$dendroZoom<-dendroZoomMin
                 zoomDendroBrushedmapAndHeatmap(scene)
@@ -1871,7 +1870,7 @@ idendro<-structure(function# Interactive Dendrogram
 
             if (dbg.dendro.zoom) cat('zoomBack button pressed\n')
 
-            rv<-popDendroZoomHistory(.sharedEnv)
+            rv<-popDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
             if (!is.null(rv)) {
                 .sharedEnv$dendroZoom<-rv
                 if (dbg.dendro.zoom) printVar(.sharedEnv$dendroZoom)
@@ -1886,7 +1885,7 @@ idendro<-structure(function# Interactive Dendrogram
 
             if (dbg.dendro.select) cat('unselect button pressed\n')
 
-            rv<-unselectCurrentCluster(.sharedEnv$df)
+            rv<-unselectCurrentCluster(.sharedEnv$df,dbg.dendro.select)
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
                 .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
@@ -1900,7 +1899,7 @@ idendro<-structure(function# Interactive Dendrogram
 
             if (dbg.dendro.select) cat('unselectAll button pressed\n')
 
-            rv<-unselectAllClusters(.sharedEnv$df)
+            rv<-unselectAllClusters(.sharedEnv$df,dbg.dendro.select)
             .sharedEnv$df<-rv$df
             if (rv$selectionChanged) {
                 .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
@@ -1914,7 +1913,7 @@ idendro<-structure(function# Interactive Dendrogram
 
             if (dbg.dendro.select) cat('selectBack button pressed\n')
 
-            rv<-popSelectionHistory(.sharedEnv$df)
+            rv<-popSelectionHistory(.sharedEnv$df,dbg.dendro.select)
             if (!is.null(rv)) {
                 .sharedEnv$df<-rv
                 .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)

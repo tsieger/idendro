@@ -2,16 +2,14 @@ unselectAllClusters<-function
 ### Unselect all clusters.
 ##keyword<<internal
 (
-    df ##<< shared data frame
+    df, ##<< shared data frame
+    dbg ##<< debug flag/level
 ) {
-    dbg<-.gfc(dbg)
-    dbg.dendro.select<-.gfc(dbg.dendro.select)
-
-    if (dbg.dendro.select) cat('unselectAllClusters called\n')
+    if (dbg) cat('unselectAllClusters called\n')
 
     if (df$lastSelectionSaver!='unselectAll') {
         # remember current selection
-        df<-pushSelectionHistory(df)
+        df<-pushSelectionHistory(df,dbg)
         df$lastSelectionSaver<-'unselectAll'
     }
 

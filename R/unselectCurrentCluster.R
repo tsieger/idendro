@@ -2,17 +2,15 @@ unselectCurrentCluster<-function
 ### Unselect the current cluster.
 ##keyword<<internal
 (
-    df ##<< shared data frame
+    df, ##<< shared data frame
+    dbg=FALSE ##<< debug flag/level
 ) {
-    dbg.dendro.select<-.gfc(dbg.dendro.select)
-
-    if (dbg.dendro.select) cat('unselectCluster called\n')
-    if (dbg.dendro.select) printVar(df$currentCluster)
+    if (dbg) cat('unselectCluster called\n')
+    if (dbg) printVar(df$currentCluster)
 
     # remember current selection
-    df<-pushSelectionHistory(df)
+    df<-pushSelectionHistory(df,dbg)
     df$lastSelectionSaver<-'unselectCurrectCluster'
-
 
     if (!is.null(df$clusters[[df$currentCluster]])) {
         currentClusterIdxInH<-max(df$clusters[[df$currentCluster]]$indices)
