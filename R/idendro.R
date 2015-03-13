@@ -400,7 +400,7 @@ idendro<-structure(function# Interactive Dendrogram
     heatmapTipText<-NA
     heatmapTipPos<-c(NA,NA)
 
-    df<-prepareDendro(h,x,xOrig,dbg.dendro)
+    df<-prepareDendro(h,x,xOrig,doFlip=TRUE,dbg.dendro)
     # initialize clusters from leaf colors, if supplied
     if (!is.null(qx) && !is.null(colnames(qx)) && '.cluster'%in%colnames(qx)) {
         if (dbg.dendro) cat('.cluster found in qx\n')
