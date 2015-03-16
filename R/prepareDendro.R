@@ -13,7 +13,7 @@ prepareDendro<-function
     xOrig = NULL, ##<< a data frame holding observations tha were clustered
     ## giving rise to 'h'
 
-    doFlip = TRUE, ##<< should branches' heights ("grow") be flipped
+    doFlipG = TRUE, ##<< should branches' heights ("grow") be flipped
     ## such that the heights of elementary observations correspond not
     ## to 0, but to the height of the dendrogram?
 
@@ -124,7 +124,7 @@ prepareDendro<-function
         x0<-h$height[i]
         x1<-heights[n+1+h$merge[i,1]]
         x2<-heights[n+1+h$merge[i,2]]
-        if (doFlip) {
+        if (doFlipG) {
           # mirror Xs: x=0 corresponding to the top-most cluster, x>0 to leafs
           x0<-topClusterHeight-x0
           x1<-topClusterHeight-x1
