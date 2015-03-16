@@ -2,7 +2,7 @@ selectCluster<-function
 ### Select the nearest cluster to the position 'pos'.
 ##keyword<<internal
 (
-    pos, ##<< position in the dendro figure
+    pos, ##<< (x,y) position in the dendro figure
     df, ##<< shared data frame
     dendroZoom, ##<< the current dendro zoom region (used to determine
     ## the scaling)
