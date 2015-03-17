@@ -724,7 +724,9 @@ idendro<-structure(function# Interactive Dendrogram
                 # not all observations visible in the dendrogram,
                 # smooth heat map to carry info about the currently
                 # elementary clusters in the zoomed dendro
-                ch<-cutree(df$h,h=df$h$height[df$clusterCount]-dendroZoom$g[2])
+                hght<-dendroZoom$g[2]
+                if (df$doFlipG) hght<-df$h$height[df$clusterCount]-hght
+                ch<-cutree(df$h,h=hght)
                 if (max(ch)!=df$elemClusterCount) {
                     if (dbg.heatmap) cat('smoothing heat map\n')
                     df$xOrderedSmoothed<-smoothHeatmap(df$xOrdered,ch[df$leafOrder],dbg.heatmap.smooth)

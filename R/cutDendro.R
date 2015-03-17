@@ -6,10 +6,6 @@ cutDendro<-function
     df, ##<< shared data frame
     cutG, ##<< cutting grow height
     dendroZoom, ##<< current dendro zoom region
-    doFlipG = TRUE, ##<< should `cutG' be flipped in the sense that the
-    ## heights of elementary observations correspond not
-    ## to 0, but to the height of the dendrogram? This flag should
-    ## correspond to the one passed to `prepareDendro'
     dbg=FALSE ##<< debug level
 ) {
 
@@ -23,7 +19,7 @@ cutDendro<-function
     df<-pushSelectionHistory(df,dbg)
     df$lastSelectionSaver<-'cutDendro'
 
-    if (doFlipG) cutG<-df$h$height[df$clusterCount]-cutG
+    if (df$doFlipG) cutG<-df$h$height[df$clusterCount]-cutG
     ch<-cutree(h,h=cutG)
     selectedClusterCandidateCount<-max(ch)
     if (dbg) printVar(selectedClusterCandidateCount)

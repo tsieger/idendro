@@ -21,6 +21,7 @@ prepareDendro<-function
 ) {
 
     df<-NULL
+    df$doFlipG<-doFlipG
     df$h<-h
     df$x<-x
     df$clusterCount<-clusterCount<-length(h$height)
