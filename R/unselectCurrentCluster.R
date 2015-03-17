@@ -5,14 +5,13 @@ unselectCurrentCluster<-function
     df, ##<< shared data frame
     dbg=FALSE ##<< debug flag/level
 ) {
-    if (dbg) cat('unselectCluster called\n')
+    if (dbg) cat('unselectCurrentCluster called\n')
     if (dbg) printVar(df$currentCluster)
 
-    # remember current selection
-    df<-pushSelectionHistory(df,dbg)
-    df$lastSelectionSaver<-'unselectCurrectCluster'
-
-    if (!is.null(df$clusters[[df$currentCluster]])) {
+    if (!is.null(df$clusters[[df$currentCluster]]$indices)) {
+        # remember the current selection
+        df<-pushSelectionHistory(df,dbg)
+        # unselect the current cluster
         currentClusterIdxInH<-max(df$clusters[[df$currentCluster]]$indices)
         currentClusterLeafs<-computeMemberIndices(df$h,currentClusterIdxInH)
         df$leafColorIdxs[currentClusterLeafs]<-0

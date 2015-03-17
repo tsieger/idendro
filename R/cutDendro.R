@@ -17,7 +17,6 @@ cutDendro<-function
 
     # remember current selection
     df<-pushSelectionHistory(df,dbg)
-    df$lastSelectionSaver<-'cutDendro'
 
     if (df$doFlipG) cutG<-df$h$height[df$clusterCount]-cutG
     ch<-cutree(h,h=cutG)

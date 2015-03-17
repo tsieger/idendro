@@ -11,8 +11,9 @@ selectCluster<-function
     if (dbg) print('selectCluster called')
 
     # remember the current selection
+    dfOrig<-df
+    # and push it
     df<-pushSelectionHistory(df,dbg)
-    df$lastSelectionSaver<-'selectCluster'
 
     if (dbg) print(pos)
     x<-as.numeric(pos)[1]
@@ -74,6 +75,12 @@ selectCluster<-function
 
     # compute leaf colors
     df$leafColorIdxs<-computeLeafColorIdxs(df)
+
+    if (all(df$leafColorIdxs==dfOrig$leafColorIdxs)) {
+      # selection has not changed, stick to the previous one
+      # (it includes disregarding the push operation)
+      df<-dfOrig
+    }
 
     if (dbg>1) printWithName(df)
     return(df)

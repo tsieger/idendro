@@ -7,13 +7,10 @@ unselectAllClusters<-function
 ) {
     if (dbg) cat('unselectAllClusters called\n')
 
-    if (df$lastSelectionSaver!='unselectAll') {
-        # remember current selection
-        df<-pushSelectionHistory(df,dbg)
-        df$lastSelectionSaver<-'unselectAll'
-    }
-
     if (!is.null(df$clusters)) {
+        # remember the current selection
+        df<-pushSelectionHistory(df,dbg)
+        # and unselect all clusters
         df$clusters<-NULL
         df$leafColorIdxs<-0
         df$unselectedBranches<-df$allBranches

@@ -443,7 +443,6 @@ idendro<-structure(function# Interactive Dendrogram
     lastDendroZoomHistorySaver<-'none'
 
     df$selectionHistory<-list()
-    df$lastSelectionSaver<-'none'
 
     if (!is.null(geometry)) {
         if (is.numeric(geometry)) {
