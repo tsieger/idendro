@@ -4,8 +4,8 @@ fig2dendro<-function
 (
     gw ##<< ##<< a list of 'g' and 'w' components
 ) {
-    dbg.tx<-.gfc(dbg.tx)
-    if (dbg.tx) print('fig2dendro called')
+    dbg.tx<-.gfc(dbg.tx,required=FALSE)
+    if (!is.null(dbg.tx) && dbg.tx) print('fig2dendro called')
 
     return(gw)
     ### converted values, a list of 'g' and 'w' components

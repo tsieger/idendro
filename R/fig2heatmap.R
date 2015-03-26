@@ -4,8 +4,8 @@ fig2heatmap<-function
 (
     gw ##<< a list of 'g' and 'w' components
 ) {
-    dbg.tx<-.gfc(dbg.tx)
-    if (dbg.tx) print('fig2heatmap called')
+    dbg.tx<-.gfc(dbg.tx,required=FALSE)
+    if (!is.null(dbg.tx) && dbg.tx) print('fig2heatmap called')
 
     return(gw)
     ### a list of 'g' and 'w' components
