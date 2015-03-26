@@ -423,11 +423,14 @@ idendro<-structure(function# Interactive Dendrogram
 
     # observation annotations
     if (!is.null(x) && !is.null(rownames(x))) {
-        df$observationLabels<-rownames(x)
+        df$observationLabelsOrdered<-rownames(x)
     } else {
-        df$observationLabels<-h$labels
+        df$observationLabelsOrdered<-h$labels
     }
-    if (observationAnnotationEnabled && is.null(df$observationLabels)) {
+    if (!is.null(df$observationLabelsOrdered)) {
+        df$observationLabelsOrdered<-df$observationLabelsOrdered[df$leafOrder]
+    }
+    if (observationAnnotationEnabled && is.null(df$observationLabelsOrdered)) {
         # if annotation not available, nothing to draw
         observationAnnotationEnabled<-FALSE
     }
@@ -937,12 +940,12 @@ idendro<-structure(function# Interactive Dendrogram
         clearLayerBackground(layer,painter)
 
         observationAnnotationPainterImpl<-function(layer,painter) {
-            if (dbg.heatmap>1) printVar(df$observationLabels)
+            if (dbg.heatmap>1) printVar(df$observationLabelsOrdered)
             gLabelObs<-rep(0,df$n)
             wLabelObs<-seq(1,df$n)
             coordsLabelObs<-gw2xy(heatmap2fig(list(gLabelObs,wLabelObs)))
             # annotate observations
-            qdrawText(painter,df$observationLabels[df$leafOrder],coordsLabelObs[[1]],coordsLabelObs[[2]],color='black',halign='left')
+            qdrawText(painter,df$observationLabelsOrdered,coordsLabelObs[[1]],coordsLabelObs[[2]],color='black',halign='left')
 
             if (!.sharedEnv$observationAnnotationLayerSized) {
                 # resize observationAnnotationLayer such that dim annotations fit in nicely
@@ -957,16 +960,16 @@ idendro<-structure(function# Interactive Dendrogram
                 # strings
                 if (n>200) {
                     # select a few long observation labels
-                    lens<-sapply(df$observationLabels,nchar)
+                    lens<-sapply(df$observationLabelsOrdered,nchar)
                     if (sum(lens==max(lens))>10) {
                         len.threshold<-max(lens)
                     } else {
                         len.threshold<-floor(quantile(lens,.9))
                     }
-                    tmp<-df$observationLabels[sample(which(lens>=len.threshold),100)]
+                    tmp<-df$observationLabelsOrdered[sample(which(lens>=len.threshold),100)]
                 } else {
                     # use all observation labels
-                    tmp<-df$observationLabels
+                    tmp<-df$observationLabelsOrdered
                 }
                 xs<-sapply(tmp,function(x)layer$mapToScene(qstrWidth(painter,x),NA)$x())
                 layout$setColumnMinimumWidth(3,max(xs)-x0+2)
