@@ -2,14 +2,17 @@ pushDendroZoomHistory <- function
 ### Save the current dendroZoom (as stored in '.sharedEnv').
 ##keyword<<internal
 (
-    .sharedEnv, ##<< shared environment (the environment of the
-    ## 'idendro' function)
+    df, ##<< shared data frame
+    dendroZoom, ##<< dendro zoom to push
     dbg=FALSE ##<< debug flag/level
 ) {
     if (dbg) cat('pushDendroZoomHistory called\n')
-    if (dbg) printVar(.sharedEnv$dendroZoom)
+    if (dbg) printVar(dendroZoom)
 
-    .sharedEnv$df$dendroZoomHistory<-c(list(.sharedEnv$dendroZoom),.sharedEnv$df$dendroZoomHistory)
+    df$dendroZoomHistory<-c(list(dendroZoom),df$dendroZoomHistory)
 
-    if (dbg) printVar(length(.sharedEnv$df$dendroZoomHistory))
+    if (dbg) printVar(length(df$dendroZoomHistory))
+    return(df)
+    ### shared data frame with dendro zoom pushed on top of the
+    ### dendro zoom stack
 }

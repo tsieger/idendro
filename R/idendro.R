@@ -1051,7 +1051,7 @@ idendro<-structure(function# Interactive Dendrogram
 
         if (.sharedEnv$mouseMiddleButtonPressed) {
             if (lastDendroZoomHistorySaver!='mouseMoveFun') {
-                pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
+                .sharedEnv$df<-pushDendroZoomHistory(.sharedEnv$df,.sharedEnv$dendroZoom,dbg.dendro.zoom)
                 lastDendroZoomHistorySaver<<-'mouseMoveFun'
             }
 
@@ -1160,7 +1160,7 @@ idendro<-structure(function# Interactive Dendrogram
         if (event$button()==2) {
             # right mouse button
 
-            pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
+            .sharedEnv$df<-pushDendroZoomHistory(.sharedEnv$df,.sharedEnv$dendroZoom,dbg.dendro.zoom)
             lastDendroZoomHistorySaver<<-'dendroZoomSelectionFinisher'
 
             # update the selection region
@@ -1188,7 +1188,7 @@ idendro<-structure(function# Interactive Dendrogram
 
         if (dbg.dendro.zoom) cat('dendroZoomer called\n')
 
-        pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
+        .sharedEnv$df<-pushDendroZoomHistory(.sharedEnv$df,.sharedEnv$dendroZoom,dbg.dendro.zoom)
         lastDendroZoomHistorySaver<<-'dendroZoomer'
 
         dendroZoomerImpl<-function(layer, event) {
@@ -1857,7 +1857,7 @@ idendro<-structure(function# Interactive Dendrogram
 
             # do not attempt to change zoom if zoomed fully already
             if (!(dendroZoom$g==dendroZoomMin$g && dendroZoom$w==dendroZoomMin$w)) {
-                pushDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
+                .sharedEnv$df<-pushDendroZoomHistory(.sharedEnv$df,.sharedEnv$dendroZoom,dbg.dendro.zoom)
                 lastDendroZoomHistorySaver<<-'fullView'
                 .sharedEnv$dendroZoom<-dendroZoomMin
                 zoomDendroBrushedmapAndHeatmap(scene)
@@ -1871,9 +1871,10 @@ idendro<-structure(function# Interactive Dendrogram
 
             if (dbg.dendro.zoom) cat('zoomBack button pressed\n')
 
-            rv<-popDendroZoomHistory(.sharedEnv,dbg.dendro.zoom)
-            if (!is.null(rv)) {
-                .sharedEnv$dendroZoom<-rv
+            rv<-popDendroZoomHistory(.sharedEnv$df,dbg.dendro.zoom)
+            if (!is.null(rv$dendroZoom)) {
+                .sharedEnv$dendroZoom<-rv$dendroZoom
+                .sharedEnv$df<-rv$df
                 if (dbg.dendro.zoom) printVar(.sharedEnv$dendroZoom)
                 zoomDendroBrushedmapAndHeatmap(scene)
             }
