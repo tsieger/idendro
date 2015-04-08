@@ -8,7 +8,8 @@ unselectCurrentCluster<-function
     if (dbg) cat('unselectCurrentCluster called\n')
     if (dbg) printVar(df$currentCluster)
 
-    if (!is.null(df$clusters[[df$currentCluster]]$indices)) {
+    if (!is.null(df$clusters) && length(df$clusters)>=df$currentCluster
+        && !is.null(df$clusters[[df$currentCluster]]$indices)) {
         # remember the current selection
         df<-pushSelectionHistory(df,dbg)
         # unselect the current cluster
