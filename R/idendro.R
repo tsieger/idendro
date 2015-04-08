@@ -1700,7 +1700,7 @@ idendro<-structure(function# Interactive Dendrogram
         ratio<-0
         if (dbg.dendro.select>1) printVar(df$clusters)
         if (!is.null(df$clusters)) {
-            if (idx<=length(df$clusters) && !is.null(df$clusters[idx]) && length(df$clusters[[idx]]$indices)>0) {
+            if (idx<=length(df$clusters) && length(df$clusters[[idx]]$indices)>0) {
                 clusterSize<-length(df$clusters[[idx]]$indices)+1
                 ratio<-clusterSize/df$n
                 info<-paste(
@@ -1716,7 +1716,7 @@ idendro<-structure(function# Interactive Dendrogram
         if (brushedmapEnabled) {
             if (dbg.dendro.select>1) printVar(df$clusters)
             if (!is.null(df$clusters)) {
-                if (idx<=length(df$clusters) && !is.null(df$clusters[idx]) && length(df$clusters[[idx]]$indices)>0) {
+                if (idx<=length(df$clusters) && length(df$clusters[[idx]]$indices)>0) {
                     clusterBrushedSize<-sum(df$leafColorIdxs==idx & qx$.brushed)
                     brushedSize<-sum(qx$.brushed)
                     if (brushedSize>0) {
