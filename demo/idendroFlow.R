@@ -18,8 +18,7 @@ hx <- hclust(dist(x), method = 'average')
 # plot dendrogram + heat map
 mdf.x <- idendro(hx, x, 
     heatmapColors = colorRampPalette(c("purple4", "blue3", "blue3", "grey", 
-        "grey", "orangered", "orangered", "red")), 
-    heatmapColorCount = 15, 
+        "grey", "orangered", "orangered", "red")(15)),
     clusterColors = brewer.pal(12, "Paired"))
 
 # plot scatter plots of selected data projections
