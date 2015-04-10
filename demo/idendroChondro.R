@@ -2,8 +2,8 @@
 ## cranvas scatter plot and parallel coordinate plot integrated.
 ##
 
-require (hyperSpec) # chondro data
-data(chondro)
+library(hyperSpec) # chondro data
+
 # extract data matrix
 x <- chondro [[]]
 # prepend 'x' in front of numeric dimnames
