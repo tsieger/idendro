@@ -23,10 +23,10 @@ of thousands of observations, at least).
         "red", "#7F0000"))(10), heatmapColorCount = 10, doScaleHeatmap = TRUE, 
     doScaleHeatmapByRows = FALSE, heatmapRelSize = 0.2, heatmapInspectFormatFun = format, 
     brushedmapEnabled = !is.null(qx), separateGui = FALSE, graphicalClusterInfos = TRUE, 
-    textualClusterInfos = TRUE, geometry = Qt$QRect(0, 0, 600, 
-        400), clipDendro = TRUE, opengl = NULL)}
+    textualClusterInfos = TRUE, geometry = c(0, 0, 600, 400), 
+    clipDendro = TRUE, opengl = NULL)}
 \arguments{
-  \item{h}{an object of class 'stats::hclust' (or other class
+  \item{h}{object of class 'stats::hclust' (or other class
 convertible to class 'hclust' by the 'as.hclust' function)
 describing a hierarchical clustering.
 If _inversions_ in heights (see 'hclust') is detected,
@@ -34,7 +34,7 @@ the heights get fixed in a simple naive way by preserving
 non-negative relative differences in the heights, but changing
 negative differences to zero. Using clustering with monotone
 distance measure should be considered in that case.}
-  \item{qx}{a mutaframe holding observations that were clustered
+  \item{qx}{mutaframe holding observations that were clustered
 giving rise to 'h', with metadata (special columns) for
 interaction, as created by 'cranvas::qdata'.
 If 'qx' is enriched with 'idendro'-specific
@@ -45,13 +45,14 @@ A regular data frame can be passed instead of a mutaframe, in
 which case it will get converted into a mutaframe
 automatically.
 This parameter is optional.}
-  \item{x}{a data frame holding observations tha were clustered
+  \item{x}{data frame holding observations tha were clustered
 giving rise to 'h'.
-The heat map will depict this data.
+The heat map will depict this data. (The heat map can be scaled
+- see the 'doScaleHeatmap' and 'doScaleHeatmapByRows' arguments.)
 Non-numeric types will get converted to numeric using 'as.numeric'.
 This parameter is optional. If missing, it will be guessed
 from 'qx' by omitting any columns starting in '.'.}
-  \item{zoomFactor}{the amount of zoom in/out as controlled by the
+  \item{zoomFactor}{amount of zoom in/out as controlled by the
 mouse wheel}
   \item{observationAnnotationEnabled}{shall the names of individual
 observations (rownames of 'x') be shown next to the

@@ -109,7 +109,7 @@ idendro<-structure(function# Interactive Dendrogram
 ##
 ##
 (
-    h, ##<< an object of class 'stats::hclust' (or other class
+    h, ##<< object of class 'stats::hclust' (or other class
     ## convertible to class 'hclust' by the 'as.hclust' function)
     ## describing a hierarchical clustering.
     ## If _inversions_ in heights (see 'hclust') is detected,
@@ -118,7 +118,7 @@ idendro<-structure(function# Interactive Dendrogram
     ## negative differences to zero. Using clustering with monotone
     ## distance measure should be considered in that case.
 
-    qx=NULL,##<< a mutaframe holding observations that were clustered
+    qx=NULL,##<< mutaframe holding observations that were clustered
     ## giving rise to 'h', with metadata (special columns) for
     ## interaction, as created by 'cranvas::qdata'.
     ## If 'qx' is enriched with 'idendro'-specific
@@ -130,14 +130,15 @@ idendro<-structure(function# Interactive Dendrogram
     ## automatically.
     ## This parameter is optional.
 
-    x=qx, ##<< a data frame holding observations tha were clustered
+    x=qx, ##<< data frame holding observations tha were clustered
     ## giving rise to 'h'.
-    ## The heat map will depict this data.
+    ## The heat map will depict this data. (The heat map can be scaled
+    ## - see the 'doScaleHeatmap' and 'doScaleHeatmapByRows' arguments.)
     ## Non-numeric types will get converted to numeric using 'as.numeric'.
     ## This parameter is optional. If missing, it will be guessed
     ## from 'qx' by omitting any columns starting in '.'.
 
-    zoomFactor=1/240, ##<<the amount of zoom in/out as controlled by the
+    zoomFactor=1/240, ##<< amount of zoom in/out as controlled by the
     ## mouse wheel
 
     observationAnnotationEnabled=TRUE, ##<< shall the names of individual
@@ -1203,12 +1204,11 @@ idendro<-structure(function# Interactive Dendrogram
             if (dbg.dendro.zoom>1) printVar(gw)
             if (dbg.dendro.zoom>1) printVar(dendroZoom)
 
-            # construct the (absolute) zoomFactor based on the
+            # Construct the (absolute) zoomFactor based on the
             # user-supplied relative zoomFactor and the zooming amount
-            # requested by the mouse wheel
-            zoomFactor<-params$zoomFactor*abs(delta)
-            # the zoomFactor must be less than 1 in order to prevent
-            # range reversal
+            # requested by the mouse wheel.
+            # The zoomFactor must be less than 1 in order to prevent
+            # range reversal.
             zoomFactor<-min(.5,params$zoomFactor*abs(delta))
 
             if (delta>0) {

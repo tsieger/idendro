@@ -2,13 +2,13 @@
 \alias{popDendroZoomHistory}
 \title{popDendroZoomHistory}
 \description{Restore (and discard from history) the last dendro zoom.}
-\usage{popDendroZoomHistory(.sharedEnv)}
+\usage{popDendroZoomHistory(df, dbg = FALSE)}
 \arguments{
-  \item{.sharedEnv}{shared environment (the environment of the
-'idendro' function)}
+  \item{df}{shared data frame}
+  \item{dbg}{debug flag/level}
 }
 
-\value{dendro zoom}
+\value{dendro zoom popped (or NULL if stack empty)}
 
 \author{Tomas Sieger}
 
