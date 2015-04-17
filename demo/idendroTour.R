@@ -23,7 +23,7 @@ x.pc <- prcomp(x, center=TRUE, scale. = TRUE)
 qx$PC1 <- x.pc$x[, 1]
 qx$PC2 <- x.pc$x[, 2]
 # ... and show the first two principal components
-qscatter(PC1, PC2, qx)
+print(qscatter(PC1, PC2, qx))
 
 # now select some clusters in the dendrogram
 # once you are done, run this code to visualize data on a tour plot:
