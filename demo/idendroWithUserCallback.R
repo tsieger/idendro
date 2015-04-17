@@ -5,18 +5,18 @@
 data(iris)
 
 # compute pairwise distances
-dx<-dist(iris[, 1:4])
+dx <- dist(iris[, 1:4])
 
 # perform hierarchical clustering
-hx<-hclust(dx)
+hx <- hclust(dx)
 
 # prepare mutable data frame enabling to communicate between
 # idendro and user callback
-qx<-qdata(iris)
+qx <- qdata(iris)
 
 # visualize clusters, qx mutaframe enriched with `.cluster'
 # and `.inCurrentCluster' returned
-qx<-idendro(hx,qx)
+qx <- idendro(hx,qx)
 
 # bind a listener to changes to cluster assignment and current cluster setting
 qx.listener <- add_listener(qx, function(i, j) {
@@ -31,12 +31,12 @@ qx.listener <- add_listener(qx, function(i, j) {
 qsetClass("UserCallbackWindow", Qt$QWidget, function(parent = NULL) {
     super(parent)
 
-    this$currentClusterSize<-0
-    this$currentClusterMeanX1<-NA
-    this$currentClusterMeanX2<-NA
+    this$currentClusterSize <- 0
+    this$currentClusterMeanX1 <- NA
+    this$currentClusterMeanX2 <- NA
   
-    this$label<-Qt$QLabel('There is no current cluster.')
-    this$quitButton<-Qt$QPushButton("&Quit")
+    this$label <- Qt$QLabel('There is no current cluster.')
+    this$quitButton <- Qt$QPushButton("&Quit")
     mainLayout <- Qt$QGridLayout()
     mainLayout$addWidget(label)
     mainLayout$addWidget(quitButton)
@@ -46,7 +46,7 @@ qsetClass("UserCallbackWindow", Qt$QWidget, function(parent = NULL) {
     qconnect(quitButton, "pressed", function(data) {
         remove_listener(data[[1]], data[[2]])
         close()
-    },list(qx,qx.listener))
+    },list(qx, qx.listener))
 
     qsetMethod("updateClusterInfo", UserCallbackWindow, function(qx) {
         this$label$setText(sprintf(
@@ -57,7 +57,7 @@ qsetClass("UserCallbackWindow", Qt$QWidget, function(parent = NULL) {
     })
 })
 
-userCallbackWindow<-UserCallbackWindow()
+userCallbackWindow <- UserCallbackWindow()
 userCallbackWindow$updateClusterInfo(qx)
 userCallbackWindow$show()
 
