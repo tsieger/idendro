@@ -2,7 +2,8 @@
 ## integrated.
 ##
 
-library(cranvas)
+library(idendro) # idendro
+library(cranvas) # qdata, qscatter, qparallel
 
 data(iris)
 
@@ -25,4 +26,3 @@ idendro(hx, qx)
 print(qscatter(Sepal.Length, Sepal.Width, data = qx))
 # and a parallel coordinate plot
 print(qparallel(~., data = qx))
-
