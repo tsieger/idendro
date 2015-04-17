@@ -6,18 +6,18 @@
 
 library(tourr) # animate_xy
 
-x<-flea[,1:6]
+x <- flea[, 1:6]
 # compute pairwise distances
-dx<-dist(x)
+dx <- dist(x)
 
 # perform hierarchical clustering
-hx<-hclust(dx)
+hx <- hclust(dx)
 
 # visualize clusters
-qx<-idendro(hx,x,maxClusterCount=6,doSmoothHeatmap=T)
+qx <- idendro(hx, x, maxClusterCount = 6, doSmoothHeatmap = TRUE)
 
 # compute PCA ...
-x.pc <- prcomp(x,center=TRUE,scale.=TRUE)
+x.pc <- prcomp(x, center=TRUE, scale. = TRUE)
 qx$PC1 <- x.pc$x[, 1]
 qx$PC2 <- x.pc$x[, 2]
 # ... and show the first two principal components
