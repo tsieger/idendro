@@ -4,6 +4,7 @@
 ##
 
 library(DendSer) # dser
+library(idendro) # idendro
 
 # hierarchical cluster analysis over iris data
 d <- dist(scale(iris[, -5]))
@@ -15,11 +16,11 @@ PC1 <- prcomp(iris[,-5], scale = TRUE)$x[, 1]
 iris.with.pc1 <- cbind(iris, PC1)
 
 # draw dendrogram with heat map
-idendro(h, iris.with.pc1)
+idendro(h, iris.with.pc1, geometry=c(0,0,600,400))
 # note the order of the observations (rows in heat map) does not
 # reflect the Species well (and PC1 either)
 
 # Let's reorder the observations by the PC1 using 'DendSer::dser'
 h$order <- dser(h, PC1, cost = costLS)
-idendro(h, iris.with.pc1)
+idendro(h, iris.with.pc1, geometry=c(600,0,600,400))
 # note the order of observations is much more natural when sorted
