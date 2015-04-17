@@ -1,11 +1,11 @@
 Package: idendro
 Type: Package
 Title: Interactive dendrograms
-Version: 1.4.2
+Version: 1.4.3
 Date: 2015-04-10
 Author: Tomas Sieger
 Depends: qtbase, qtpaint, cranvas, plumbr, grDevices, scales
-Suggests: DendSer, testthat
+Suggests: DendSer, cluster, tourr, RColorBrewer, testthat
 URL: http://github.com/tsieger/idendro
 Maintainer: Tomas Sieger <tomas.sieger@seznam.cz>
 Description: Interactive dendrogram that enables the user to select and

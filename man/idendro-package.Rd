@@ -11,11 +11,11 @@ interactive plot implemented in the cranvas package.}
 \tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
 Title: \tab Interactive dendrograms\cr
-Version: \tab 1.4.2\cr
+Version: \tab 1.4.3\cr
 Date: \tab 2015-04-10\cr
 Author: \tab Tomas Sieger\cr
 Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, scales\cr
-Suggests: \tab DendSer, testthat\cr
+Suggests: \tab DendSer, cluster, tourr, RColorBrewer, testthat\cr
 URL: \tab http://github.com/tsieger/idendro\cr
 Maintainer: \tab Tomas Sieger <tomas.sieger@seznam.cz>\cr
 License: \tab GPL-2\cr
