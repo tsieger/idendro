@@ -1,6 +1,8 @@
 ## Dendrogram + heat map demo.
 ##
 
+library(idendro) # idendro
+
 data(iris)
 
 # perform hierarchical clustering analysis
