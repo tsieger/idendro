@@ -4,6 +4,8 @@
 ## package).
 ##
 
+library(idendro) # idendro
+library(cranvas) # qdata, qscatter, qparallel
 library(tourr) # animate_xy
 
 x <- flea[, 1:6]
