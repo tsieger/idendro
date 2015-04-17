@@ -1,6 +1,8 @@
 ## Demo on clustering both rows and columns of a data set.
 ##
 
+library(idendro) # idendro
+
 data(iris)
 
 # Find similar variables (i.e. features measured on the Iris flowers:
