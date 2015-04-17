@@ -3,7 +3,7 @@
 ## (This demo is based on the example provided for `dser'.)
 ##
 
-require(DendSer) # dser
+library(DendSer) # dser
 
 # hierarchical cluster analysis over iris data
 d <- dist(scale(iris[, -5]))
