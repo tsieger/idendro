@@ -4,6 +4,9 @@
 
 library(flowStats) # ITN
 library(RColorBrewer) # brewer.pal
+library(idendro) # idendro
+library(cranvas) # qdata, qscatter
+
 data(ITN)
 
 # get data matrix
@@ -13,12 +16,14 @@ x[, 3:7] <- log10(x[, 3:7])
 x <- scale(x)
 
 # perform HCA
+cat('computing HCA (this takes a while)\n')
 hx <- hclust(dist(x), method = 'average')
 
 # plot dendrogram + heat map
+cat('plotting dendrogram\n')
 mdf.x <- idendro(hx, x, 
     heatmapColors = colorRampPalette(c("purple4", "blue3", "blue3", "grey", 
-        "grey", "orangered", "orangered", "red")(15)),
+        "grey", "orangered", "orangered", "red"))(15),
     clusterColors = brewer.pal(12, "Paired"))
 
 # plot scatter plots of selected data projections
