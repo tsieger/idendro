@@ -2,7 +2,8 @@
 ## using "big data" (5000 observations).
 ##
 
-library(cranvas)
+library(idendro) # idendro
+library(cranvas) # qdata, qscatter
 
 # load "big data"
 data(hca5000)
