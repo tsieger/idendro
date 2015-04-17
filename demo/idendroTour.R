@@ -4,7 +4,7 @@
 ## package).
 ##
 
-require(tourr) # animate_xy
+library(tourr) # animate_xy
 
 x<-flea[,1:6]
 # compute pairwise distances
