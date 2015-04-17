@@ -3,6 +3,8 @@
 ##
 
 library(hyperSpec) # chondro data
+library(idendro) # idendro
+library(cranvas) # qdata, qscatter, qparallel
 
 # preprocess chondro data
 cat('preprocessing the chondro data (it takes a while)\n')
