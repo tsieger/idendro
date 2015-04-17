@@ -1,6 +1,8 @@
 ## Simple dendrogram demo.
 ##
 
+library(idendro) # idendro
+
 data(iris)
 
 # perform hierarchical clustering
