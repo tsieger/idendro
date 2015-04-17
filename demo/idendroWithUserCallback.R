@@ -2,6 +2,11 @@
 ## interactively to changes made to `idendro' dendrogram and GUI.
 ##
 
+library(idendro) # idendro
+library(cranvas) # qdata
+library(plumbr) # add_listener, remove_listener
+library(qtbase) # Qt, qconnect, qsetMethod
+
 data(iris)
 
 # compute pairwise distances
