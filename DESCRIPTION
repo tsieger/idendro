@@ -1,7 +1,7 @@
 Package: idendro
 Type: Package
 Title: Interactive dendrograms
-Version: 1.4.3
+Version: 1.4.4
 Date: 2015-04-10
 Author: Tomas Sieger
 Depends: qtbase, qtpaint, cranvas, plumbr, grDevices, scales
