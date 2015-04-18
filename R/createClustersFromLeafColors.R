@@ -51,9 +51,9 @@ createClustersFromLeafColors<-function
         # indices of supplied cluster IDs
         clustersIdsSupplied<-sort(setdiff(leafColors,0))
         if (dbg) printVar(clustersIdsSupplied)
-        if (length(clustersIdsSupplied)>maxClusterCount) {
-            stop(sprintf('user-supplied cluster count %d greater than maxClusterCount %d.',
-                length(clustersIdsSupplied),maxClusterCount))
+        if (max(clustersIdsSupplied)>maxClusterCount) {
+            stop(sprintf('user-supplied cluster %d greater than maxClusterCount %d.',
+                max(clustersIdsSupplied),maxClusterCount))
         }
         unselectedIndices<-1:n
         clst<-clst[n+(1:clusterCount)]
