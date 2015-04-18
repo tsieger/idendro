@@ -11,7 +11,7 @@ interactive plot implemented in the cranvas package.}
 \tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
 Title: \tab Interactive dendrograms\cr
-Version: \tab 1.4.3\cr
+Version: \tab 1.4.4\cr
 Date: \tab 2015-04-10\cr
 Author: \tab Tomas Sieger\cr
 Depends: \tab qtbase, qtpaint, cranvas, plumbr, grDevices, scales\cr
