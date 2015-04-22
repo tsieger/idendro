@@ -4,6 +4,6 @@ written by Tomas Sieger (tomas.sieger@seznam.cz)
 
 up-to-date version can be found at https://github.com/tsieger/idendro
 
-For installation, please see the INSTALL file.
+For installation, please see https://github.com/tsieger/idendro/wiki.
 
 For demos, please run `demo(package="idendro")'.
