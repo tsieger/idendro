@@ -1,10 +1,16 @@
+Detailed installation instructions can be found at 
+https://github.com/tsieger/idendro/wiki.
+
+
+Brief installation instructions:
+
 Prerequisites:
 =============
 R packages required:
 
 - cranvas (which, in turn, depends (not only) on qtbase and qtpaint)
 
-Please, read https://github.com/ggobi/cranvas/wiki to learn how to
+Please, read http://cranvas.org/download.html to learn how to
 install these packages. 
 
 
@@ -16,14 +22,13 @@ Hadley Wickham's `devtools' package (e.g. https://github.com/hadley/devtools)
 could come handy.
 
 
-
 idendro
 =======
 
 i) directly from github, using the `devtools' R package:
 
   > library(devtools)
-  > install_github('idendro','tsieger')
+  > install_github('tsieger/idendro')
 
 ii) manually:
 
