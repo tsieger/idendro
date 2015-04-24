@@ -6,6 +6,6 @@ if (interactive()) {
 
     hx<-hclust(dist(iris[, 1:4]))
     levels(iris$Species)[1]<-'1\n22222\n333'
-    cat('Click in the upper right corner of the heatmap - is the annotation dispalyed well?\n')
+    cat('Click in the upper right corner of the heatmap - is the annotation displayed well?\n')
     idendro(hx, iris)
 }
