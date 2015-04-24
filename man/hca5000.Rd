@@ -19,6 +19,6 @@ hierarchical cluster analysis performed on 'x'.
 \examples{
 library(idendro)
 data(hca5000)
-idendro(hca5000$hx,hca5000$x,observationAnnotationEnabled=FALSE)
+idendro(hca5000$hx, hca5000$x, observationAnnotationEnabled = FALSE)
 }
 \keyword{datasets}
