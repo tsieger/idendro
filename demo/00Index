@@ -1,14 +1,14 @@
 idendro                 dendrogram + heat map demo
 idendroSimple           dendrogram demo
 idendroWithCranvas      dendrogram + heat map + scatter plot demo
-idendroFlow             dendrogram + heat map of flow cytometry data
+idendroTour             dendrogram projecting to a tour plot 
 idendroBig              dendrogram + heat map + scatter plot demo using big data
 idendroWithUserCallback user code responding to interactive dendrogram changes demo
-idendroDendSer          dendrogram optimization using `DendSer::dser'
-idendroAnnotation       dendrogram + heat map with long annotations
-idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
+idendroFlow             dendrogram + heat map of flow cytometry data
 idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot of spectroscopy data
-idendroTour             dendrogram projecting to a tour plot 
+idendroAnnotation       dendrogram + heat map with long annotations
+idendroDendSer          dendrogram optimization using `DendSer::dser'
+idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
 idenroRowCol            clustering both rows and columns of a data set
 
 idendroDemo             deprecated, see the `idendro' demo
