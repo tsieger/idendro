@@ -331,8 +331,17 @@ idendro<-structure(function# Interactive Dendrogram
 
     if (is.unsorted(h$height)) {
         warning('Non-monotone distance detected, applying a simple workaround. Consider using clustering with monotone distance.')
+        # 1  4  2  7  6  5  8  9  # h$height
+        #    3 -2  5 -1 -1  3  1  # tmp<-diff(h$height),  min(tmp[tmp>0]) = 1
+        #    2 -3  4 -2 -2  2  0  # tmp2<-tmp-min(tmp[tmp>0]
+        #    0 -3  0 -2 -2  0  0  # tmp2*I(tmp<0)
+        #    0 -3 -3 -5 -7 -7 -7  # cumsum(tmp2*I(tmp<0))
+        #    0  3  3  5  7  7  7  # -cumsum(tmp2*I(tmp<0))
+        # 1  4  2  7  6  5  8  9  # h$height
+        # 1  4  5 10 11 12 15 16  # h$height + c(0,-cumsum(tmp*I(tmp<0)))
         tmp<-diff(h$height)
-        h$height<-h$height+c(0,-cumsum(tmp*I(tmp<0)))
+        tmp2<-tmp-min(tmp[tmp>0])
+        h$height<-h$height+c(0,-cumsum(tmp2*I(tmp<0)))
     }
 
     n<-length(h$height)+1
