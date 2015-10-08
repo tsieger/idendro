@@ -1636,12 +1636,12 @@ idendro<-structure(function# Interactive Dendrogram
         createButtons(clusterLabel$sizeHint$width())
         for (i in 1:params$maxClusterCount) {
             # ... currentCluster selectors,
-            clustersLayout$addWidget(clusterSelectorButtons[[i]],i+1,1)
+            clustersLayout$addWidget(this$clusterSelectorButtons[[i]],i+1,1)
             # ... clusterInfos (out of total number of observations)
-            clustersLayout$addWidget(clusterInfosTotal[[i]],i+1,2)
+            clustersLayout$addWidget(this$clusterInfosTotal[[i]],i+1,2)
             if (brushedmapEnabled) {
                 # ... clusterInfos (out of brushed observations)
-                clustersLayout$addWidget(clusterInfosBrushed[[i]],i+1,3)
+                clustersLayout$addWidget(this$clusterInfosBrushed[[i]],i+1,3)
             }
         }
         # set the current cluster
@@ -1652,35 +1652,35 @@ idendro<-structure(function# Interactive Dendrogram
         # GUI buttons
         zoomLayout<-Qt$QHBoxLayout()
         zoomLayout$addStretch(1)
-        zoomLayout$addWidget(zoomBackButton)
-        zoomLayout$addWidget(fullViewButton)
+        zoomLayout$addWidget(this$zoomBackButton)
+        zoomLayout$addWidget(this$fullViewButton)
         zoomLayout$addStretch(1)
         guiLayout$addLayout(zoomLayout)
 
         selectBackLayout<-Qt$QHBoxLayout()
         selectBackLayout$addStretch(1)
-        selectBackLayout$addWidget(selectBackButton)
+        selectBackLayout$addWidget(this$selectBackButton)
         selectBackLayout$addStretch(1)
         guiLayout$addLayout(selectBackLayout,0)
         selectionLayout<-Qt$QHBoxLayout()
         selectionLayout$addStretch(1)
-        selectionLayout$addWidget(unselectButton)
-        selectionLayout$addWidget(unselectAllButton)
+        selectionLayout$addWidget(this$unselectButton)
+        selectionLayout$addWidget(this$unselectAllButton)
         selectionLayout$addStretch(1)
         guiLayout$addLayout(selectionLayout,0)
 
         heatmapSmoothingLabelLayout<-Qt$QHBoxLayout()
-        heatmapSmoothingLabelLayout$addWidget(heatmapSmoothingLabel)
+        heatmapSmoothingLabelLayout$addWidget(this$heatmapSmoothingLabel)
         heatmapSmoothingLayout<-Qt$QHBoxLayout()
-        heatmapSmoothingLayout$addWidget(heatmapSmoothingRadioButton_none)
-        heatmapSmoothingLayout$addWidget(heatmapSmoothingRadioButton_cluster)
-        heatmapSmoothingLayout$addWidget(heatmapSmoothingRadioButton_zoom)
+        heatmapSmoothingLayout$addWidget(this$heatmapSmoothingRadioButton_none)
+        heatmapSmoothingLayout$addWidget(this$heatmapSmoothingRadioButton_cluster)
+        heatmapSmoothingLayout$addWidget(this$heatmapSmoothingRadioButton_zoom)
         guiLayout$addLayout(heatmapSmoothingLabelLayout,0)
         guiLayout$addLayout(heatmapSmoothingLayout,0)
 
         quitLayout<-Qt$QHBoxLayout()
         quitLayout$addStretch(1)
-        quitLayout$addWidget(quitButton)
+        quitLayout$addWidget(this$quitButton)
         quitLayout$addStretch(1)
         guiLayout$addLayout(quitLayout,0)
 
@@ -1798,7 +1798,7 @@ idendro<-structure(function# Interactive Dendrogram
             rect<-Qt$QRect(event$rect())
             if (graphicalClusterInfos) {
                 # fill part of the rectangle, excluding border
-                rect$setWidth(rect$width()*relWidth)
+                rect$setWidth(rect$width()*this$relWidth)
                 painter$fillRect(rect,qbrush(this$color))
             }
             # draw border
@@ -1829,7 +1829,7 @@ idendro<-structure(function# Interactive Dendrogram
         maxClusterInfoWidth<-wideLabel$sizeHint$width()+2*3 # add some space at the borders to make it visually more appealing
         for (i in 1:params$maxClusterCount) {
             this$clusterSelectorButtons[[i]]<-ColoredRadioButton(sprintf('%2d',i),params$clusterColors[i])
-            qconnect(clusterSelectorButtons[[i]],"pressed",function(i) {
+            qconnect(this$clusterSelectorButtons[[i]],"pressed",function(i) {
                 df<-attr(scene,'.sharedEnv')$df
                 if (df$currentCluster!=i) {
                     df$currentCluster<-i
@@ -1854,7 +1854,7 @@ idendro<-structure(function# Interactive Dendrogram
         }
 
         this$fullViewButton<-Qt$QPushButton('&Full view')
-        qconnect(fullViewButton,"pressed",function() {
+        qconnect(this$fullViewButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
@@ -1868,7 +1868,7 @@ idendro<-structure(function# Interactive Dendrogram
         })
 
         this$zoomBackButton<-Qt$QPushButton('Undo &zoom')
-        qconnect(zoomBackButton,"pressed",function() {
+        qconnect(this$zoomBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
@@ -1884,7 +1884,7 @@ idendro<-structure(function# Interactive Dendrogram
         })
 
         this$unselectButton<-Qt$QPushButton('&Unselect')# current cluster')
-        qconnect(unselectButton,"pressed",function() {
+        qconnect(this$unselectButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
@@ -1898,7 +1898,7 @@ idendro<-structure(function# Interactive Dendrogram
         })
 
         this$unselectAllButton<-Qt$QPushButton('Unselect &all')# clusters')
-        qconnect(unselectAllButton,"pressed",function() {
+        qconnect(this$unselectAllButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
@@ -1912,7 +1912,7 @@ idendro<-structure(function# Interactive Dendrogram
         })
 
         this$selectBackButton<-Qt$QPushButton('Undo &selection')
-        qconnect(selectBackButton,"pressed",function() {
+        qconnect(this$selectBackButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
 
@@ -1929,7 +1929,7 @@ idendro<-structure(function# Interactive Dendrogram
 
         this$heatmapSmoothingLabel<-Qt$QLabel('heat map smoothing:')
         this$heatmapSmoothingRadioButton_none<-Qt$QRadioButton('none')
-        qconnect(heatmapSmoothingRadioButton_none,"pressed",function() {
+        qconnect(this$heatmapSmoothingRadioButton_none,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             if (.sharedEnv$params$heatmapSmoothing!='none') {
                 .sharedEnv$params$heatmapSmoothing<-'none'
@@ -1937,7 +1937,7 @@ idendro<-structure(function# Interactive Dendrogram
             }
         })
         this$heatmapSmoothingRadioButton_cluster<-Qt$QRadioButton('cluster')
-        qconnect(heatmapSmoothingRadioButton_cluster,"pressed",function() {
+        qconnect(this$heatmapSmoothingRadioButton_cluster,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             if (.sharedEnv$params$heatmapSmoothing!='cluster') {
                 .sharedEnv$params$heatmapSmoothing<-'cluster'
@@ -1945,7 +1945,7 @@ idendro<-structure(function# Interactive Dendrogram
             }
         })
         this$heatmapSmoothingRadioButton_zoom<-Qt$QRadioButton('zoom')
-        qconnect(heatmapSmoothingRadioButton_zoom,"pressed",function() {
+        qconnect(this$heatmapSmoothingRadioButton_zoom,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             if (.sharedEnv$params$heatmapSmoothing!='zoom') {
                 .sharedEnv$params$heatmapSmoothing<-'zoom'
@@ -1953,17 +1953,17 @@ idendro<-structure(function# Interactive Dendrogram
             }
         })
         heatmapSmoothingRadioButtonGroup<-Qt$QButtonGroup()
-        heatmapSmoothingRadioButtonGroup$addButton(heatmapSmoothingRadioButton_none)
-        heatmapSmoothingRadioButtonGroup$addButton(heatmapSmoothingRadioButton_cluster)
-        heatmapSmoothingRadioButtonGroup$addButton(heatmapSmoothingRadioButton_zoom)
+        heatmapSmoothingRadioButtonGroup$addButton(this$heatmapSmoothingRadioButton_none)
+        heatmapSmoothingRadioButtonGroup$addButton(this$heatmapSmoothingRadioButton_cluster)
+        heatmapSmoothingRadioButtonGroup$addButton(this$heatmapSmoothingRadioButton_zoom)
         switch(attr(scene,'.sharedEnv')$params$heatmapSmoothing,
-            'none'=heatmapSmoothingRadioButton_none$setChecked(TRUE),
-            'cluster'=heatmapSmoothingRadioButton_cluster$setChecked(TRUE),
-            'zoom'=heatmapSmoothingRadioButton_zoom$setChecked(TRUE)
+            'none'=this$heatmapSmoothingRadioButton_none$setChecked(TRUE),
+            'cluster'=this$heatmapSmoothingRadioButton_cluster$setChecked(TRUE),
+            'zoom'=this$heatmapSmoothingRadioButton_zoom$setChecked(TRUE)
         )
 
         this$quitButton<-Qt$QPushButton('&Quit')
-        qconnect(quitButton,"pressed",function() {
+        qconnect(this$quitButton,"pressed",function() {
             # close dendrogram
             view$close()
             # close GUI
@@ -2006,7 +2006,7 @@ idendro<-structure(function# Interactive Dendrogram
     ### to 'idendro', the cluster selection saved in the mutaframe will
     ### get restored. 
 },ex=function() {
-    data(iris)
+    data(iris, envir = environment())
     hx <- hclust(dist(iris[, 1:4]))
     idendro(hx, iris)
 

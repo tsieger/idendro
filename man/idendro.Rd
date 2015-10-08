@@ -243,7 +243,7 @@ get restored. }
 \seealso{hclust, plclust, identify.hclust, rect.hclust,
 cutree, dendrogram, cranvas::qdata}
 \examples{
-data(iris)
+data(iris, envir = environment())
 hx <- hclust(dist(iris[, 1:4]))
 idendro(hx, iris)
 
