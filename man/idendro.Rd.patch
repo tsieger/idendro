@@ -1,0 +1,40 @@
+*** idendro.Rd	Thu Oct  8 08:31:57 2015
+--- idendro.Rd2	Thu Oct  8 09:03:00 2015
+***************
+*** 13,19 ****
+  'idendro' can be used to inspect quite large dendrograms (tens
+  of thousands of observations, at least).
+  }
+! \usage{idendro(h, qx = NULL, x = qx, zoomFactor = 1/240, observationAnnotationEnabled = TRUE, 
+      clusterColors = c("red", "green", "blue", "yellow", "magenta", 
+          "cyan", "darkred", "darkgreen", "purple", "darkcyan"), 
+      unselectedClusterColor = "black", maxClusterCount = length(clusterColors), 
+--- 13,20 ----
+  'idendro' can be used to inspect quite large dendrograms (tens
+  of thousands of observations, at least).
+  }
+! \usage{idendro(h, qx = NULL, x = qx, zoomFactor = 1/240, 
+!     observationAnnotationEnabled = TRUE, 
+      clusterColors = c("red", "green", "blue", "yellow", "magenta", 
+          "cyan", "darkred", "darkgreen", "purple", "darkcyan"), 
+      unselectedClusterColor = "black", maxClusterCount = length(clusterColors), 
+***************
+*** 21,28 ****
+          "cluster", "zoom"), heatmapColors = colorRampPalette(c("#00007F", 
+          "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", 
+          "red", "#7F0000"))(10), heatmapColorCount = 10, doScaleHeatmap = TRUE, 
+!     doScaleHeatmapByRows = FALSE, heatmapRelSize = 0.2, heatmapInspectFormatFun = format, 
+!     brushedmapEnabled = !is.null(qx), separateGui = FALSE, graphicalClusterInfos = TRUE, 
+      textualClusterInfos = TRUE, geometry = c(0, 0, 600, 400), 
+      clipDendro = TRUE, opengl = NULL)}
+  \arguments{
+--- 22,30 ----
+          "cluster", "zoom"), heatmapColors = colorRampPalette(c("#00007F", 
+          "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", 
+          "red", "#7F0000"))(10), heatmapColorCount = 10, doScaleHeatmap = TRUE, 
+!     doScaleHeatmapByRows = FALSE, heatmapRelSize = 0.2, 
+!     heatmapInspectFormatFun = format, brushedmapEnabled = !is.null(qx), 
+!     separateGui = FALSE, graphicalClusterInfos = TRUE, 
+      textualClusterInfos = TRUE, geometry = c(0, 0, 600, 400), 
+      clipDendro = TRUE, opengl = NULL)}
+  \arguments{

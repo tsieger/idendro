@@ -1,0 +1,11 @@
+*** idendro-package.Rd	Thu Oct  8 08:31:57 2015
+--- idendro-package.Rd2	Thu Oct  8 09:01:45 2015
+***************
+*** 1,6 ****
+  \name{idendro-package}
+  \alias{idendro-package}
+- \alias{idendro}
+  \docType{package}
+  \title{Interactive dendrograms}
+  \description{Interactive dendrogram that enables the user to select and
+--- 1,5 ----

@@ -1,10 +1,40 @@
-.git
-git.init
-data/generate_hca5000.R
-data/hca10k.rda
-demo/idendroChondroDemo.R
-doc/
-doc-private/
-demoCranvasIdendro.png
-TODO
-wishlist.txt
+^\.gitignore$
+^\.git
+^git.init$
+
+^man/.*patch$
+^man/.*orig$
+^man/.*rej$
+
+^data/generate_hca5000.R$
+^data/hca10k.rda$
+^doc
+^doc-private
+^TODO$
+^wishlist.txt$
+^bugs
+^hacks
+^img
+^inst
+^installation issues
+^installation notes
+
+^R/idendro.R.dbg$
+^R/other
+
+# .md files
+^cran-comments\.md$
+^NEWS.md$
+
+^idendro.*tar.gz$
+^idendro\.Rcheck$
+^release_HOWTO.txt$
+tmp
+
+# scripts
+^version_update$
+^create_test_dist$
+^test_dist$
+^fix_man$
+^make_NEWS$
+

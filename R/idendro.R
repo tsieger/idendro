@@ -242,15 +242,6 @@ idendro<-structure(function# Interactive Dendrogram
 ##seealso<<hclust, plclust, identify.hclust, rect.hclust,
 ## cutree, dendrogram, cranvas::qdata
 
-    #### required libraries
-    ####
-    require(scales) # alpha
-    require(qtpaint)
-    require(qtbase)
-    require(cranvas) # qdata
-    require(plumbr) # add_listener
-    require(grDevices) # needed to generate jet palette by `colorRampPalette'
-
     #### debugs
     ####
     # general debug
@@ -410,7 +401,7 @@ idendro<-structure(function# Interactive Dendrogram
     heatmapTipText<-NA
     heatmapTipPos<-c(NA,NA)
 
-    df<-prepareDendro(h,x,xOrig,doFlip=TRUE,dbg.dendro)
+    df<-prepareDendro(h,x,xOrig,doFlipG=TRUE,dbg.dendro)
     # initialize clusters from leaf colors, if supplied
     if (!is.null(qx) && !is.null(colnames(qx)) && '.cluster'%in%colnames(qx)) {
         if (dbg.dendro) cat('.cluster found in qx\n')
@@ -1639,7 +1630,7 @@ idendro<-structure(function# Interactive Dendrogram
             # 'M brushed' label
             this$brushedDesc<-Qt$QLabel('0 brushed')
             this$brushedDesc$setMinimumWidth(computeMaxLabelWidth('',' brushed'))
-            clustersLayout$addWidget(brushedDesc,1,3,Qt$Qt$AlignJustify)
+            clustersLayout$addWidget(this$brushedDesc,1,3,Qt$Qt$AlignJustify)
         }
         # populate clustersLayout with ...
         createButtons(clusterLabel$sizeHint$width())
