@@ -9,7 +9,7 @@ idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot of
 idendroAnnotation       dendrogram + heat map with long annotations
 idendroDendSer          dendrogram optimization using `DendSer::dser'
 idendroAgnesDiana       dendrogram demo based on `diana' and `agnes' HCA
-idenroRowCol            clustering both rows and columns of a data set
+idendroRowCol           clustering both rows and columns of a data set
 
 idendroDemo             deprecated, see the `idendro' demo
 idendroTourDemo         deprecated, see the `idendroTour' demo
