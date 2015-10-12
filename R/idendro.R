@@ -1753,6 +1753,7 @@ idendro<-structure(function# Interactive Dendrogram
 
     qsetMethod("createButtons", Window, function(clusterLabelWidth) {
         if (dbg.gui) cat('createButtons called\n')
+        print(1)
 
         ## Radio button with a colored background.
         # Used to identify the current cluster.
@@ -1760,6 +1761,7 @@ idendro<-structure(function# Interactive Dendrogram
             super(parent,...)
             this$color<-color
         }))
+        print(2)
         qsetMethod("paintEvent",ColoredRadioButton,function(event) {
             painter<-Qt$QPainter(this)
             # draw background
@@ -1781,6 +1783,7 @@ idendro<-structure(function# Interactive Dendrogram
             # must finish the painter
             painter$end()
         })
+        print(3)
 
         # Label with a partially filled background.
         # Used to represent the ratio of members in a cluster.
@@ -1790,9 +1793,11 @@ idendro<-structure(function# Interactive Dendrogram
             this$color<-color
             this$relWidth<-relWidth
         }))
+        print(4)
         qsetMethod("setRelWidth",ColoredRectWithLabel,function(relWidth) {
             this$relWidth<-relWidth
         })
+        print(5)
         qsetMethod("paintEvent",ColoredRectWithLabel,function(event) {
             painter<-Qt$QPainter(this)
             rect<-Qt$QRect(event$rect())
@@ -1816,10 +1821,12 @@ idendro<-structure(function# Interactive Dendrogram
                 super('paintEvent',event)
             }
         })
+        print(6)
 
         this$clusterSelectorButtons<-vector('list',params$maxClusterCount)
         this$clusterInfosTotal<-vector('list',params$maxClusterCount)
         this$clusterInfosBrushed<-vector('list',params$maxClusterCount)
+        print(7)
 
         # width of the "cluster" label, used to make cluster selectors wide at least of this size
         maxClusterSelectorWidth<-clusterLabelWidth
@@ -1852,8 +1859,10 @@ idendro<-structure(function# Interactive Dendrogram
             # finally, set the minimal width to the maximum of widths of current cluster selectors
             this$clusterSelectorButtons[[i]]$setMaximumWidth(maxClusterSelectorWidth)
         }
+        print(8)
 
         this$fullViewButton<-Qt$QPushButton('&Full view')
+        print(9)
         qconnect(this$fullViewButton,"pressed",function() {
             .sharedEnv<-attr(scene,'.sharedEnv')
             for (vn in .sharedVarNames()) assign(vn,eval(parse(text=vn),envir=.sharedEnv))
@@ -1866,6 +1875,7 @@ idendro<-structure(function# Interactive Dendrogram
                 zoomDendroBrushedmapAndHeatmap(scene)
             }
         })
+        print(10)
 
         this$zoomBackButton<-Qt$QPushButton('Undo &zoom')
         qconnect(this$zoomBackButton,"pressed",function() {
@@ -1882,6 +1892,7 @@ idendro<-structure(function# Interactive Dendrogram
                 zoomDendroBrushedmapAndHeatmap(scene)
             }
         })
+        print(11)
 
         this$unselectButton<-Qt$QPushButton('&Unselect')# current cluster')
         qconnect(this$unselectButton,"pressed",function() {
@@ -1896,6 +1907,7 @@ idendro<-structure(function# Interactive Dendrogram
                 .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
             }
         })
+        print(12)
 
         this$unselectAllButton<-Qt$QPushButton('Unselect &all')# clusters')
         qconnect(this$unselectAllButton,"pressed",function() {
@@ -1910,6 +1922,7 @@ idendro<-structure(function# Interactive Dendrogram
                 .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
             }
         })
+        print(13)
 
         this$selectBackButton<-Qt$QPushButton('Undo &selection')
         qconnect(this$selectBackButton,"pressed",function() {
@@ -1926,6 +1939,7 @@ idendro<-structure(function# Interactive Dendrogram
                 # no history to recall
             }
         })
+        print(14)
 
         this$heatmapSmoothingLabel<-Qt$QLabel('heat map smoothing:')
         this$heatmapSmoothingRadioButton_none<-Qt$QRadioButton('none')
@@ -1961,6 +1975,7 @@ idendro<-structure(function# Interactive Dendrogram
             'cluster'=this$heatmapSmoothingRadioButton_cluster$setChecked(TRUE),
             'zoom'=this$heatmapSmoothingRadioButton_zoom$setChecked(TRUE)
         )
+        print(15)
 
         this$quitButton<-Qt$QPushButton('&Quit')
         qconnect(this$quitButton,"pressed",function() {
@@ -1969,6 +1984,7 @@ idendro<-structure(function# Interactive Dendrogram
             # close GUI
             close()
         })
+        print(16)
     })
 
     # Compute the width of a label constructed as "paste(txt1,<several digits>,txt2).
