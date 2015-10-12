@@ -321,7 +321,7 @@ idendro<-structure(function# Interactive Dendrogram
     }
 
     if (is.unsorted(h$height)) {
-        warning('Non-monotone distance detected, applying a simple workaround. Consider using clustering with monotone distance.')
+        message('Note: non-monotone distance detected, applying a simple workaround. Consider using clustering with monotone distance.')
         # 1  4  2  7  6  5  8  9  # h$height
         #    3 -2  5 -1 -1  3  1  # tmp<-diff(h$height),  min(tmp[tmp>0]) = 1
         #    2 -3  4 -2 -2  2  0  # tmp2<-tmp-min(tmp[tmp>0]
@@ -357,7 +357,7 @@ idendro<-structure(function# Interactive Dendrogram
             }
         }
         if (nonNumericColumnFound) {
-            warning('Non-numeric data found, converting to numeric (in order to enable heatmap drawing).')
+            message('Note: non-numeric data found, converting to numeric (in order to enable heatmap drawing).')
         }
     } else {
         xOrig<-NULL
