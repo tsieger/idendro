@@ -1633,7 +1633,7 @@ idendro<-structure(function# Interactive Dendrogram
             clustersLayout$addWidget(this$brushedDesc,1,3,Qt$Qt$AlignJustify)
         }
         # populate clustersLayout with ...
-        createButtons(clusterLabel$sizeHint$width())
+        createButtons(clusterLabel$sizeHint$width(),where=topenv(parent.frame(3)))
         for (i in 1:params$maxClusterCount) {
             # ... currentCluster selectors,
             clustersLayout$addWidget(this$clusterSelectorButtons[[i]],i+1,1)
@@ -1751,7 +1751,7 @@ idendro<-structure(function# Interactive Dendrogram
         update()
     })
 
-    qsetMethod("createButtons", Window, function(clusterLabelWidth) {
+    qsetMethod("createButtons", Window, function(clusterLabelWidth,...) {
         if (dbg.gui) cat('createButtons called\n')
 
         ## Radio button with a colored background.
@@ -1759,7 +1759,7 @@ idendro<-structure(function# Interactive Dendrogram
         suppressWarnings(qsetClass("ColoredRadioButton",Qt$QRadioButton,function(parent=NULL,color=color,...) {
             super(parent,...)
             this$color<-color
-        }))
+        },...))
         qsetMethod("paintEvent",ColoredRadioButton,function(event) {
             painter<-Qt$QPainter(this)
             # draw background
@@ -1789,7 +1789,7 @@ idendro<-structure(function# Interactive Dendrogram
             setAlignment(0x84) # Justifies the text in the available space.
             this$color<-color
             this$relWidth<-relWidth
-        }))
+        },...))
         qsetMethod("setRelWidth",ColoredRectWithLabel,function(relWidth) {
             this$relWidth<-relWidth
         })
