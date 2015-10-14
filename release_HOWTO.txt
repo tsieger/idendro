@@ -1,0 +1,5 @@
+* R:
+    library(tsiMisc);buildInlineDoc('~/src/Rweb/idendro')
+* fix_man
+* make_NEWS
+* create_test_dist
