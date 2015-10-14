@@ -5,13 +5,13 @@
 \description{Interactive dendrogram that enables the user to select and
 color clusters, to zoom and pan the dendrogram, and to visualize
 the clustered data not only in a built-in heat map, but also in any
-interactive plot implemented in the cranvas package.}
+interactive plot implemented in the 'cranvas' package.}
 \details{
 \tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
 Title: \tab Interactive dendrograms\cr
-Version: \tab 1.4.5.9000\cr
-Date: \tab 2015-04-10\cr
+Version: \tab 1.5.1\cr
+Date: \tab 2015-10-14\cr
 Author: \tab Tomas Sieger\cr
 Depends: \tab cranvas\cr
 Imports: \tab qtbase, qtpaint, plumbr, grDevices, scales\cr
