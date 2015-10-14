@@ -1,3 +1,8 @@
+# idendro 1.5.2.9000
+-----------------------------------------------------------------------
+* development version started
+
+
 # idendro 1.5.2
 -----------------------------------------------------------------------
 * 'plumbr' and 'grDevices' packages must be depended upon (in order to 

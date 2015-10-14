@@ -1,7 +1,7 @@
 Package: idendro
 Type: Package
 Title: Interactive dendrograms
-Version: 1.5.2
+Version: 1.5.2.9000
 Date: 2015-10-14
 Author: Tomas Sieger
 Depends: cranvas, plumbr, grDevices
