@@ -1,3 +1,9 @@
+# idendro 1.5.2
+-----------------------------------------------------------------------
+* 'plumbr' and 'grDevices' packages must be depended upon (in order to 
+  let users use their functions directly)
+
+
 # idendro 1.5.1
 -----------------------------------------------------------------------
 * version updated to align with that of 'idendr0'

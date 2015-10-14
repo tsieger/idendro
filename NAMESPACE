@@ -1,8 +1,8 @@
 export(idendro)
 
-import(qtpaint)
-import(qtbase)
-importFrom(cranvas,qdata)
-importFrom(scales,alpha)
+import(cranvas)
 importFrom(plumbr,add_listener,remove_listener,is.mutaframe)
 importFrom(grDevices,colorRampPalette,rgb)
+import(qtpaint)
+import(qtbase)
+importFrom(scales,alpha)
