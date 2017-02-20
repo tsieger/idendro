@@ -1,0 +1,29 @@
+bibentry(bibtype = "Article",
+  title        = "Interactive Dendrograms: The {R} Packages {idendro} and {idendr0}",
+  author       = c(person(given = "Tom\\'a\\v{s}",
+                          family = "Sieger",
+                          email = "tomas.sieger@seznam.cz"),
+                   person(given = c("Catherine", "B."),
+                          family = "Hurley",
+                          email = "catherine.hurley@nuim.ie"),
+                   person(given = "Karel",
+                          family = "Fi\\v{s}er",
+                          email = "karel.fiser@lfmotol.cuni.cz"),
+                   person(given = "Claudia",
+                          family = "Beleites",
+                          email = "Claudia.Beleites@ipht-jena.de")),
+  journal      = "Journal of Statistical Software",
+  year         = "2017",
+  volume       = "76",
+  number       = "10",
+  pages        = "1--22",
+  doi          = "10.18637/jss.v076.i10",
+
+  header       = "To cite idendro/idendr0 in publications use:",
+  textVersion  =
+  paste("Tomas Sieger, Catherine B. Hurley, Karel Fiser, Claudia Beleites (2017).",
+        "Interactive Dendrograms: The R Packages idendro and idendr0.",
+        "Journal of Statistical Software, 76(10), 1-22.",
+        "doi:10.18637/jss.v076.i10")
+)
+
