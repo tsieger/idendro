@@ -26,4 +26,9 @@ LazyLoad: \tab yes\cr}
 
 \keyword{ package }
 
-
+\references{
+  Sieger, T.,  Hurley, C. B., Fiser, K., Beleites, C. (2017)
+  Interactive Dendrograms: The R Packages idendro and idendr0.
+  \emph{Journal of Statistical Software}, \bold{76}(10), 1--22.
+  doi:10.18637/jss.v076.i10
+}
