@@ -1,8 +1,8 @@
 Package: idendro
 Type: Package
-Title: Interactive dendrograms
-Version: 1.5.2.9000
-Date: 2015-10-14
+Title: Interactive Dendrograms
+Version: 1.5.3
+Date: 2017-02-22
 Author: Tomas Sieger
 Depends: cranvas, plumbr, grDevices
 Imports: qtbase, qtpaint, scales
@@ -16,3 +16,4 @@ Description: Interactive dendrogram that enables the user to select and
     interactive plot implemented in the 'cranvas' package.
 License: GPL-2
 LazyLoad: yes
+LazyData: true

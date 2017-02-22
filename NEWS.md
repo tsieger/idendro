@@ -1,6 +1,8 @@
-# idendro 1.5.2.9000
+# idendr0 1.5.3
 -----------------------------------------------------------------------
-* development version started
+* our JSS paper referenced
+* vignette added
+* minor improvements
 
 
 # idendro 1.5.2
