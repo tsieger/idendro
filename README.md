@@ -14,7 +14,7 @@ suitable for users who have no 'cranvas' package installed.
 To install:
 
 * the latest development version: 
-  `install_github("tsieger/idendro", args="--no-multiarch")`
+  `devtools::install_github("tsieger/idendro", args="--no-multiarch")`
 
 The installation of prerequisities is described in the full installation
 instructions available at https://github.com/tsieger/idendro/wiki.
