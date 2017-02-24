@@ -3,3 +3,8 @@
 * fix_man
 * make_NEWS
 * create_test_dist
+
+
+after release start a new devel version:
+- change version to x.y.z.9000 in DESCRIPTION and man/idendro-package.Rd
+- add x.y.z.9000 version to NEWS.md
