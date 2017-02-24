@@ -10,7 +10,7 @@ interactive plot implemented in the 'cranvas' package.}
 \tabular{ll}{Package: \tab idendro\cr
 Type: \tab Package\cr
 Title: \tab Interactive dendrograms\cr
-Version: \tab 1.5.3\cr
+Version: \tab 1.5.3.9000\cr
 Date: \tab 2017-02-22\cr
 Author: \tab Tomas Sieger\cr
 Depends: \tab cranvas, plumbr, grDevices\cr
