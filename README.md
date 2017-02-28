@@ -11,7 +11,7 @@ terms of base R graphics and platform-independent Tcl/Tk GUI, and
 integrated with the GGobi dynamic interactive graphics. 'idendr0' is
 suitable for users who have no 'cranvas' package installed.
 
-To install:
+## To install:
 
 * the latest development version: 
   `devtools::install_github("tsieger/idendro", args="--no-multiarch")`
@@ -19,7 +19,7 @@ To install:
 The installation of prerequisities is described in the full installation
 instructions available at https://github.com/tsieger/idendro/wiki.
 
-A simple example:
+#### A simple example:
 
     library(idendro)
     hc <- hclust(dist(iris[, 1:4]))
@@ -27,7 +27,7 @@ A simple example:
 
 ![Example](/man/figures/idendro1.png?raw=true "Simple example.")
 
-Bidirectional integration with interactive cranvas plots:
+#### Bidirectional integration with interactive cranvas plots:
 
     library(idendro)
     library(cranvas)
