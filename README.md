@@ -21,10 +21,23 @@ instructions available at https://github.com/tsieger/idendro/wiki.
 
 A simple example:
 
+    library(idendro)
     hc <- hclust(dist(iris[, 1:4]))
     idendro(hc, iris)
 
 ![Example](/man/figures/idendro1.png?raw=true "Simple example")
+
+Bidirectional integration with interactive cranvas plots:
+
+    library(idendro)
+    library(cranvas)
+    hc <- hclust(dist(iris[, 1:4]))
+    qx <- qdata(iris)
+    idendro(hx, qx)
+    print(qscatter(Sepal.Length, Sepal.Width, data = qx))
+    print(qparallel(~., data = qx))
+
+![Example](/man/figures/idendro2.png?raw=true "Integration with cranvas")
 
 For demos, please run `demo(package="idendro")'.
 
