@@ -24,6 +24,8 @@ A simple example:
     hc <- hclust(dist(iris[, 1:4]))
     idendro(hc, iris)
 
+![Example](/man/figures/idendro1.png?raw=true "Simple example")
+
 For demos, please run `demo(package="idendro")'.
 
 Find out more at https://github.com/tsieger/idendro
