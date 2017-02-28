@@ -25,7 +25,7 @@ A simple example:
     hc <- hclust(dist(iris[, 1:4]))
     idendro(hc, iris)
 
-![Example](/man/figures/idendro1.png?raw=true "Simple example")
+![Example](/man/figures/idendro1.png?raw=true "Simple example.")
 
 Bidirectional integration with interactive cranvas plots:
 
@@ -37,8 +37,8 @@ Bidirectional integration with interactive cranvas plots:
     print(qscatter(Sepal.Length, Sepal.Width, data = qx))
     print(qparallel(~., data = qx))
 
-![Example](/man/figures/idendro2.png?raw=true "Integration with cranvas")
+![Example](/man/figures/idendro2.png?raw=true "Integration with cranvas.")
 
-For demos, please run `demo(package="idendro")'.
+For demos, please run `demo(package="idendro")`.
 
 Find out more at https://github.com/tsieger/idendro
