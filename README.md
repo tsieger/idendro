@@ -9,13 +9,14 @@ interactive plot implemented in the
 Note: there is an alternative lightweight version of 'idendro' called
 [idendr0](https://github.com/tsieger/idendr0). It is implemented in
 terms of base R graphics and platform-independent Tcl/Tk GUI, and
-integrated with the [GGobi dynamic interactive graphics](http://ggobi.org/). 
+integrated with the [GGobi](http://ggobi.org/) dynamic interactive graphics.
 [idendr0](https://github.com/tsieger/idendr0) is suitable for users who 
 have no [cranvas](https://github.com/ggobi/cranvas) package installed.
 
 #### Documentation
 
-[A paper in the Journal of Statistical Software](http://dx.doi.org/10.18637/jss.v076.i10)
+[A paper](http://dx.doi.org/10.18637/jss.v076.i10) in the 
+[Journal of Statistical Software](http://jstatsoft.org/)
 and [idendro vignette](/inst/doc/idendro.pdf).
 
 ## To install:
