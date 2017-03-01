@@ -3,13 +3,20 @@
 'idendro' is an interactive dendrogram that enables the user to select 
 and color clusters, to zoom and pan the dendrogram, and to visualize 
 the clustered data not only in a built-in heat map, but also in any
-interactive plot implemented in the 'cranvas' package.
+interactive plot implemented in the 
+[cranvas](https://github.com/ggobi/cranvas) package.
 
-Note: there is an alternative lightweight 'idendro' version called
-'idendr0' (https://github.com/tsieger/idendr0).  It is implemented in
+Note: there is an alternative lightweight version of 'idendro' called
+[idendr0](https://github.com/tsieger/idendr0). It is implemented in
 terms of base R graphics and platform-independent Tcl/Tk GUI, and
-integrated with the GGobi dynamic interactive graphics. 'idendr0' is
-suitable for users who have no 'cranvas' package installed.
+integrated with the [GGobi dynamic interactive graphics](http://ggobi.org/). 
+[idendr0](https://github.com/tsieger/idendr0) is suitable for users who 
+have no [cranvas](https://github.com/ggobi/cranvas) package installed.
+
+#### Documentation
+
+[A paper in the Journal of Statistical Software](http://dx.doi.org/10.18637/jss.v076.i10)
+and [idendro vignette](/inst/doc/idendro.pdf).
 
 ## To install:
 
@@ -41,4 +48,4 @@ instructions available at https://github.com/tsieger/idendro/wiki.
 
 For demos, please run `demo(package="idendro")`.
 
-Find out more at https://github.com/tsieger/idendro
+Find out more at https://github.com/tsieger/idendro.
