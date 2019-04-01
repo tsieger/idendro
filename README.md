@@ -41,7 +41,7 @@ instructions available at https://github.com/tsieger/idendro/wiki.
     library(cranvas)
     hc <- hclust(dist(iris[, 1:4]))
     qx <- qdata(iris)
-    idendro(hx, qx)
+    idendro(hc, qx)
     print(qscatter(Sepal.Length, Sepal.Width, data = qx))
     print(qparallel(~., data = qx))
 
