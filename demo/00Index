@@ -4,6 +4,7 @@ idendroWithCranvas      dendrogram + heat map + scatter plot demo
 idendroTour             dendrogram projecting to a tour plot 
 idendroBig              dendrogram + heat map + scatter plot demo using big data
 idendroWithUserCallback user code responding to interactive dendrogram changes demo
+idendroWithUserClsSel   user code controlling cluster selection interactively
 idendroFlow             dendrogram + heat map of flow cytometry data
 idendroChondro          dendrogram + heat map + scatter plot + par.coord.plot of spectroscopy data
 idendroAnnotation       dendrogram + heat map with long annotations

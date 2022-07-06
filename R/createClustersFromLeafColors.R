@@ -23,6 +23,10 @@ createClustersFromLeafColors<-function
     clusterCount<-df$clusterCount
     h<-df$h
 
+    # clear any clusters currently present
+    df$clusters<-NULL
+    df$currentCluster<-1
+
     if (!is.null(leafColors) && length(leafColors)==n &&
         is.numeric(leafColors) && any(leafColors>0)) {
         # initialize clusters from user-supplied initial assignment

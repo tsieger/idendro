@@ -267,6 +267,7 @@ idendro<-structure(function# Interactive Dendrogram
     dbg.heatmap.smooth<-0*dbg
     dbg.brushedmap<-0*dbg
     dbg.brushedmap.limits<-0*dbg
+    dbg.listener<-0*dbg
 
     #### arguments handling
     ####
@@ -1572,13 +1573,35 @@ idendro<-structure(function# Interactive Dendrogram
     layout$setColumnStretchFactor(3,0)
 
     ## listeners on the data (which column updates which layer(s))
+    listenerCallDepth<-0 # to check against infinite recursion
     if (!is.null(qx)) {
         qx.listener<-add_listener(qx,function(i,j) {
+            if (dbg.listener>1) cat('i=',i,'\n')
+            if (dbg.listener) cat('j=',j,'\n')
+            if (dbg.listener) cat('qx listener: calling depth',listenerCallDepth,'\n')
+            if (listenerCallDepth>0) return()
+            listenerCallDepth<<-1
+            # reset listenerCallDepth on exit (we can't simply reset it upon return, as
+            # createClustersFromLeafColors can fail and this function can terminate abnormally)
+            on.exit({if (dbg.listener) cat('resetting listenerCallDepth\n');listenerCallDepth<<-0})
+
             idx<-which(j==c('.brushed'))
             if (length(idx)>0) {
                 if (dbg.brushedmap) cat('qx listener: brushed status changed\n')
                 qupdate(brushedmapLayer)
                 guiWindow$updateClusterInfos()
+            }
+
+            idx<-which(j==c('.cluster'))
+            if (length(idx)>0) {
+                if (dbg.dendro) cat('qx listener: .clusters changed\n')
+                if (dbg.dendro) printVar(qx$.cluster)
+                .sharedEnv<-attr(scene,'.sharedEnv')
+                df<-createClustersFromLeafColors(.sharedEnv$df,qx$.cluster,maxClusterCount,dbg.dendro)
+                # we ignore .inCurrentCluster, as changing the current cluster would require to also
+                if (dbg.dendro>1) printClusters(df)
+                .sharedEnv$df<-df
+                .sharedEnv$df<-updateClustersOnChange(.sharedEnv,qx,guiWindow)
             }
         })
         qconnect(dendroLayer,'destroyed',function(x) {
@@ -1731,10 +1754,23 @@ idendro<-structure(function# Interactive Dendrogram
         return(list(info=info,ratio=ratio))
     }
 
+    # Print number of observations in clusters.
+    # A debug function.
+    printClusters<-function(df) {
+        if (!is.null(df$clusters)) {
+            for (i in 1:params$maxClusterCount) {
+                if (i<=length(df$clusters) && length(df$clusters[[i]]$indices)>0) {
+                    cat(paste0(i,':',length(df$clusters[[i]]$indices),'\n'))
+                }
+            }
+        }
+    }
+
     qsetMethod("updateClusterInfos", Window, function() {
         if (dbg.dendro.info) cat('updateClusterInfos called\n')
         .sharedEnv<-attr(scene,'.sharedEnv')
         df<-.sharedEnv$df
+        if (dbg.dendro.info) printClusters(df)
         if (brushedmapEnabled) {
             this$brushedDesc$setText(paste(sum(qx$.brushed),'brushed'))
         }
